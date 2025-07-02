@@ -1,0 +1,149 @@
+/* 1. БЭШ-боксинг и базовые сбросы */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. Глобальные стили */
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f0f2f5;
+  color: #333;
+  padding: 2rem;
+  line-height: 1.5;
+}
+
+header {
+  padding: 1rem;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Поисковое поле */
+#search-box {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+/* Заголовок */
+h1 {
+  margin: 2rem 0;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 2rem;
+}
+
+/* 3. Контейнер для «резиновой» таблицы */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* 4. Таблица */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 3rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #3498db;
+  color: #fff;
+  white-space: nowrap;
+}
+
+tr.entry {
+  cursor: pointer;
+  background: #f5faff;
+  transition: background-color .2s;
+}
+
+tr.entry:hover {
+  background: #e0f0ff;
+}
+
+tr.detail {
+  display: none;
+  background: #fcfeff;
+}
+
+tr.detail td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* 5. Блоки кода */
+pre {
+  background: #2e2e2e;
+  color: #f8f8f2;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* 6. Адаптивная типографика и отступы */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  #search-box {
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.6rem;
+  }
+}
+
+/* 7. Мобильное представление таблицы */
+@media (max-width: 480px) {
+  .table-container {
+    /* Чтобы таблица скроллилась по горизонтали */
+    overflow-x: scroll;
+  }
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  tr {
+    margin: 0 0 1rem 0;
+    border: 1px solid #ccc;
+  }
+  td {
+    /* Эмулируем подписи колонок через data-label */
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+  td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    width: 45%;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+}

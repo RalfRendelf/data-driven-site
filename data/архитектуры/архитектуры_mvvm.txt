@@ -1,0 +1,23 @@
+<p><strong>Описание:</strong> Model-View-ViewModel (MVVM) разделяет логику, представление и состояние. ViewModel предоставляет реактивные данные, View — подписывается и отображает.</p>
+
+<p><strong>Плюсы:</strong></p>
+<ul>
+  <li>Реактивность: LiveData, StateFlow</li>
+  <li>Минимальная логика во View</li>
+</ul>
+
+<p><strong>Минусы:</strong></p>
+<ul>
+  <li>Сложность с DataBinding</li>
+  <li>Переусложнение в простых приложениях</li>
+</ul>
+
+<pre><code>// Kotlin ViewModel
+class UserVM : ViewModel() {
+  val user: LiveData&lt;User&gt; = repo.getUser()
+}
+
+// В Activity
+viewModel.user.observe(this) {
+  render(it)
+}</code></pre>

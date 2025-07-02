@@ -1,0 +1,42 @@
+<p><strong>Назначение:</strong> Visitor позволяет вынести операции над объектами в отдельный класс, не изменяя их структуру. Подходит, когда нужно выполнять действия над множеством разнородных объектов.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда новые операции нужно добавлять без изменения самих объектов.</li>
+  <li>Когда структура объектов стабильна, но над ней выполняются разные действия.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Разделяет алгоритм и структуру данных.</li>
+  <li>Упрощает добавление новых операций.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Трудности при изменении классов элементов.</li>
+  <li>Нарушение инкапсуляции (если visitor доступен к приватным данным).</li>
+</ul>
+
+<p><strong>Пример:</strong></p>
+<pre><code>interface Visitor {
+  void visit(Book book);
+  void visit(CD cd);
+}
+
+interface Item {
+  void accept(Visitor visitor);
+}
+
+class Book implements Item {
+  public void accept(Visitor v) { v.visit(this); }
+}
+
+class CD implements Item {
+  public void accept(Visitor v) { v.visit(this); }
+}
+
+class PriceCalculator implements Visitor {
+  public void visit(Book b) { /* цена книги */ }
+  public void visit(CD c) { /* цена CD */ }
+}</code></pre>

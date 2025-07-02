@@ -1,0 +1,49 @@
+<p><strong>Назначение:</strong> паттерн Singleton гарантирует, что у класса существует только один экземпляр. Он предоставляет глобальную точку доступа к этому объекту, при этом контролируя создание.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>При работе с глобальными ресурсами (настройки, конфигурации);</li>
+  <li>Для логирования или ведения статистики;</li>
+  <li>Для подключения к базе данных;</li>
+  <li>Когда требуется централизованное управление одним объектом.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Централизованный доступ к ресурсу;</li>
+  <li>Контроль над инициализацией;</li>
+  <li>Может использовать ленивую инициализацию (по требованию).</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Может нарушать принципы ООП (особенно SRP и DIP);</li>
+  <li>Усложняет тестирование (мокать Singleton трудно);</li>
+  <li>Может скрывать зависимости между компонентами.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>public class Singleton {
+  private static Singleton instance;
+  private Singleton() {}
+
+  public static synchronized Singleton getInstance() {
+    if (instance == null) {
+      instance = new Singleton();
+    }
+    return instance;
+  }
+}</code></pre>
+
+<p><strong>Пример на C++:</strong></p>
+<pre><code>class Singleton {
+public:
+  static Singleton& getInstance() {
+    static Singleton instance;
+    return instance;
+  }
+private:
+  Singleton() = default;
+  Singleton(const Singleton&) = delete;
+  void operator=(const Singleton&) = delete;
+};</code></pre>

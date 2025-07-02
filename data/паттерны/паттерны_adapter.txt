@@ -1,0 +1,41 @@
+<p><strong>Назначение:</strong> Adapter позволяет объектам с несовместимыми интерфейсами работать вместе, оборачивая один интерфейс другим.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Нужно использовать сторонний или устаревший класс с несовместимым интерфейсом.</li>
+  <li>Нужно объединить классы с разной структурой в единую систему.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Позволяет переиспользовать несовместимые классы без изменения их кода.</li>
+  <li>Следует принципу единой ответственности.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Добавляет дополнительный уровень абстракции.</li>
+  <li>Сложность увеличивается при множестве адаптируемых интерфейсов.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>// Сторонний класс
+class OldPrinter {
+  public void printOld(String msg) {
+    System.out.println("Old: " + msg);
+  }
+}
+
+// Требуемый интерфейс
+interface Printer {
+  void print(String text);
+}
+
+// Адаптер
+class PrinterAdapter implements Printer {
+  private OldPrinter oldPrinter = new OldPrinter();
+
+  public void print(String text) {
+    oldPrinter.printOld(text);
+  }
+}</code></pre>

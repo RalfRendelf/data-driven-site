@@ -1,0 +1,50 @@
+<p><strong>Назначение:</strong> Mediator упрощает взаимодействие между объектами, предоставляя централизованный посредник. Это снижает связанность между компонентами и упрощает изменение поведения.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Объекты сильно связаны между собой, и изменения в одном влияют на другие.</li>
+  <li>Когда нужно централизовать обмен сообщениями и взаимодействие (например, чаты, UI, компоненты формы).</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Снижение связности между участниками.</li>
+  <li>Логика взаимодействия сосредоточена в одном месте.</li>
+  <li>Упрощается поддержка и масштабирование системы.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Медиатор может превратиться в "божественный объект", если перегрузить его логикой.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Mediator {
+  void notify(Component sender, String event);
+}
+
+class Dialog implements Mediator {
+  private Button ok;
+  private TextBox input;
+
+  public void notify(Component sender, String event) {
+    if (sender == ok && event.equals("click")) {
+      System.out.println("Сохраняем: " + input.getText());
+    }
+  }
+}
+
+abstract class Component {
+  protected Mediator mediator;
+  public Component(Mediator m) { this.mediator = m; }
+}
+
+class Button extends Component {
+  public void click() {
+    mediator.notify(this, "click");
+  }
+}
+
+class TextBox extends Component {
+  public String getText() { return "Данные"; }
+}</code></pre>

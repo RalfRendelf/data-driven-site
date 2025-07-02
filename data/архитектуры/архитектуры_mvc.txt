@@ -1,0 +1,29 @@
+<p><strong>Описание:</strong> Model-View-Controller (MVC) — архитектурный шаблон, разделяющий логику приложения:</p>
+<ul>
+  <li><strong>Model</strong> — бизнес-логика, данные, состояние</li>
+  <li><strong>View</strong> — пользовательский интерфейс</li>
+  <li><strong>Controller</strong> — обрабатывает действия пользователя, обновляет модель и представление</li>
+</ul>
+
+<p><strong>Плюсы:</strong></p>
+<ul>
+  <li>Чёткое разделение ответственности</li>
+  <li>Подходит для веб-приложений и UI с контроллерами</li>
+</ul>
+
+<p><strong>Минусы:</strong></p>
+<ul>
+  <li>Controller может разрастаться</li>
+  <li>Жёсткое связывание между View и Controller</li>
+</ul>
+
+<pre><code>// Java
+class Controller {
+  Model model;
+  View view;
+
+  void handleInput(String name) {
+    model.setName(name);
+    view.refresh(model);
+  }
+}</code></pre>

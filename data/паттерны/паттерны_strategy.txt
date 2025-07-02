@@ -1,0 +1,46 @@
+<p><strong>Назначение:</strong> Strategy определяет семейство алгоритмов, инкапсулирует каждый и делает их взаимозаменяемыми. Паттерн позволяет изменять поведение объекта на лету, не меняя его класс.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда у объекта есть несколько вариантов поведения, и нужно выбирать между ними во время выполнения.</li>
+  <li>Когда требуется изолировать различные алгоритмы в отдельные классы для повторного использования.</li>
+  <li>Когда в коде есть множество условных операторов (if/switch) с выбором поведения.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Избавляет от дублирования кода.</li>
+  <li>Позволяет добавлять новые алгоритмы без изменения существующего кода.</li>
+  <li>Соблюдает принцип открытости/закрытости.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Увеличивает количество классов.</li>
+  <li>Необходимо знать отличия стратегий и правильно их подбирать.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface CompressionStrategy {
+  void compress(String data);
+}
+
+class ZipCompression implements CompressionStrategy {
+  public void compress(String data) { System.out.println("ZIP"); }
+}
+
+class RarCompression implements CompressionStrategy {
+  public void compress(String data) { System.out.println("RAR"); }
+}
+
+class Compressor {
+  private CompressionStrategy strategy;
+
+  public Compressor(CompressionStrategy strategy) {
+    this.strategy = strategy;
+  }
+
+  public void compress(String data) {
+    strategy.compress(data);
+  }
+}</code></pre>

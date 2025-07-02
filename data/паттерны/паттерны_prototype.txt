@@ -1,0 +1,38 @@
+<p><strong>Назначение:</strong> Prototype позволяет копировать существующие объекты без привязки к их конкретному классу. Вместо создания нового объекта с нуля, создаётся клон существующего.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Создание объектов обходится дорого или сложно (например, загружены из БД, содержат много вложенных структур).</li>
+  <li>Необходимо дублировать объекты с частичным изменением.</li>
+  <li>Нужно сохранять тип во время клонирования, не привязываясь к конкретному классу.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Клонирование объектов без знания их конкретных классов.</li>
+  <li>Повышает производительность при множественном создании похожих объектов.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Сложности с глубоким клонированием (вложенные объекты).</li>
+  <li>Нарушение инкапсуляции при копировании приватных данных.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>abstract class Shape implements Cloneable {
+  public String color;
+  public Shape clone() throws CloneNotSupportedException {
+    return (Shape) super.clone();
+  }
+}
+
+class Circle extends Shape {
+  public int radius;
+}
+
+// Использование:
+Circle original = new Circle();
+original.radius = 10;
+original.color = "red";
+Circle clone = (Circle) original.clone();</code></pre>

@@ -1,0 +1,48 @@
+<p><strong>Назначение:</strong> Proxy предоставляет заместителя другого объекта с тем же интерфейсом. Может контролировать доступ, логировать, кэшировать или отложить реальное создание объекта.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда нужно контролировать доступ к ресурсоёмкому или удалённому объекту.</li>
+  <li>Когда необходимо добавить к объекту дополнительную логику без изменения его класса.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Отложенное или условное создание объекта (Lazy Initialization).</li>
+  <li>Контроль доступа, кэширование, логирование без изменения оригинала.</li>
+  <li>Может выступать как "заглушка" для удалённого ресурса (Remote Proxy).</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Дополнительный слой абстракции.</li>
+  <li>Необходимость поддерживать интерфейс оригинала.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Image {
+  void display();
+}
+
+class RealImage implements Image {
+  private String filename;
+  public RealImage(String name) { this.filename = name; load(); }
+  private void load() { System.out.println("Загрузка " + filename); }
+  public void display() { System.out.println("Отображение " + filename); }
+}
+
+class ProxyImage implements Image {
+  private RealImage real;
+  private String filename;
+
+  public ProxyImage(String filename) {
+    this.filename = filename;
+  }
+
+  public void display() {
+    if (real == null) {
+      real = new RealImage(filename);
+    }
+    real.display();
+  }
+}</code></pre>

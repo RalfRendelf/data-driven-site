@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Паттерны и Архитектуры</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Десктопная версия (от 601px и выше) -->
+  <link
+    rel="stylesheet"
+    href="style.css"
+    media="screen and (min-width: 601px)"
+  />
+
+  <!-- Мобильная версия (до 600px) -->
+  <link
+    rel="stylesheet"
+    href="mobile.css"
+    media="screen and (max-width: 600px)"
+  />
+
+  <script type="module" defer src="./main.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🔍 Поиск</h1>
+    <input
+      id="search-box"
+      type="text"
+      placeholder="Введите ключевые слова..."
+    />
+  </header>
+
+  <main id="content"></main>
+</body>
+</html>

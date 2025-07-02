@@ -1,0 +1,33 @@
+<p><strong>Описание:</strong> Чистая архитектура разделяет систему на слои с направлением зависимостей внутрь:</p>
+<ul>
+  <li><strong>Entities</strong> — бизнес-модели</li>
+  <li><strong>UseCases</strong> — прикладная логика</li>
+  <li><strong>Interface adapters</strong> — ViewModel, контроллеры</li>
+  <li><strong>Frameworks & Drivers</strong> — UI, базы данных, сети</li>
+</ul>
+
+<p><strong>Плюсы:</strong></p>
+<ul>
+  <li>Тестируемость</li>
+  <li>Модульность</li>
+  <li>Гибкость внедрения зависимостей</li>
+</ul>
+
+<p><strong>Минусы:</strong></p>
+<ul>
+  <li>Сложность на старте</li>
+  <li>Избыточность для простых проектов</li>
+</ul>
+
+<pre><code>// UseCase
+class GetUser(private val repo: UserRepo) {
+  fun execute(id: String): User = repo.get(id)
+}
+
+// ViewModel
+class UserVM(private val getUser: GetUser) : ViewModel() {
+  val user = MutableLiveData&lt;User&gt;()
+  fun load() {
+    user.value = getUser.execute("123")
+  }
+}</code></pre>

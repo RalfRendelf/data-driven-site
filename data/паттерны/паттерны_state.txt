@@ -1,0 +1,44 @@
+<p><strong>Назначение:</strong> State позволяет объекту менять своё поведение в зависимости от внутреннего состояния. Снаружи кажется, что изменился класс объекта.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда объект имеет несколько состояний, каждое со своим поведением.</li>
+  <li>Когда поведение зависит от текущего состояния, а количество условий (if/else) растёт.</li>
+  <li>Для реализации конечных автоматов, UI-компонентов, игровых состояний и т.п.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Избавляет от условных операторов switch/case.</li>
+  <li>Каждое состояние инкапсулируется в отдельный класс.</li>
+  <li>Новые состояния можно добавлять без изменения логики контекста.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Увеличение количества классов.</li>
+  <li>Иногда сложно организовать переходы между состояниями без дублирования.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface State {
+  void handle();
+}
+
+class StartState implements State {
+  public void handle() {
+    System.out.println("Состояние: Старт");
+  }
+}
+
+class StopState implements State {
+  public void handle() {
+    System.out.println("Состояние: Стоп");
+  }
+}
+
+class Context {
+  private State state;
+  public void setState(State s) { this.state = s; }
+  public void request() { state.handle(); }
+}</code></pre>

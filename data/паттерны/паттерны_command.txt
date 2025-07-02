@@ -1,0 +1,41 @@
+<p><strong>Назначение:</strong> Command превращает запросы в отдельные объекты, позволяя параметризовать исполнителей, реализовать очереди, отмену (undo) и ведение истории операций.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Для реализации отмены/повтора действий (undo/redo).</li>
+  <li>Когда нужно логировать или откладывать выполнение команд.</li>
+  <li>Когда нужно передавать действия как параметры (например, макросы).</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Отделяет объект, отправляющий запрос, от объекта, исполняющего его.</li>
+  <li>Позволяет легко реализовать отложенные действия и очереди команд.</li>
+  <li>Упрощает реализацию undo/redo.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Увеличивает количество классов (по одной команде на каждое действие).</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Command {
+  void execute();
+}
+
+class Light {
+  void on() { System.out.println("Свет включён"); }
+}
+
+class LightOnCommand implements Command {
+  private Light light;
+  LightOnCommand(Light light) { this.light = light; }
+  public void execute() { light.on(); }
+}
+
+class RemoteControl {
+  private Command command;
+  void setCommand(Command cmd) { command = cmd; }
+  void pressButton() { command.execute(); }
+}</code></pre>

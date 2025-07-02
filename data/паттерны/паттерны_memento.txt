@@ -1,0 +1,33 @@
+<p><strong>Назначение:</strong> Memento сохраняет и восстанавливает предыдущее состояние объекта без нарушения его инкапсуляции. Используется для undo/redo, снапшотов и сохранения.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда необходимо сохранить состояние объекта для последующего восстановления.</li>
+  <li>Когда клиент не должен иметь прямой доступ к внутренней структуре объекта.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Не нарушает инкапсуляцию.</li>
+  <li>Позволяет легко реализовать отмену действий.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Увеличивает расход памяти (если хранить много состояний).</li>
+  <li>Сложность управления жизненным циклом memento-объектов.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>class Memento {
+  private String state;
+  public Memento(String state) { this.state = state; }
+  public String getState() { return state; }
+}
+
+class Originator {
+  private String state;
+  public void set(String state) { this.state = state; }
+  public Memento save() { return new Memento(state); }
+  public void restore(Memento m) { state = m.getState(); }
+}</code></pre>

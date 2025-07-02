@@ -1,0 +1,40 @@
+<p><strong>Назначение:</strong> Observer создаёт механизм подписки, позволяющий объектам получать уведомления при изменении состояния другого объекта.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Существует один объект (Subject), которому должны автоматически реагировать другие.</li>
+  <li>Нужно реализовать реактивную модель (например, UI, события, LiveData).</li>
+  <li>Объекты слабо связаны: отправитель и получатель не знают друг о друге.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Слабая связанность между объектами.</li>
+  <li>Автоматическое оповещение об изменениях.</li>
+  <li>Упрощает реализацию событийных систем.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Возможны утечки памяти при неправильной отписке.</li>
+  <li>Трудности с отладкой и отслеживанием каскадных событий.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Observer {
+  void update(String data);
+}
+
+class Subject {
+  private List&lt;Observer&gt; observers = new ArrayList<>();
+
+  public void subscribe(Observer o) {
+    observers.add(o);
+  }
+
+  public void notifyAll(String data) {
+    for (Observer o : observers) {
+      o.update(data);
+    }
+  }
+}</code></pre>

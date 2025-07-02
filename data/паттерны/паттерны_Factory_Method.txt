@@ -1,0 +1,48 @@
+<p><strong>Назначение:</strong> Factory Method позволяет создавать объекты, не указывая их конкретный класс. Вместо прямого вызова конструктора, используется интерфейс или абстрактный метод для делегирования создания подклассам.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда код должен быть независим от конкретных классов создаваемых объектов.</li>
+  <li>Когда нужно расширять систему новыми типами объектов без изменения существующего кода.</li>
+  <li>Когда класс не может предсказать тип создаваемого объекта заранее.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Изолирует код создания объектов.</li>
+  <li>Упрощает замену и расширение типов объектов.</li>
+  <li>Следует принципу открытости/закрытости (Open/Closed Principle).</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Может привести к увеличению количества классов.</li>
+  <li>Добавляет уровень абстракции, усложняя чтение кода новичками.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Button {
+  void render();
+}
+
+class HTMLButton implements Button {
+  public void render() {
+    System.out.println("Кнопка HTML");
+  }
+}
+
+abstract class Dialog {
+  public void renderWindow() {
+    Button okButton = createButton();
+    okButton.render();
+  }
+  protected abstract Button createButton();
+}
+
+class WebDialog extends Dialog {
+  protected Button createButton() {
+    return new HTMLButton();
+  }
+}</code></pre>
+
+<p><strong>Применение:</strong> Android UI (Button, EditText), фабрики контроллеров, зависимости в DI-контейнерах, сериализация/десериализация с типами (Jackson, Moshi, etc).</p>

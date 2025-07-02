@@ -1,0 +1,44 @@
+<p><strong>Назначение:</strong> Decorator позволяет динамически добавлять объектам новые обязанности, оборачивая их в другие объекты. Он расширяет поведение без наследования и изменения исходного кода.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Если поведение объекта нужно добавлять гибко, без изменения кода базового класса.</li>
+  <li>Когда необходимо избежать создания множества подклассов с комбинациями функций.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Гибкая альтернатива наследованию.</li>
+  <li>Позволяет комбинировать поведение в рантайме.</li>
+  <li>Следует принципу открытости/закрытости.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Может привести к большому количеству маленьких объектов.</li>
+  <li>Порядок декораторов имеет значение и может усложнять понимание.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface DataSource {
+  void write(String data);
+}
+
+class FileDataSource implements DataSource {
+  public void write(String data) {
+    System.out.println("Запись: " + data);
+  }
+}
+
+class EncryptionDecorator implements DataSource {
+  protected DataSource wrappee;
+  EncryptionDecorator(DataSource source) { this.wrappee = source; }
+
+  public void write(String data) {
+    wrappee.write(encrypt(data));
+  }
+
+  private String encrypt(String input) {
+    return "ENCRYPTED(" + input + ")";
+  }
+}</code></pre>

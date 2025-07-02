@@ -1,0 +1,39 @@
+<p><strong>Назначение:</strong> Composite позволяет объединить объекты в древовидную структуру и работать с ними единообразно. Упрощает работу с иерархиями, например, компонентов UI, файловых систем и т.д.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Когда объекты имеют иерархическую структуру (часть-целое).</li>
+  <li>Когда нужно, чтобы клиент одинаково работал с одиночными объектами и их группами.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Упрощает клиентский код, работающий с деревьями.</li>
+  <li>Рекурсивная структура (вложенные контейнеры).</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Сложно ограничить поведение только для определённых элементов.</li>
+  <li>Может затруднить поддержку зависимостей при глубоком дереве.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>interface Component {
+  void render();
+}
+
+class Button implements Component {
+  public void render() { System.out.println("Кнопка"); }
+}
+
+class Panel implements Component {
+  private List&lt;Component&gt; children = new ArrayList<>();
+
+  public void add(Component c) { children.add(c); }
+  public void render() {
+    for (Component c : children) {
+      c.render();
+    }
+  }
+}</code></pre>

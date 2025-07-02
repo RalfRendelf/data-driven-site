@@ -1,0 +1,26 @@
+<p><strong>Описание:</strong> Model-View-Presenter (MVP) — развитие MVC. Presenter заменяет Controller, а View становится "тупой". Все действия проходят через Presenter, что упрощает тестирование.</p>
+
+<p><strong>Плюсы:</strong></p>
+<ul>
+  <li>Тестируемость View и Presenter по отдельности</li>
+  <li>Подходит для Android (до MVVM)</li>
+</ul>
+
+<p><strong>Минусы:</strong></p>
+<ul>
+  <li>Много шаблонного кода</li>
+  <li>Presenter может превратиться в "монолит"</li>
+</ul>
+
+<pre><code>// Интерфейс View
+interface LoginView {
+  void showError(String msg);
+}
+
+// Presenter
+class LoginPresenter {
+  LoginView view;
+  void onLogin(String user, String pass) {
+    if (user.isEmpty()) view.showError("Логин пуст");
+  }
+}</code></pre>

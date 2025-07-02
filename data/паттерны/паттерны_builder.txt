@@ -1,0 +1,54 @@
+<p><strong>Назначение:</strong> Builder позволяет создавать сложные объекты пошагово. Он отделяет создание объекта от его представления, позволяя использовать один и тот же процесс построения для разных представлений.</p>
+
+<p><strong>Когда использовать:</strong></p>
+<ul>
+  <li>Объект имеет множество параметров или опций.</li>
+  <li>Нужно исключить необходимость передачи длинных списков аргументов конструктору.</li>
+  <li>Процесс построения может меняться независимо от конечного объекта.</li>
+</ul>
+
+<p><strong>Преимущества:</strong></p>
+<ul>
+  <li>Читаемый, «пошаговый» код создания объектов.</li>
+  <li>Изоляция логики построения от бизнес-объекта.</li>
+  <li>Поддержка неизменяемых объектов.</li>
+</ul>
+
+<p><strong>Недостатки:</strong></p>
+<ul>
+  <li>Может привести к появлению большого количества дополнительных классов.</li>
+  <li>Повышает сложность проекта при переизбытке.</li>
+</ul>
+
+<p><strong>Пример на Java:</strong></p>
+<pre><code>class User {
+  private String name;
+  private int age;
+
+  public static class Builder {
+    private String name;
+    private int age;
+
+    public Builder setName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder setAge(int age) {
+      this.age = age;
+      return this;
+    }
+
+    public User build() {
+      return new User(name, age);
+    }
+  }
+
+  private User(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+// Использование:
+User u = new User.Builder().setName("Alex").setAge(30).build();</code></pre>

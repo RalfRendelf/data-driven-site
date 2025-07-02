@@ -1,0 +1,33 @@
+[
+    {
+      "type": "архитектуры",
+      "name": "MVC",
+      "category": "Model-View-Controller",
+      "usage": "Классические веб-приложения и UI"
+    },
+    {
+      "type": "архитектуры",
+      "name": "MVP",
+      "category": "Model-View-Presenter",
+      "usage": "Android до MVVM, тестируемость"
+    },
+    {
+      "type": "архитектуры",
+      "name": "MVVM",
+      "category": "Model-View-ViewModel",
+      "usage": "Реактивный UI, Android, WPF, SwiftUI"
+    },
+    {
+      "type": "архитектуры",
+      "name": "Clean Architecture",
+      "category": "Чистая архитектура",
+      "usage": "Слоистые системы, масштабируемость"
+    },
+    {
+      "type": "архитектуры",
+      "name": "PAC",
+      "category": "Presentation-Abstraction-Control",
+      "usage": "Модульные визуальные системы"
+    }
+  ]
+  
