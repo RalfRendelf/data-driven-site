@@ -1,0 +1,268 @@
+<h2>Последовательные интерфейсы: UART/USART/SPI/I2C</h2>
+
+<p><strong>Категория:</strong> Периферия</p>
+
+<h3>Описание</h3>
+<p>Последовательные интерфейсы (UART, USART, SPI, I2C) представляют собой основные средства для передачи данных между микроконтроллером и другими устройствами. Они позволяют подключать различные периферийные устройства, такие как датчики, исполнительные механизмы, ЖК-дисплеи, Bluetooth-модули и т.д.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>UART - универсальный асинхронный приемопередатчик</li>
+<li>USART - универсальный синхронный/асинхронный приемопередатчик</li>
+<li>SPI - последовательный периферийный интерфейс, синхронный</li>
+<li>I2C - двунаправленная двухпроводная шина, синхронный</li>
+<li>Различные скорости передачи данных</li>
+<li>Поддержка прерываний и DMA для эффективной передачи данных</li>
+</ul>
+
+<h3>Пример использования UART:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+UART_HandleTypeDef huart2;
+
+void UART2_Init() {
+    // Включить тактирование UART2
+    __HAL_RCC_USART2_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    // Настроить GPIO пины для UART2 (TX:PA2, RX:PA3)
+    GPIO_InitTypeDef gpio_init = {0};
+    gpio_init.Pin = GPIO_PIN_2 | GPIO_PIN_3;
+    gpio_init.Mode = GPIO_MODE_AF_PP;
+    gpio_init.Pull = GPIO_NOPULL;
+    gpio_init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    gpio_init.Alternate = GPIO_AF7_USART2;
+    HAL_GPIO_Init(GPIOA, &gpio_init);
+
+    // Настроить параметры UART
+    huart2.Instance = USART2;
+    huart2.Init.BaudRate = 115200;           // Скорость передачи
+    huart2.Init.WordLength = UART_WORDLENGTH_8B;
+    huart2.Init.StopBits = UART_STOPBITS_1;
+    huart2.Init.Parity = UART_PARITY_NONE;
+    huart2.Init.Mode = UART_MODE_TX_RX;
+    huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+
+    if (HAL_UART_Init(&huart2) != HAL_OK) {
+        // Обработка ошибки
+        Error_Handler();
+    }
+}
+
+void UART_SendString(char *str) {
+    HAL_UART_Transmit(&huart2, (uint8_t *)str, strlen(str), HAL_MAX_DELAY);
+}
+
+void UART_ReceiveCharIT() {
+    // Включить прерывание по приему
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&received_char, 1);
+}
+
+uint8_t received_char;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if(huart->Instance == USART2) {
+        // Обработка принятого символа
+        HAL_UART_Transmit(&huart2, &received_char, 1, HAL_MAX_DELAY); // Эхо
+    }
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    UART2_Init();
+
+    UART_SendString("UART initialized!\r\n");
+
+    // Включить прерывание по приему
+    HAL_UART_Receive_IT(&huart2, (uint8_t *)&received_char, 1);
+
+    while(1) {
+        // Основной цикл программы
+    }
+}
+</code>
+</pre>
+
+<h3>Пример использования SPI:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+SPI_HandleTypeDef hspi1;
+
+void SPI1_Init() {
+    // Включить тактирование SPI1
+    __HAL_RCC_SPI1_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    // Настроить GPIO пины для SPI1 (SCK:PA5, MISO:PA6, MOSI:PA7)
+    GPIO_InitTypeDef gpio_init = {0};
+    gpio_init.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    gpio_init.Mode = GPIO_MODE_AF_PP;
+    gpio_init.Pull = GPIO_NOPULL;
+    gpio_init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    gpio_init.Alternate = GPIO_AF5_SPI1;
+    HAL_GPIO_Init(GPIOA, &gpio_init);
+
+    // Настроить параметры SPI
+    hspi1.Instance = SPI1;
+    hspi1.Init.Mode = SPI_MODE_MASTER;       // Режим мастера
+    hspi1.Init.Direction = SPI_DIRECTION_2LINES; // Полный дуплекс
+    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;   // Низкий уровень по умолчанию
+    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;      // Передача по первому фронту
+    hspi1.Init.NSS = SPI_NSS_SOFT;              // Управление NSS программно
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16; // Делитель
+    hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;     // Передача старшим битом
+    hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+    hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+
+    if (HAL_SPI_Init(&hspi1) != HAL_OK) {
+        Error_Handler();
+    }
+}
+
+uint8_t SPI_Transceive(uint8_t data) {
+    uint8_t rx_data;
+    HAL_SPI_TransmitReceive(&hspi1, &data, &rx_data, 1, HAL_MAX_DELAY);
+    return rx_data;
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    SPI1_Init();
+
+    while(1) {
+        // Отправить байт и получить ответ
+        uint8_t response = SPI_Transceive(0xAA);
+        HAL_Delay(100);
+    }
+}
+
+void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle) {
+    // Инициализация периферии SPI
+}
+</code>
+</pre>
+
+<h3>Пример использования I2C:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+I2C_HandleTypeDef hi2c1;
+
+void I2C1_Init() {
+    // Включить тактирование I2C1
+    __HAL_RCC_I2C1_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    // Настроить GPIO пины для I2C1 (SCL:PB6, SDA:PB7)
+    GPIO_InitTypeDef gpio_init = {0};
+    gpio_init.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    gpio_init.Mode = GPIO_MODE_AF_OD;  // Режим "открытый сток"
+    gpio_init.Pull = GPIO_NOPULL;
+    gpio_init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    gpio_init.Alternate = 0;  // Не используется для OD режима
+    HAL_GPIO_Init(GPIOB, &gpio_init);
+
+    // Настроить параметры I2C
+    hi2c1.Instance = I2C1;
+    hi2c1.Init.ClockSpeed = 100000;      // 100 кГц
+    hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+    hi2c1.Init.OwnAddress1 = 0;
+    hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c1.Init.OwnAddress2 = 0;
+    hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+
+    if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
+        Error_Handler();
+    }
+}
+
+uint8_t I2C_ReadRegister(uint8_t device_addr, uint8_t reg_addr) {
+    uint8_t data;
+    // Записать адрес регистра
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)(device_addr<<1), &reg_addr, 1, HAL_MAX_DELAY);
+    // Прочитать данные из регистра
+    HAL_I2C_Master_Receive(&hi2c1, (uint16_t)(device_addr<<1), &data, 1, HAL_MAX_DELAY);
+    return data;
+}
+
+void I2C_WriteRegister(uint8_t device_addr, uint8_t reg_addr, uint8_t data) {
+    uint8_t tx_data[2];
+    tx_data[0] = reg_addr;
+    tx_data[1] = data;
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)(device_addr<<1), tx_data, 2, HAL_MAX_DELAY);
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    I2C1_Init();
+
+    // Пример чтения из датчика по I2C (например, акселерометр)
+    uint8_t device_address = 0x18;  // Пример адреса
+    uint8_t id_reg = 0x0F;          // Регистр ID
+    uint8_t sensor_id = I2C_ReadRegister(device_address, id_reg);
+
+    while(1) {
+        // Основной цикл программы
+    }
+}
+</code>
+</pre>
+
+<h3>Сравнение интерфейсов:</h3>
+<table border="1" style="border-collapse: collapse;">
+<tr>
+<th>Интерфейс</th>
+<th>Количество проводов</th>
+<th>Тип связи</th>
+<th>Скорость</th>
+<th>Преимущества</th>
+<th>Недостатки</th>
+</tr>
+<tr>
+<td>UART</td>
+<td>2 (TX, RX)</td>
+<td>Асинхронный, полный дуплекс</td>
+<td>до Мбит/с</td>
+<td>Простота, нет необходимости в тактировании</td>
+<td>Нет контроля ошибок, нет адресации</td>
+</tr>
+<tr>
+<td>SPI</td>
+<td>3-4 (MOSI, MISO, SCK, CS)</td>
+<td>Синхронный, полный дуплекс</td>
+<td>до десятков Мбит/с</td>
+<td>Высокая скорость, простота протокола</td>
+<td>Требует больше проводов, нет встроенного адреса</td>
+</tr>
+<tr>
+<td>I2C</td>
+<td>2 (SDA, SCL)</td>
+<td>Синхронный, полудуплекс</td>
+<td>до 3.4 Мбит/с</td>
+<td>Адресация устройств, минимальное количество проводов</td>
+<td>Более сложный протокол, ограничение по скорости</td>
+</tr>
+</table>
+
+<h3>Преимущества использования последовательных интерфейсов:</h3>
+<ul>
+<li>Минимизация количества выводов микроконтроллера</li>
+<li>Возможность подключения множества устройств</li>
+<li>Стандартизированные протоколы обмена</li>
+<li>Поддержка прерываний и DMA для эффективной передачи данных</li>
+</ul>

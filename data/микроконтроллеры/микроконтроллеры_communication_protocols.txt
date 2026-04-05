@@ -1,0 +1,721 @@
+<h2>Коммуникационные протоколы</h2>
+
+<p><strong>Категория:</strong> Периферия</p>
+
+<h3>Описание</h3>
+<p>Коммуникационные протоколы позволяют микроконтроллерам обмениваться данными с внешними устройствами, такими как сенсоры, исполнительные механизмы, другие микроконтроллеры, компьютеры и облачные сервисы. Понимание различных протоколов и их применения критично для построения надежных и эффективных встраиваемых систем.</p>
+
+<h3>Modbus RTU / TCP:</h3>
+<p>Modbus - это один из самых популярных протоколов промышленной автоматизации. Существует две основные версии:</p>
+
+<ul>
+<li><strong>Modbus RTU</strong> - используется для последовательной передачи данных по RS-485/RS-232</li>
+<li><strong>Modbus TCP</strong> - версия протокола для передачи по IP-сети</li>
+</ul>
+
+<h4>Пример реализации Modbus RTU на C:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+#include <string.h>
+
+#define MODBUS_SLAVE_ADDR 0x01
+#define MAX_MODBUS_FRAME 256
+
+// Структура Modbus заголовка
+typedef struct {
+    uint8_t slave_addr;
+    uint8_t function_code;
+    uint8_t data[250];
+    uint16_t crc;
+} modbus_frame_t;
+
+// Буферы для Modbus
+uint8_t modbus_tx_buf[MAX_MODBUS_FRAME];
+uint8_t modbus_rx_buf[MAX_MODBUS_FRAME];
+
+// Таблица CRC16 для Modbus
+const uint16_t crc_table[256] = {
+    0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
+    0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
+    // ... (полная таблица содержит 256 значений)
+};
+
+uint16_t modbus_crc16(uint8_t *data, uint16_t len) {
+    uint16_t crc = 0xFFFF;
+    for(int i = 0; i < len; i++) {
+        crc = (crc >> 8) ^ crc_table[(crc ^ data[i]) & 0xFF];
+    }
+    return crc;
+}
+
+// Функция для чтения регистров Holding Registers (FC 03)
+uint8_t modbus_read_holding_registers(uint8_t slave_addr, uint16_t start_addr, uint16_t count) {
+    uint8_t frame_len = 0;
+    
+    // Формирование запроса
+    modbus_tx_buf[frame_len++] = slave_addr;          // Slave address
+    modbus_tx_buf[frame_len++] = 0x03;               // Function code (Read Holding Registers)
+    modbus_tx_buf[frame_len++] = (start_addr >> 8);  // Starting address Hi
+    modbus_tx_buf[frame_len++] = start_addr & 0xFF;  // Starting address Lo
+    modbus_tx_buf[frame_len++] = (count >> 8);       // Number of registers Hi
+    modbus_tx_buf[frame_len++] = count & 0xFF;       // Number of registers Lo
+    
+    // Добавляем CRC
+    uint16_t crc = modbus_crc16(modbus_tx_buf, frame_len);
+    modbus_tx_buf[frame_len++] = crc & 0xFF;
+    modbus_tx_buf[frame_len++] = crc >> 8;
+    
+    // Отправляем запрос через UART
+    HAL_UART_Transmit(&huart2, modbus_tx_buf, frame_len, HAL_MAX_DELAY);
+    
+    // Ждем и принимаем ответ
+    HAL_UART_Receive(&huart2, modbus_rx_buf, MAX_MODBUS_FRAME, 1000);
+    
+    // Проверяем CRC в ответе
+    uint16_t recv_crc = (modbus_rx_buf[3 + modbus_rx_buf[2]] << 8) | modbus_rx_buf[3 + modbus_rx_buf[2] - 1];
+    uint16_t calc_crc = modbus_crc16(modbus_rx_buf, 3 + modbus_rx_buf[2]);
+    
+    if(recv_crc != calc_crc) {
+        return 0; // CRC ошибка
+    }
+    
+    return 1; // Успешно
+}
+
+// Обработчик запросов Modbus (для ведомого устройства)
+void modbus_slave_handler() {
+    uint8_t frame_len = 0;
+    
+    // Принимаем запрос
+    HAL_UART_Receive(&huart2, modbus_rx_buf, MAX_MODBUS_FRAME, HAL_MAX_DELAY);
+    
+    // Проверяем адрес ведомого
+    if(modbus_rx_buf[0] != MODBUS_SLAVE_ADDR) {
+        return; // Не для нас
+    }
+    
+    // Проверяем CRC
+    uint16_t recv_crc = (modbus_rx_buf[frame_len-1] << 8) | modbus_rx_buf[frame_len-2];
+    uint16_t calc_crc = modbus_crc16(modbus_rx_buf, frame_len-2);
+    if(recv_crc != calc_crc) {
+        return; // CRC ошибка
+    }
+    
+    uint8_t func_code = modbus_rx_buf[1];
+    uint16_t start_addr = (modbus_rx_buf[2] << 8) | modbus_rx_buf[3];
+    uint16_t count = (modbus_rx_buf[4] << 8) | modbus_rx_buf[5];
+    
+    switch(func_code) {
+        case 0x03: // Read Holding Registers
+            // Формируем ответ
+            modbus_tx_buf[0] = MODBUS_SLAVE_ADDR;
+            modbus_tx_buf[1] = 0x03;
+            modbus_tx_buf[2] = count * 2; // Кол-во байт
+            
+            // Заполняем данные из регистров (в реальном приложении - из таблицы регистров)
+            for(int i = 0; i < count; i++) {
+                uint16_t reg_value = get_register_value(start_addr + i);
+                modbus_tx_buf[3 + (i*2)] = (reg_value >> 8) & 0xFF;
+                modbus_tx_buf[3 + (i*2) + 1] = reg_value & 0xFF;
+            }
+            
+            // Добавляем CRC
+            uint16_t resp_len = 3 + (count * 2);
+            uint16_t crc = modbus_crc16(modbus_tx_buf, resp_len);
+            modbus_tx_buf[resp_len++] = crc & 0xFF;
+            modbus_tx_buf[resp_len++] = crc >> 8;
+            
+            // Отправляем ответ
+            HAL_UART_Transmit(&huart2, modbus_tx_buf, resp_len, HAL_MAX_DELAY);
+            break;
+            
+        default:
+            // Обработка других функций или ошибок
+            break;
+    }
+}
+</code>
+</pre>
+
+<h3>MQTT (Message Queuing Telemetry Transport):</h3>
+<p>MQTT - это легковесный протокол передачи сообщений, разработанный для IoT-устройств с ограниченными ресурсами. Протокол работает поверх TCP/IP и использует модель издатель-подписчик.</p>
+
+<h4>Пример MQTT-клиента на C:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+#include <stdio.h>
+#include <string.h>
+
+#define MQTT_MAX_PACKET_SIZE 1024
+#define MQTT_KEEPALIVE_INTERVAL 60
+
+typedef enum {
+    MQTT_CONNECT = 1,
+    MQTT_CONNACK,
+    MQTT_PUBLISH,
+    MQTT_PUBACK,
+    MQTT_PUBREC,
+    MQTT_PUBREL,
+    MQTT_PUBCOMP,
+    MQTT_SUBSCRIBE,
+    MQTT_SUBACK,
+    MQTT_UNSUBSCRIBE,
+    MQTT_UNSUBACK,
+    MQTT_PINGREQ,
+    MQTT_PINGRESP,
+    MQTT_DISCONNECT
+} mqtt_control_type_t;
+
+// Структура MQTT-соединения
+typedef struct {
+    char client_id[64];
+    char username[32];
+    char password[32];
+    uint8_t connected;
+} mqtt_client_t;
+
+// Буфер для MQTT-пакетов
+uint8_t mqtt_packet_buffer[MQTT_MAX_PACKET_SIZE];
+
+// Функция формирования CONNECT-пакета
+uint8_t* mqtt_create_connect_packet(mqtt_client_t *client, uint16_t *packet_len) {
+    uint8_t *ptr = mqtt_packet_buffer;
+    
+    // Тип пакета
+    *ptr++ = (MQTT_CONNECT << 4);
+    
+    // Оставшаяся длина (пока устанавливаем в 0, будет вычислено позже)
+    uint8_t remaining_len = 0;
+    *ptr++ = remaining_len;
+    
+    // Версия протокола ("MQTT" с длиной 4)
+    *ptr++ = 0x00;
+    *ptr++ = 0x04;
+    *ptr++ = 'M';
+    *ptr++ = 'Q';
+    *ptr++ = 'T';
+    *ptr++ = 'T';
+    *ptr++ = 0x04; // Уровень протокола 4 (MQTT 3.1.1)
+    
+    // Флаги подключения
+    *ptr++ = 0x02; // Clean session = 1, остальные = 0
+    
+    // Keep-alive интервал (в секундах)
+    *ptr++ = (MQTT_KEEPALIVE_INTERVAL >> 8) & 0xFF;
+    *ptr++ = MQTT_KEEPALIVE_INTERVAL & 0xFF;
+    
+    // Client ID
+    uint8_t client_id_len = strlen(client->client_id);
+    *ptr++ = (client_id_len >> 8) & 0xFF;
+    *ptr++ = client_id_len & 0xFF;
+    memcpy(ptr, client->client_id, client_id_len);
+    ptr += client_id_len;
+    
+    // Вычисляем оставшуюся длину и перезаписываем
+    remaining_len = ptr - mqtt_packet_buffer - 2; // минус тип и длина
+    
+    // Перемещаем данные, чтобы вставить правильную длину
+    memmove(mqtt_packet_buffer + 2 + get_variable_length_bytes(remaining_len), 
+            mqtt_packet_buffer + 3, remaining_len);
+    
+    // Записываем правильную оставшуюся длину
+    ptr = mqtt_packet_buffer + 1;
+    encode_variable_length(ptr, remaining_len);
+    
+    *packet_len = 1 + get_variable_length_bytes(remaining_len) + remaining_len;
+    
+    return mqtt_packet_buffer;
+}
+
+// Упрощенная функция отправки пакета PUBLISH
+uint8_t mqtt_publish(mqtt_client_t *client, const char* topic, const char* payload) {
+    if(!client->connected) {
+        return 0; // Не подключен
+    }
+    
+    uint8_t *ptr = mqtt_packet_buffer;
+    uint8_t flags = 0; // QoS 0, без retain и dup
+    
+    // Тип пакета и флаги
+    *ptr++ = ((MQTT_PUBLISH << 4) | flags);
+    
+    // Вычисляем оставшуюся длину
+    uint16_t topic_len = strlen(topic);
+    uint16_t payload_len = strlen(payload);
+    uint32_t remaining_len = 2 + topic_len + payload_len; // длина топика + топик + полезная нагрузка
+    
+    // Кодируем оставшуюся длину
+    uint8_t var_len_bytes = encode_variable_length(ptr, remaining_len);
+    ptr += var_len_bytes;
+    
+    // Длина топика
+    *ptr++ = (topic_len >> 8) & 0xFF;
+    *ptr++ = topic_len & 0xFF;
+    
+    // Топик
+    memcpy(ptr, topic, topic_len);
+    ptr += topic_len;
+    
+    // Полезная нагрузка
+    memcpy(ptr, payload, payload_len);
+    ptr += payload_len;
+    
+    uint16_t packet_len = ptr - mqtt_packet_buffer;
+    
+    // Отправляем пакет через TCP-соединение
+    // tcp_send(mqtt_socket, mqtt_packet_buffer, packet_len);
+    
+    return 1;
+}
+
+// Функция кодирования переменной длины (для MQTT)
+uint8_t encode_variable_length(uint8_t *ptr, uint32_t length) {
+    uint8_t bytes_written = 0;
+    
+    do {
+        uint8_t encoded_byte = length % 128;
+        length /= 128;
+        if(length > 0) {
+            encoded_byte |= 128;
+        }
+        *ptr++ = encoded_byte;
+        bytes_written++;
+    } while(length > 0 && bytes_written < 4);
+    
+    return bytes_written;
+}
+
+uint8_t get_variable_length_bytes(uint32_t length) {
+    if(length < 128) return 1;
+    if(length < 16384) return 2;
+    if(length < 2097152) return 3;
+    return 4;
+}
+</code>
+</pre>
+
+<h3>BLE (Bluetooth Low Energy):</h3>
+<p>BLE - это энергоэффективная версия Bluetooth, разработанная для IoT-устройств. Особенно популярна при использовании микроконтроллеров с nRF5x чипами или внешних BLE-контроллеров.</p>
+
+<h4>Пример использования BLE с Nordic nRF5x:</h4>
+
+<pre>
+<code>
+#include "ble.h"
+#include "ble_srv_common.h"
+#include "app_uart.h"
+#include "nrf_drv_rng.h"
+
+#define DEVICE_NAME "IoT_Sensor"
+#define MANUFACTURER_NAME "Acme Corp"
+#define APP_BLE_CONN_CFG_TAG    1
+#define APP_COMPANY_ID          0x005D
+#define APP_ADV_INTERVAL        300 // ms
+#define APP_ADV_TIMEOUT         180 // sec
+
+// UUID для нашего сервиса
+#define CUSTOM_SERVICE_UUID_BASE {0x34, 0x12, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x00, 0x00, 0x00, 0x00}
+#define CUSTOM_SERVICE_UUID     0x1234
+#define CUSTOM_CHAR_UUID        0x5678
+
+// Структура для нашего сервиса
+typedef struct {
+    uint16_t service_handle;
+    ble_gatts_char_handles_t custom_char_handles;
+    uint8_t uuid_type;
+    uint16_t conn_handle;
+} custom_service_t;
+
+static custom_service_t m_custom_service;
+static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+// Обработчик событий BLE
+void ble_evt_handler(ble_evt_t * p_evt) {
+    ret_code_t err_code;
+    
+    switch (p_evt->header.evt_id) {
+        case BLE_GAP_EVT_CONNECTED:
+            m_conn_handle = p_evt->evt.gap_evt.conn_handle;
+            break;
+            
+        case BLE_GAP_EVT_DISCONNECTED:
+            m_conn_handle = BLE_CONN_HANDLE_INVALID;
+            // Перезапускаем рекламу
+            advertising_start();
+            break;
+            
+        case BLE_GATTS_EVT_WRITE:
+            // Обработка записи в характеристику
+            if (p_evt->evt.gatts_evt.params.write.handle == m_custom_service.custom_char_handles.value_handle) {
+                // Обработка данных от клиента
+                handle_characteristic_write(p_evt->evt.gatts_evt.params.write.data, 
+                                          p_evt->evt.gatts_evt.params.write.len);
+            }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+// Инициализация нашего сервиса
+void custom_service_init(void) {
+    ret_code_t err_code;
+    ble_uuid_t ble_uuid;
+    
+    // Добавляем наш UUID
+    ble_uuid128_t custom_base_uuid = CUSTOM_SERVICE_UUID_BASE;
+    err_code = sd_ble_uuid_vs_add(&custom_base_uuid, &m_custom_service.uuid_type);
+    APP_ERROR_CHECK(err_code);
+    
+    // Устанавливаем UUID для сервиса
+    ble_uuid.type = m_custom_service.uuid_type;
+    ble_uuid.uuid = CUSTOM_SERVICE_UUID;
+    
+    // Добавляем сервис
+    err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, &ble_uuid, &m_custom_service.service_handle);
+    APP_ERROR_CHECK(err_code);
+    
+    // Настройка характеристики
+    ble_gatts_char_md_t char_md;
+    memset(&char_md, 0, sizeof(char_md));
+    
+    char_md.char_props.read = 1;
+    char_md.char_props.write = 1;
+    char_md.char_props.notify = 1;
+    char_md.p_char_user_desc = NULL;
+    char_md.p_char_pf = NULL;
+    char_md.p_user_desc_md = NULL;
+    char_md.p_cccd_md = NULL;
+    char_md.p_sccd_md = NULL;
+    
+    ble_uuid.type = m_custom_service.uuid_type;
+    ble_uuid.uuid = CUSTOM_CHAR_UUID;
+    
+    ble_gatts_attr_md_t attr_md;
+    memset(&attr_md, 0, sizeof(attr_md));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+    attr_md.vloc = BLE_GATTS_VLOC_STACK;
+    attr_md.rd_auth = 0;
+    attr_md.wr_auth = 0;
+    attr_md.vlen = 0;
+    
+    ble_gatts_attr_t attr_char_value;
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+    
+    attr_char_value.p_uuid = &ble_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len = sizeof(uint32_t);
+    attr_char_value.max_len = sizeof(uint32_t);
+    
+    // Добавляем характеристику
+    err_code = sd_ble_gatts_characteristic_add(m_custom_service.service_handle, &char_md,
+                                               &attr_char_value,
+                                               &m_custom_service.custom_char_handles);
+    APP_ERROR_CHECK(err_code);
+}
+
+// Отправка уведомления клиенту
+void send_sensor_data(uint32_t sensor_value) {
+    if (m_conn_handle != BLE_CONN_HANDLE_INVALID) {
+        ble_gatts_hvx_params_t hvx_params;
+        memset(&hvx_params, 0, sizeof(hvx_params));
+        
+        hvx_params.handle = m_custom_service.custom_char_handles.value_handle;
+        hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset = 0;
+        hvx_params.p_len = sizeof(sensor_value);
+        hvx_params.p_data = (uint8_t*)&sensor_value;
+        
+        sd_ble_gatts_hvx(m_conn_handle, &hvx_params);
+    }
+}
+
+// Обработчик события системного таймера для отправки данных датчика
+void sensor_timer_handler(void) {
+    uint32_t sensor_value = read_sensor_value();
+    send_sensor_data(sensor_value);
+}
+</code>
+</pre>
+
+<h3>USB CDC (Communications Device Class):</h3>
+<p>USB CDC позволяет микроконтроллеру выступать в роли виртуального COM-порта, что удобно для отладки и обмена данными с ПК.</p>
+
+<h4>Пример инициализации USB CDC на STM32:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+#include "usbd_core.h"
+#include "usbd_desc.h"
+#include "usbd_cdc.h"
+#include "usbd_cdc_interface.h"
+
+USBD_HandleTypeDef hUsbDeviceFS;
+
+// Структура для CDC класса
+USBD_CDC_LineCodingTypeDef LineCoding = {
+    115200, /* baud rate*/
+    0x00,   /* stop bits-1*/
+    0x00,   /* parity - none*/
+    0x08    /* nb. of bits 8*/
+};
+
+// Буферы для передачи и приема
+uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
+uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
+uint8_t usb_receive_buffer[USB_RX_BUFFER_SIZE];
+
+// Обработчик приема данных по USB CDC
+int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len) {
+    // Копируем полученные данные в наш буфер
+    for(int i = 0; i < *Len; i++) {
+        usb_receive_buffer[usb_rx_head] = Buf[i];
+        usb_rx_head = (usb_rx_head + 1) % USB_RX_BUFFER_SIZE;
+    }
+    
+    // Обработка полученных данных
+    process_usb_command(Buf, *Len);
+    
+    return (USBD_OK);
+}
+
+// Отправка данных через CDC
+uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len) {
+    uint8_t result = USBD_OK;
+    
+    // Ждем, пока предыдущая передача завершится
+    while(UserTxBufPtrFs != 0);
+    
+    // Копируем данные в буфер передачи
+    for(int i = 0; i < Len; i++) {
+        UserTxBufferFS[i] = Buf[i];
+    }
+    
+    // Запускаем передачу
+    result = USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, Len);
+    
+    if(result == USBD_OK) {
+        result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+    }
+    
+    return result;
+}
+
+// Инициализация USB Device
+void MX_USB_DEVICE_Init(void) {
+    // Инициализация USB
+    hUsbDeviceFS.pClassData = USBD_CDC_RegisterInterface(&USBD_Interface_fops_FS);
+    hUsbDeviceFS.pUserData = &USBD_Interface_fops_FS;
+    
+    if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK) {
+        Error_Handler();
+    }
+    
+    if (USBD_CDC_Init(&hUsbDeviceFS) != USBD_OK) {
+        Error_Handler();
+    }
+    
+    if (USBD_Start(&hUsbDeviceFS) != USBD_OK) {
+        Error_Handler();
+    }
+}
+
+// Обработка команд, полученных через USB
+void process_usb_command(uint8_t* buf, uint32_t len) {
+    // Простой пример обработки команд
+    if(len >= 3 && buf[0] == 'A' && buf[1] == 'T') {
+        if(buf[2] == '\n' || buf[2] == '\r') {
+            // Команда AT - отвечаем OK
+            CDC_Transmit_FS((uint8_t*)"OK\r\n", 4);
+        }
+        else if(buf[2] == '+' && strncmp((char*)buf, "AT+TEMP?", 8) == 0) {
+            // Команда запроса температуры
+            float temp = read_temperature();
+            char response[32];
+            snprintf(response, sizeof(response), "TEMP:%.2f\r\n", temp);
+            CDC_Transmit_FS((uint8_t*)response, strlen(response));
+        }
+    }
+}
+
+// Главный цикл приложения
+void usb_task(void) {
+    // Проверяем состояние USB
+    if(hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
+        // Можем отправлять данные через CDC
+        if(new_sensor_data_available()) {
+            float sensor_value = read_latest_sensor_value();
+            char data_str[64];
+            snprintf(data_str, sizeof(data_str), "Sensor: %.2f\r\n", sensor_value);
+            CDC_Transmit_FS((uint8_t*)data_str, strlen(data_str));
+        }
+    }
+}
+</code>
+</pre>
+
+<h3>Ethernet TCP/IP (LwIP):</h3>
+<p>LwIP (Lightweight IP) - это стек TCP/IP, специально разработанный для систем с ограниченными ресурсами. Он предоставляет полную реализацию стека TCP/IP с минимальными требованиями к памяти.</p>
+
+<h4>Пример использования LwIP на STM32:</h4>
+
+<pre>
+<code>
+#include "lwip/opt.h"
+#include "lwip/init.h"
+#include "lwip/netif.h"
+#include "lwip/ip_addr.h"
+#include "lwip/tcp.h"
+#include "netif/ethernet.h"
+#include "ethernetif.h" // драйвер конкретного контроллера
+
+struct netif g_netif;
+
+// Инициализация сети
+void lwip_init_network(void) {
+    ip_addr_t ipaddr, netmask, gateway;
+    
+    // Инициализация LwIP
+    lwip_init();
+    
+    // Установка IP-адреса
+    IP4_ADDR(&ipaddr, 192, 168, 1, 10);
+    IP4_ADDR(&netmask, 255, 255, 255, 0);
+    IP4_ADDR(&gateway, 192, 168, 1, 1);
+    
+    // Добавление сетевого интерфейса
+    netif_add(&g_netif, &ipaddr, &netmask, &gateway, NULL, &ethernetif_init, &ethernet_input);
+    netif_set_default(&g_netif);
+    
+    // Включение DHCP, если используется
+    dhcp_start(&g_netif);
+    
+    // Поднятие интерфейса
+    netif_set_up(&g_netif);
+}
+
+// Обработчик TCP-соединения
+err_t tcp_connection_callback(void *arg, struct tcp_pcb *tpcb, err_t err) {
+    if (err == ERR_OK) {
+        // Соединение установлено
+        tcp_recv(tpcb, tcp_recv_callback);
+        tcp_sent(tpcb, tcp_sent_callback);
+        
+        // Отправляем приветствие
+        const char *welcome_msg = "Connected to embedded device\r\n";
+        tcp_write(tpcb, welcome_msg, strlen(welcome_msg), TCP_WRITE_FLAG_COPY);
+        tcp_output(tpcb);
+        
+        return ERR_OK;
+    }
+    
+    return ERR_VAL;
+}
+
+// Обработчик получения данных
+err_t tcp_recv_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) {
+    if (err != ERR_OK || p == NULL) {
+        if (p != NULL) {
+            tcp_recved(tpcb, p->tot_len);
+            pbuf_free(p);
+        }
+        tcp_close(tpcb);
+        return ERR_OK;
+    }
+    
+    // Обрабатываем полученные данные
+    tcp_recved(tpcb, p->tot_len);
+    
+    // Пример обработки команд
+    char *data = (char*)p->payload;
+    uint16_t len = p->tot_len;
+    
+    if (strncmp(data, "GET_TEMP", 8) == 0) {
+        float temp = read_temperature();
+        char response[64];
+        snprintf(response, sizeof(response), "%.2f\r\n", temp);
+        
+        tcp_write(tpcb, response, strlen(response), TCP_WRITE_FLAG_COPY);
+        tcp_output(tpcb);
+    }
+    else if (strncmp(data, "GET_STATUS", 10) == 0) {
+        const char *status = "Device is running normally\r\n";
+        tcp_write(tpcb, status, strlen(status), TCP_WRITE_FLAG_COPY);
+        tcp_output(tpcb);
+    }
+    
+    pbuf_free(p);
+    return ERR_OK;
+}
+
+// Сервер для прослушивания подключений
+void start_tcp_server(u16_t port) {
+    struct tcp_pcb *pcb;
+    
+    pcb = tcp_new();
+    if (pcb != NULL) {
+        err_t err = tcp_bind(pcb, IP_ADDR_ANY, port);
+        if (err == ERR_OK) {
+            pcb = tcp_listen(pcb);
+            tcp_accept(pcb, tcp_accept_callback);
+        } else {
+            memp_free(MEMP_TCP_PCB, pcb);
+        }
+    }
+}
+
+// Обработчик нового подключения
+err_t tcp_accept_callback(void *arg, struct tcp_pcb *newpcb, err_t err) {
+    LWIP_UNUSED_ARG(arg);
+    LWIP_UNUSED_ARG(err);
+    
+    tcp_setprio(newpcb, TCP_PRIO_MIN);
+    
+    // Устанавливаем обратные вызовы для нового соединения
+    tcp_arg(newpcb, NULL);
+    tcp_err(newpcb, tcp_error_callback);
+    
+    return tcp_connection_callback(NULL, newpcb, ERR_OK);
+}
+
+// Обработчик ошибок
+void tcp_error_callback(void *arg, err_t err) {
+    struct tcp_pcb *tpcb = (struct tcp_pcb*)arg;
+    LWIP_UNUSED_ARG(err);
+    
+    if (tpcb != NULL) {
+        // Очистка ресурсов
+        tcp_close(tpcb);
+    }
+}
+
+// Callback для подтверждения отправки
+err_t tcp_sent_callback(void *arg, struct tcp_pcb *tpcb, u16_t len) {
+    // Данные подтверждены к получению
+    return ERR_OK;
+}
+
+// Инициализация и запуск сервера
+void init_ethernet_server(void) {
+    lwip_init_network();
+    start_tcp_server(8080); // Открываем сервер на порту 8080
+}
+</code>
+</pre>
+
+<h3>Рекомендации по использованию коммуникационных протоколов:</h3>
+<ul>
+<li>Выбирайте протокол в зависимости от требований к дальности, скорости и энергопотреблению</li>
+<li>Для промышленных приложений часто используется Modbus из-за своей надежности</li>
+<li>MQTT идеально подходит для IoT-приложений с подключением к облаку</li>
+<li>BLE эффективен для устройств с ограниченным энергопотреблением</li>
+<li>USB CDC удобен для отладки и настройки устройств</li>
+<li>Ethernet/LwIP обеспечивает высокую скорость и надежность в локальных сетях</li>
+</ul>

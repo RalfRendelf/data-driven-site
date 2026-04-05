@@ -1,0 +1,276 @@
+<h2>std::make_shared</h2>
+
+<p><strong>Категория:</strong> Умные указатели</p>
+
+<h3>Описание</h3>
+<p>std::make_shared — это функция, которая создает std::shared_ptr для объекта, размещенного в динамической памяти. Она выделяет память для объекта и управляющего блока одним вызовом, что делает её более эффективной и безопасной по сравнению с использованием конструктора shared_ptr.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::make_shared и их использование:</p>
+
+<h4>C++</h4>
+<pre>
+<code>
+// =======================
+// C++ пример std::make_shared
+// =======================
+
+#include &lt;memory&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+struct Person {
+    int id;
+    std::string name;
+};
+
+int main() {
+    // Создание shared_ptr для int
+    auto int_ptr = std::make_shared&lt;int&gt;(42);
+    std::cout &lt;&lt; "int: " &lt;&lt; *int_ptr &lt;&lt; "\n";
+
+    // Создание shared_ptr для строки
+    auto str_ptr = std::make_shared&lt;std::string&gt;("Hello");
+    std::cout &lt;&lt; "string: " &lt;&lt; *str_ptr &lt;&lt; "\n";
+
+    // Создание shared_ptr для структуры
+    auto person_ptr = std::make_shared&lt;Person&gt;(Person{1, "Alice"});
+    std::cout &lt;&lt; "Person: " &lt;&lt; person_ptr-&gt;id &lt;&lt; ", " &lt;&lt; person_ptr-&gt;name &lt;&lt; "\n";
+
+    // Создание shared_ptr для вектора
+    auto vec_ptr = std::make_shared&lt;std::vector&lt;int&gt;&gt;(std::initializer_list&lt;int&gt;{1,2,3});
+    std::cout &lt;&lt; "Vector: ";
+    for (int v : *vec_ptr) std::cout &lt;&lt; v &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C реализация</h4>
+<pre>
+<code>
+// Пример реализации аналога std::make_shared на C
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;pthread.h&gt;
+
+// Структура для отслеживания разделяемого объекта
+typedef struct {
+    void* ptr;
+    int* ref_count;
+    int* weak_ref_count;
+    void (*deleter)(void*);
+    pthread_mutex_t mutex;
+    int destroyed;
+} SharedObject;
+
+// Структура для хранения shared_ptr
+typedef struct {
+    SharedObject* obj;
+} SharedPtr;
+
+// Макрос для создания shared_ptr с автоматическим определением типа
+#define MAKE_SHARED(type, ...) make_shared_##type(__VA_ARGS__)
+
+// Функция для создания shared_ptr для int
+SharedPtr* make_shared_int(int value) {
+    int* ptr = malloc(sizeof(int));
+    *ptr = value;
+    
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->weak_ref_count = malloc(sizeof(int));
+    *(sptr->obj->weak_ref_count) = 0;
+    sptr->obj->deleter = &free;
+    sptr->obj->destroyed = 0;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    
+    return sptr;
+}
+
+// Функция для создания shared_ptr для double
+SharedPtr* make_shared_double(double value) {
+    double* ptr = malloc(sizeof(double));
+    *ptr = value;
+    
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->weak_ref_count = malloc(sizeof(int));
+    *(sptr->obj->weak_ref_count) = 0;
+    sptr->obj->deleter = &free;
+    sptr->obj->destroyed = 0;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    
+    return sptr;
+}
+
+// Функция для создания shared_ptr для строки
+SharedPtr* make_shared_string(const char* str) {
+    char* ptr = malloc(strlen(str) + 1);
+    strcpy(ptr, str);
+    
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->weak_ref_count = malloc(sizeof(int));
+    *(sptr->obj->weak_ref_count) = 0;
+    sptr->obj->deleter = &free;
+    sptr->obj->destroyed = 0;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    
+    return sptr;
+}
+
+// Функция для создания shared_ptr для массива
+SharedPtr* make_shared_array(size_t count, size_t element_size) {
+    void* ptr = calloc(count, element_size);
+    
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->weak_ref_count = malloc(sizeof(int));
+    *(sptr->obj->weak_ref_count) = 0;
+    sptr->obj->deleter = &free;
+    sptr->obj->destroyed = 0;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    
+    return sptr;
+}
+
+// Функция для создания shared_ptr для структуры
+typedef struct {
+    int id;
+    char name[50];
+} Person;
+
+SharedPtr* make_shared_person(int id, const char* name) {
+    Person* ptr = malloc(sizeof(Person));
+    ptr->id = id;
+    strcpy(ptr->name, name);
+    
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->weak_ref_count = malloc(sizeof(int));
+    *(sptr->obj->weak_ref_count) = 0;
+    sptr->obj->deleter = &free;
+    sptr->obj->destroyed = 0;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    
+    return sptr;
+}
+
+// Копирование shared_ptr
+SharedPtr* shared_ptr_copy(SharedPtr* original) {
+    if (!original || !original->obj) return NULL;
+    
+    SharedPtr* copy = malloc(sizeof(SharedPtr));
+    copy->obj = original->obj;
+    
+    pthread_mutex_lock(&original->obj->mutex);
+    (*(original->obj->ref_count))++;
+    pthread_mutex_unlock(&original->obj->mutex);
+    
+    return copy;
+}
+
+// Получение указателя
+void* shared_ptr_get(SharedPtr* sptr) {
+    return (sptr && sptr->obj) ? sptr->obj->ptr : NULL;
+}
+
+// Получение количества ссылок
+int shared_ptr_use_count(SharedPtr* sptr) {
+    if (!sptr || !sptr->obj) return 0;
+    pthread_mutex_lock(&sptr->obj->mutex);
+    int count = *(sptr->obj->ref_count);
+    pthread_mutex_unlock(&sptr->obj->mutex);
+    return count;
+}
+
+// Удаление shared_ptr
+void shared_ptr_destroy(SharedPtr* sptr) {
+    if (sptr && sptr->obj) {
+        pthread_mutex_lock(&sptr->obj->mutex);
+        (*(sptr->obj->ref_count))--;
+        
+        if (*(sptr->obj->ref_count) == 0) {
+            if (sptr->obj->ptr && sptr->obj->deleter) {
+                sptr->obj->deleter(sptr->obj->ptr);
+                sptr->obj->ptr = NULL;
+            }
+            sptr->obj->destroyed = 1;
+        }
+        
+        if (sptr->obj->destroyed &&
+            *(sptr->obj->ref_count) == 0 &&
+            *(sptr->obj->weak_ref_count) == 0) {
+            
+            free(sptr->obj->ref_count);
+            free(sptr->obj->weak_ref_count);
+            pthread_mutex_unlock(&sptr->obj->mutex);
+            pthread_mutex_destroy(&sptr->obj->mutex);
+            free(sptr->obj);
+        } else {
+            pthread_mutex_unlock(&sptr->obj->mutex);
+        }
+    }
+    free(sptr);
+}
+
+// Пример использования
+int main() {
+    SharedPtr* int_ptr = make_shared_int(42);
+    printf("int: %d\n", *(int*)shared_ptr_get(int_ptr));
+    printf("use_count: %d\n", shared_ptr_use_count(int_ptr));
+    
+    SharedPtr* int_ptr2 = shared_ptr_copy(int_ptr);
+    printf("after copy use_count: %d\n", shared_ptr_use_count(int_ptr));
+    
+    SharedPtr* str_ptr = make_shared_string("Hello");
+    printf("string: %s\n", (char*)shared_ptr_get(str_ptr));
+    
+    SharedPtr* arr_ptr = make_shared_array(5, sizeof(int));
+    int* arr = (int*)shared_ptr_get(arr_ptr);
+    for (int i = 0; i < 5; i++) arr[i] = i + 1;
+    
+    printf("array: ");
+    for (int i = 0; i < 5; i++) printf("%d ", arr[i]);
+    printf("\n");
+    
+    SharedPtr* person_ptr = make_shared_person(1, "Alice");
+    Person* p = (Person*)shared_ptr_get(person_ptr);
+    printf("Person: %d %s\n", p->id, p->name);
+    
+    shared_ptr_destroy(int_ptr);
+    shared_ptr_destroy(int_ptr2);
+    shared_ptr_destroy(str_ptr);
+    shared_ptr_destroy(arr_ptr);
+    shared_ptr_destroy(person_ptr);
+    
+    printf("Все ресурсы освобождены\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

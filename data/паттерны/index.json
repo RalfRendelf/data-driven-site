@@ -2,92 +2,106 @@
     {
       "type": "паттерны",
       "name": "Singleton",
+      "fileName": "паттерны_singleton.txt",
       "category": "Порождающий",
       "usage": "Конфигурация, логгеры, БД"
     },
     {
       "type": "паттерны",
       "name": "Factory Method",
+      "fileName": "паттерны_factory_method.txt",
       "category": "Порождающий",
       "usage": "Создание объектов без указания класса"
     },
     {
       "type": "паттерны",
       "name": "Builder",
+      "fileName": "паттерны_builder.txt",
       "category": "Порождающий",
       "usage": "Пошаговая сборка сложных объектов"
     },
     {
       "type": "паттерны",
       "name": "Prototype",
+      "fileName": "паттерны_prototype.txt",
       "category": "Порождающий",
       "usage": "Клонирование существующих объектов"
     },
     {
       "type": "паттерны",
       "name": "Observer",
+      "fileName": "паттерны_observer.txt",
       "category": "Поведенческий",
       "usage": "Реакция на события, подписка"
     },
     {
       "type": "паттерны",
       "name": "Strategy",
+      "fileName": "паттерны_strategy.txt",
       "category": "Поведенческий",
       "usage": "Выбор алгоритма во время выполнения"
     },
     {
       "type": "паттерны",
       "name": "Command",
+      "fileName": "паттерны_command.txt",
       "category": "Поведенческий",
       "usage": "Инкапсуляция запроса, undo/redo"
     },
     {
       "type": "паттерны",
       "name": "State",
+      "fileName": "паттерны_state.txt",
       "category": "Поведенческий",
       "usage": "Изменение поведения объекта в зависимости от состояния"
     },
     {
       "type": "паттерны",
       "name": "Memento",
+      "fileName": "паттерны_memento.txt",
       "category": "Поведенческий",
       "usage": "Сохранение и восстановление состояния"
     },
     {
       "type": "паттерны",
       "name": "Mediator",
+      "fileName": "паттерны_mediator.txt",
       "category": "Поведенческий",
       "usage": "Организация взаимодействия между объектами"
     },
     {
       "type": "паттерны",
       "name": "Decorator",
+      "fileName": "паттерны_decorator.txt",
       "category": "Структурный",
       "usage": "Динамическое добавление функционала"
     },
     {
       "type": "паттерны",
       "name": "Proxy",
+      "fileName": "паттерны_proxy.txt",
       "category": "Структурный",
       "usage": "Заместитель для контроля доступа"
     },
     {
       "type": "паттерны",
       "name": "Composite",
+      "fileName": "паттерны_composite.txt",
       "category": "Структурный",
       "usage": "Деревья объектов, единый интерфейс"
     },
     {
       "type": "паттерны",
       "name": "Adapter",
+      "fileName": "паттерны_adapter.txt",
       "category": "Структурный",
       "usage": "Совместимость между интерфейсами"
     },
     {
       "type": "паттерны",
       "name": "Visitor",
+      "fileName": "паттерны_visitor.txt",
       "category": "Поведенческий",
       "usage": "Разделение логики от структуры объектов"
     }
   ]
-  

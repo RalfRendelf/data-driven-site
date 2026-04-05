@@ -1,0 +1,126 @@
+<h2>Two Pointers: Left-right (Два указателя: слева-направо)</h2>
+
+<p><strong>Категория:</strong> Массивы</p>
+
+<h3>Описание</h3>
+<p>Алгоритм двух указателей, когда оба указателя движутся в одном направлении. Один указатель начинает с начала массива (левый), второй - с некоторой позиции или с конца (правый). Часто используется для задач на сумму пар или подмассивы.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Инициализировать два указателя: левый (обычно в начале) и правый (в нужной позиции)</li>
+<li>Двигать указатели в одном направлении в зависимости от условия задачи</li>
+<li>Обновлять результат при нахождении подходящей комбинации</li>
+<li>Прекратить, когда достигнута граница массива</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность: O(n), где n - длина массива</li>
+<li>Пространственная сложность: O(1) - только для дополнительных переменных</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Оптимизация времени выполнения по сравнению с вложенными циклами</li>
+<li>Экономия памяти по сравнению с хешированием</li>
+<li>Простота реализации для определенных задач</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Не применим ко всем типам задач</li>
+<li>Требует специфических условий (например, отсортированный массив)</li>
+</ul>
+
+<h3>Пример на C++: Поиск пар с заданной суммой</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+std::vector&lt;std::pair&lt;int, int&gt;&gt; findPairs(std::vector&lt;int&gt;&amp; arr, int targetSum) {
+    std::sort(arr.begin(), arr.end()); // Сначала сортируем
+    std::vector&lt;std::pair&lt;int, int&gt;&gt; result;
+    
+    int left = 0;
+    int right = arr.size() - 1;
+    
+    while (left < right) {
+        int currentSum = arr[left] + arr[right];
+        
+        if (currentSum == targetSum) {
+            result.push_back({arr[left], arr[right]});
+            left++;
+            right--;
+        } else if (currentSum < targetSum) {
+            left++; // Увеличиваем сумму
+        } else {
+            right--; // Уменьшаем сумму
+        }
+    }
+    
+    return result;
+}
+
+int main() {
+    std::vector&lt;int&gt; arr = {1, 2, 3, 4, 5, 6};
+    int target = 7;
+    
+    auto pairs = findPairs(arr, target);
+    
+    for (const auto&amp; pair : pairs) {
+        std::cout &lt;&lt; pair.first &lt;&lt; " + " &lt;&lt; pair.second &lt;&lt; " = " &lt;&lt; target &lt;&lt; std::endl;
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Удаление дубликатов в отсортированном массиве</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+
+int removeDuplicates(int arr[], int n) {
+    if (n == 0 || n == 1) 
+        return n;
+  
+    int j = 0; // Указатель на позицию для следующего уникального элемента
+  
+    for (int i = 0; i < n - 1; i++) {
+        if (arr[i] != arr[i + 1]) {
+            arr[j++] = arr[i];
+        }
+    }
+    
+    arr[j++] = arr[n - 1]; // Добавляем последний элемент
+  
+    return j;
+}
+
+int main() {
+    int arr[] = {1, 1, 2, 2, 3, 4, 4, 5, 5, 5};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    
+    printf("Original array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    
+    n = removeDuplicates(arr, n);
+    
+    printf("Array after removing duplicates: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

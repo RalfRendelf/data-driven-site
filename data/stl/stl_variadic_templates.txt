@@ -1,0 +1,331 @@
+<h2>Variadic Templates (Шаблоны с переменным числом параметров)</h2>
+
+<p><strong>Категория:</strong> Язык</p>
+
+<h3>Описание</h3>
+<p>Variadic templates - это возможность в C++11, позволяющая создавать шаблоны, которые принимают произвольное количество аргументов произвольных типов. Это мощный инструмент для метапрограммирования и создания гибких обобщенных алгоритмов и структур данных.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные концепции Variadic templates и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o variadic_templates_example variadic_templates_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура для хранения аргументов разного типа
+typedef struct {
+    void* data;
+    size_t size;
+    char type_name[20];
+} Argument;
+
+// Структура для хранения списка аргументов
+typedef struct {
+    Argument* args;
+    size_t count;
+    size_t capacity;
+} ArgumentList;
+
+// Функция для создания списка аргументов
+ArgumentList* create_argument_list(size_t initial_capacity) {
+    ArgumentList* list = malloc(sizeof(ArgumentList));
+    list->args = malloc(initial_capacity * sizeof(Argument));
+    list->count = 0;
+    list->capacity = initial_capacity;
+    return list;
+}
+
+// Функция для добавления аргумента в список
+void add_argument(ArgumentList* list, void* data, size_t size, const char* type_name) {
+    if (list->count >= list->capacity) {
+        list->capacity *= 2;
+        list->args = realloc(list->args, list->capacity * sizeof(Argument));
+    }
+    
+    list->args[list->count].data = malloc(size);
+    memcpy(list->args[list->count].data, data, size);
+    list->args[list->count].size = size;
+    strncpy(list->args[list->count].type_name, type_name, sizeof(list->args[list->count].type_name) - 1);
+    list->args[list->count].type_name[sizeof(list->args[list->count].type_name) - 1] = '\0';
+    list->count++;
+}
+
+// Функция для печати аргументов
+void print_arguments(ArgumentList* list) {
+    printf("Количество аргументов: %zu\n", list->count);
+    for (size_t i = 0; i < list->count; i++) {
+        printf("  [%zu] Тип: %s, ", i, list->args[i].type_name);
+        
+        if (strcmp(list->args[i].type_name, "int") == 0) {
+            printf("Значение: %d\n", *(int*)list->args[i].data);
+        } else if (strcmp(list->args[i].type_name, "double") == 0) {
+            printf("Значение: %.2f\n", *(double*)list->args[i].data);
+        } else if (strcmp(list->args[i].type_name, "char*") == 0) {
+            printf("Значение: %s\n", (char*)list->args[i].data);
+        } else if (strcmp(list->args[i].type_name, "char") == 0) {
+            printf("Значение: %c\n", *(char*)list->args[i].data);
+        } else {
+            printf("Значение: [неизвестный тип]\n");
+        }
+    }
+}
+
+// Макрос для добавления нескольких аргументов в список
+#define ADD_ARGUMENTS(list, ...) add_arguments_impl(list, __VA_ARGS__, (void*)NULL)
+
+// Функция для обработки переменного числа аргументов
+void add_arguments_impl(ArgumentList* list, ...) {
+    va_list args;
+    va_start(args, list);
+    
+    // Для простоты реализуем вручную обработку разных типов
+    // В реальной реализации variadic templates это делается рекурсивно
+    
+    // Это упрощенная версия, просто показывающая концепцию
+    va_end(args);
+}
+
+// Функция для вычисления суммы чисел (аналог рекурсивной обработки variadic template)
+double calculate_sum(ArgumentList* list) {
+    double sum = 0.0;
+    for (size_t i = 0; i < list->count; i++) {
+        if (strcmp(list->args[i].type_name, "int") == 0) {
+            sum += *(int*)list->args[i].data;
+        } else if (strcmp(list->args[i].type_name, "double") == 0) {
+            sum += *(double*)list->args[i].data;
+        }
+    }
+    return sum;
+}
+
+// Функция для подсчета аргументов (аналог sizeof...)
+size_t count_arguments(ArgumentList* list) {
+    return list->count;
+}
+
+// Макрос для создания списка аргументов и добавления элементов
+#define CREATE_VARIADIC_LIST(name, ...) \
+    ArgumentList* name = create_argument_list(10); \
+    add_variadic_items(name, __VA_ARGS__);
+
+// Функция для добавления различных типов данных в список
+void add_variadic_items(ArgumentList* list, ...) {
+    va_list args;
+    va_start(args, list);
+    
+    // Это упрощенная реализация, в реальности для каждого типа нужен отдельный вызов
+    // с правильным определением типа
+    int int_val;
+    double double_val;
+    char char_val;
+    char* str_val;
+    
+    // Попытка обработать разные типы - это не полноценная реализация variadic templates
+    // но показывает идею
+    int type_indicator;
+    while((type_indicator = va_arg(args, int)) != 0) {
+        switch(type_indicator) {
+            case 1: // int
+                int_val = va_arg(args, int);
+                add_argument(list, &int_val, sizeof(int), "int");
+                break;
+            case 2: // double
+                double_val = va_arg(args, double);
+                add_argument(list, &double_val, sizeof(double), "double");
+                break;
+            case 3: // char
+                char_val = (char)va_arg(args, int); // chars promote to int in varargs
+                add_argument(list, &char_val, sizeof(char), "char");
+                break;
+            case 4: // string
+                str_val = va_arg(args, char*);
+                add_argument(list, str_val, strlen(str_val) + 1, "char*");
+                break;
+        }
+    }
+    
+    va_end(args);
+}
+
+// Более продвинутая реализация через макросы
+#define VARIADIC_ADD(list, type, value) \
+    do { \
+        if (strcmp(#type, "int") == 0) { \
+            int v = value; \
+            add_argument(list, &v, sizeof(int), "int"); \
+        } else if (strcmp(#type, "double") == 0) { \
+            double v = value; \
+            add_argument(list, &v, sizeof(double), "double"); \
+        } else if (strcmp(#type, "char") == 0) { \
+            char v = value; \
+            add_argument(list, &v, sizeof(char), "char"); \
+        } else if (strcmp(#type, "char*") == 0) { \
+            add_argument(list, (void*)value, strlen(value) + 1, "char*"); \
+        } \
+    } while(0)
+
+// Макрос для создания списка с переменным числом аргументов
+#define MAKE_VARIADIC_LIST(name, ...) \
+    ArgumentList* name = create_argument_list(10); \
+    make_variadic_list_impl(name, __VA_ARGS__);
+
+#define make_variadic_list_impl(list, ...) \
+    do { \
+        variadic_process_args(list, __VA_ARGS__); \
+    } while(0)
+
+// Вспомогательная функция для обработки аргументов
+void variadic_process_args(ArgumentList* list) {
+    // Пустая функция для макроса
+}
+
+// Макросы для обработки конкретных аргументов
+#define PROCESS_ARG(list, value) \
+    _Generic((value), \
+        int: ({ int v = (value); add_argument(list, &v, sizeof(int), "int"); }), \
+        double: ({ double v = (value); add_argument(list, &v, sizeof(double), "double"); }), \
+        char: ({ char v = (value); add_argument(list, &v, sizeof(char), "char"); }), \
+        char*: ({ add_argument(list, (void*)(value), strlen(value) + 1, "char*"); }), \
+        default: ({ printf("Тип не поддерживается\n"); }) \
+    )
+
+// Макрос для создания списка с переменным числом аргументов через _Generic
+#define VARIADIC_LIST(...) \
+    ({ \
+        ArgumentList* list = create_argument_list(10); \
+        PROCESS_VAR_ARGS(list, __VA_ARGS__); \
+        list; \
+    })
+
+#define PROCESS_VAR_ARGS(list, ...) \
+    do { \
+        int dummy[] = {0, (PROCESS_ARG(list, __VA_ARGS__), 0)}; \
+        (void)dummy; \
+    } while(0)
+
+// Функция для демонстрации variadic templates
+void demonstrate_variadic_concept() {
+    printf("=== Демонстрация Variadic Templates (аналог) ===\n\n");
+    
+    // Создание списка аргументов вручную
+    ArgumentList* args = create_argument_list(10);
+    
+    // Добавление разных типов данных
+    int int_val = 42;
+    double double_val = 3.14;
+    char char_val = 'A';
+    char* str_val = "Hello Variadic";
+    
+    add_argument(args, &int_val, sizeof(int), "int");
+    add_argument(args, &double_val, sizeof(double), "double");
+    add_argument(args, &char_val, sizeof(char), "char");
+    add_argument(args, str_val, strlen(str_val) + 1, "char*");
+    
+    // Печать аргументов
+    printf("Созданный список аргументов:\n");
+    print_arguments(args);
+    
+    // Вычисление суммы
+    double sum = calculate_sum(args);
+    printf("\nСумма числовых аргументов: %.2f\n", sum);
+    
+    // Подсчет аргументов
+    size_t count = count_arguments(args);
+    printf("Количество аргументов: %zu\n", count);
+    
+    // Создание нового списка с помощью макроса
+    printf("\nСоздание списка с помощью макроса:\n");
+    ArgumentList* args2 = create_argument_list(10);
+    
+    // Использование макроса для добавления аргументов
+    PROCESS_ARG(args2, 100);
+    PROCESS_ARG(args2, 2.5);
+    PROCESS_ARG(args2, 'X');
+    PROCESS_ARG(args2, "World");
+    
+    print_arguments(args2);
+    
+    // Вычисление суммы для второго списка
+    double sum2 = calculate_sum(args2);
+    printf("\nСумма числовых аргументов (второй список): %.2f\n", sum2);
+    
+    // Освобождение памяти
+    for (size_t i = 0; i < args->count; i++) {
+        free(args->args[i].data);
+    }
+    free(args->args);
+    free(args);
+    
+    for (size_t i = 0; i < args2->count; i++) {
+        if (strcmp(args2->args[i].type_name, "char*") != 0) {
+            free(args2->args[i].data);
+        }
+    }
+    free(args2->args);
+    free(args2);
+}
+
+// Дополнительная информация о Variadic templates
+void variadic_templates_detailed_info() {
+    printf("\n--- Подробнее о Variadic Templates ---\n");
+    printf("\nВ C++11 Variadic Templates позволяют определять шаблоны, которые принимают\n");
+    printf("произвольное количество аргументов произвольных типов:\n\n");
+    
+    printf("// Простой пример variadic template функции\n");
+    printf("template<typename... Args>\n");
+    printf("void print(Args... args) {\n");
+    printf("    (std::cout << ... << args) << std::endl;  // C++17 fold expression\n");
+    printf("}\n\n");
+    
+    printf("// Рекурсивный пример (до C++17)\n");
+    printf("template<typename T>\n");
+    printf("void print_recursive(T&& t) {\n");
+    printf("    std::cout << t << std::endl;\n");
+    printf "}\n\n");
+    
+    printf("template<typename T, typename... Args>\n");
+    printf("void print_recursive(T&& t, Args&&... args) {\n");
+    printf("    std::cout << t << ' ';\n");
+    printf("    print_recursive(args...);\n");
+    printf("}\n\n");
+    
+    printf("// Пример variadic template класса\n");
+    printf("template<typename... Types>\n");
+    printf("struct Tuple {};\n\n");
+    
+    printf("// Специализация для одного элемента\n");
+    printf("template<typename T, typename... Types>\n");
+    printf("struct Tuple<T, Types...> {\n");
+    printf("    T value;\n");
+    printf("    Tuple<Types...> rest;\n");
+    printf("};\n\n");
+    
+    printf("Variadic templates позволяют создавать:\n");
+    printf("- универсальные функции с переменным числом аргументов\n");
+    printf("- обобщенные контейнеры (например, std::tuple)\n");
+    printf("- perfect forwarding с std::forward\n");
+    printf("- factory функции (например, std::make_shared)\n");
+}
+
+int main() {
+    demonstrate_variadic_concept();
+    variadic_templates_detailed_info();
+    
+    printf("\nVariadic templates являются мощным инструментом для создания гибких\n");
+    printf("и эффективных обобщенных алгоритмов и структур данных.\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

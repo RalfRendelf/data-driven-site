@@ -1,0 +1,218 @@
+<h2>std::span</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::span - это легковесный не владеющий участок памяти, который предоставляет безопасный доступ к элементам массива. Он был добавлен в C++20 и представляет собой представление последовательности элементов, не владея этими элементами. Span позволяет передавать массивы в функции без потери информации о размере и с сохранением безопасности типов.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++20</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::span и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o span_example span_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;assert.h&gt;
+
+// Структура для представления span (аналог std::span)
+typedef struct {
+    void* data;
+    size_t size;
+    size_t element_size;
+} Span;
+
+// Создание span из массива
+Span span_create(void* arr, size_t count, size_t elem_size) {
+    Span s;
+    s.data = arr;
+    s.size = count;
+    s.element_size = elem_size;
+    return s;
+}
+
+// Создание span из массива целых чисел
+Span span_from_int_array(int* arr, size_t count) {
+    return span_create(arr, count, sizeof(int));
+}
+
+// Создание span из массива double
+Span span_from_double_array(double* arr, size_t count) {
+    return span_create(arr, count, sizeof(double));
+}
+
+// Получение размера span
+size_t span_size(Span* s) {
+    return s ? s->size : 0;
+}
+
+// Получение размера в байтах
+size_t span_size_bytes(Span* s) {
+    if (!s) return 0;
+    return s->size * s->element_size;
+}
+
+// Проверка на пустоту
+int span_empty(Span* s) {
+    return s ? (s->size == 0) : 1;
+}
+
+// Доступ к элементу по индексу
+void* span_at(Span* s, size_t index) {
+    if (!s || index >= s->size) {
+        return NULL;
+    }
+    char* byte_ptr = (char*)s->data;
+    return byte_ptr + (index * s->element_size);
+}
+
+// Доступ к первому элементу
+void* span_first(Span* s) {
+    if (!s || s->size == 0) {
+        return NULL;
+    }
+    return s->data;
+}
+
+// Доступ к последнему элементу
+void* span_last(Span* s) {
+    if (!s || s->size == 0) {
+        return NULL;
+    }
+    char* byte_ptr = (char*)s->data;
+    return byte_ptr + ((s->size - 1) * s->element_size);
+}
+
+// Создание под-span'a (subspan)
+Span span_subspan(Span* s, size_t offset, size_t count) {
+    if (!s || offset >= s->size) {
+        Span empty = {NULL, 0, s->element_size};
+        return empty;
+    }
+    
+    if (count == 0 || offset + count > s->size) {
+        count = s->size - offset;
+    }
+    
+    char* byte_ptr = (char*)s->data;
+    Span sub;
+    sub.data = byte_ptr + (offset * s->element_size);
+    sub.size = count;
+    sub.element_size = s->element_size;
+    return sub;
+}
+
+// Создание span из начала
+Span span_first_n(Span* s, size_t count) {
+    return span_subspan(s, 0, count);
+}
+
+// Создание span из конца
+Span span_last_n(Span* s, size_t count) {
+    if (!s || count >= s->size) {
+        return *s;
+    }
+    return span_subspan(s, s->size - count, count);
+}
+
+// Пример функции, принимающей span
+void print_int_span(Span* s) {
+    if (!s || s->element_size != sizeof(int)) {
+        printf("Некорректный span\n");
+        return;
+    }
+    
+    printf("[");
+    for (size_t i = 0; i < s->size; i++) {
+        int* element = (int*)span_at(s, i);
+        printf("%d", *element);
+        if (i < s->size - 1) printf(", ");
+    }
+    printf("]\n");
+}
+
+// Пример функции, принимающей span
+void print_double_span(Span* s) {
+    if (!s || s->element_size != sizeof(double)) {
+        printf("Некорректный span\n");
+        return;
+    }
+    
+    printf("[");
+    for (size_t i = 0; i < s->size; i++) {
+        double* element = (double*)span_at(s, i);
+        printf("%.2f", *element);
+        if (i < s->size - 1) printf(", ");
+    }
+    printf("]\n");
+}
+
+// Функция для изменения элементов span
+void span_fill_with(Span* s, void* value) {
+    if (!s || !value) return;
+    
+    for (size_t i = 0; i < s->size; i++) {
+        void* element = span_at(s, i);
+        memcpy(element, value, s->element_size);
+    }
+}
+
+// Пример использования
+int main() {
+    // Создание массивов
+    int int_array[] = {1, 2, 3, 4, 5};
+    size_t int_count = sizeof(int_array) / sizeof(int_array[0]);
+    
+    double double_array[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+    size_t double_count = sizeof(double_array) / sizeof(double_array[0]);
+    
+    // Создание span'ов
+    Span int_span = span_from_int_array(int_array, int_count);
+    Span double_span = span_from_double_array(double_array, double_count);
+    
+    printf("Целочисленный span: ");
+    print_int_span(&int_span);
+    
+    printf("Вещественный span: ");
+    print_double_span(&double_span);
+    
+    printf("Размер int_span: %zu\n", span_size(&int_span));
+    printf("Размер double_span: %zu\n", span_size(&double_span));
+    
+    printf("Первый элемент int_span: %d\n", *(int*)span_first(&int_span));
+    printf("Последний элемент int_span: %d\n", *(int*)span_last(&int_span));
+    
+    // Создание под-span'a
+    Span sub_span = span_subspan(&int_span, 1, 3);
+    printf("Под-span [1,3]: ");
+    print_int_span(&sub_span);
+    
+    // Создание span из первых 3 элементов
+    Span first_three = span_first_n(&int_span, 3);
+    printf("Первые 3 элемента: ");
+    print_int_span(&first_three);
+    
+    // Создание span из последних 2 элементов
+    Span last_two = span_last_n(&int_span, 2);
+    printf("Последние 2 элемента: ");
+    print_int_span(&last_two);
+    
+    // Заполнение span новыми значениями
+    int fill_value = 99;
+    span_fill_with(&sub_span, &fill_value);
+    printf("После заполнения под-span'а значением 99: ");
+    print_int_span(&int_span);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

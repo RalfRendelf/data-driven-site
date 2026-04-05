@@ -1,0 +1,203 @@
+<h2>C++98/C++03 (Стандарты C++98 и C++03)</h2>
+
+<p><strong>Категория:</strong> Стандарты</p>
+
+<h3>Описание</h3>
+<p>C++98 был первым официальным стандартом языка C++, опубликованным в 1998 году. C++03 был техническим корректировочным стандартом, в основном исправляющим дефекты, опубликованным в 2003 году. Эти стандарты заложили основы языка C++ как объектно-ориентированного языка программирования.</p>
+
+<h3>Основные особенности</h3>
+<ol>
+<li>Стандартизация STL (Standard Template Library)</li>
+<li>Шаблоны и параметризованные типы</li>
+<li>Обработка исключений</li>
+<li>RTTI (Run-Time Type Information)</li>
+<li>Виртуальные функции и наследование</li>
+</ol>
+
+<h3>Сложность</h3>
+<ul>
+<li>Временная сложность: N/A</li>
+<li>Пространственная сложность: N/A</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Базовый стандарт, на котором строятся все последующие версии</li>
+<li>Стабильность и надежность</li>
+<li>Широкая поддержка компиляторов</li>
+<li>Хорошо документированная спецификация</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Отсутствие современных возможностей языка</li>
+<li>Более многословный синтаксис</li>
+<li>Менее безопасные конструкции по сравнению с новыми стандартами</li>
+</ul>
+
+<h3>Примеры кода</h3>
+
+<h4>Python</h4>
+<pre>
+<code>
+# Python не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+class MyClass:
+    def __init__(self, value):
+        self.value = value
+    
+    def getValue(self):
+        return self.value
+
+# STL-подобные контейнеры в Python
+my_list = [1, 2, 3, 4, 5]
+my_dict = {'key': 'value'}
+</code>
+</pre>
+
+<h4>JavaScript</h4>
+<pre>
+<code>
+// JS не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+class MyClass {
+    constructor(value) {
+        this.value = value;
+    }
+    
+    getValue() {
+        return this.value;
+    }
+}
+
+// STL-подобные методы в JavaScript
+const myArray = [1, 2, 3, 4, 5];
+const doubled = myArray.map(x => x * 2);
+</code>
+</pre>
+
+<h4>C</h4>
+<pre>
+<code>
+// C не поддерживает классы и шаблоны, как C++, но показывает основы
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Структура как замена классу
+typedef struct {
+    int value;
+} MyStruct;
+
+// Функции для имитации методов класса
+MyStruct* createMyStruct(int value) {
+    MyStruct* obj = malloc(sizeof(MyStruct));
+    obj->value = value;
+    return obj;
+}
+
+int getValue(MyStruct* obj) {
+    return obj->value;
+}
+
+void destroyMyStruct(MyStruct* obj) {
+    free(obj);
+}
+</code>
+</pre>
+
+<h4>C++</h4>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;stdexcept&gt;
+
+class MyClass {
+private:
+    int value;
+
+public:
+    // Конструктор
+    explicit MyClass(int val) : value(val) {}
+    
+    // Геттер
+    int getValue() const {
+        return value;
+    }
+    
+    // Сеттер
+    void setValue(int val) {
+        value = val;
+    }
+};
+
+int main() {
+    // STL контейнеры
+    std::vector&lt;int&gt; numbers;
+    
+    // Заполнение вектора
+    for (int i = 0; i < 10; ++i) {
+        numbers.push_back(i);
+    }
+    
+    // Алгоритмы STL
+    std::reverse(numbers.begin(), numbers.end());
+    
+    // Обработка исключений
+    try {
+        MyClass obj(42);
+        std::cout << "Value: " << obj.getValue() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>Java</h4>
+<pre>
+<code>
+// Java также имеет схожие концепции с C++
+import java.util.*;
+
+public class MyClass {
+    private int value;
+    
+    public MyClass(int val) {
+        this.value = val;
+    }
+    
+    public int getValue() {
+        return value;
+    }
+    
+    public void setValue(int val) {
+        this.value = val;
+    }
+    
+    public static void main(String[] args) {
+        // Коллекции Java как аналоги STL
+        List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;();
+        
+        // Заполнение списка
+        for (int i = 0; i < 10; ++i) {
+            numbers.add(i);
+        }
+        
+        // Алгоритмы коллекций
+        Collections.reverse(numbers);
+        
+        // Обработка исключений
+        try {
+            MyClass obj = new MyClass(42);
+            System.out.println("Value: " + obj.getValue());
+        } catch (Exception e) {
+            System.err.println("Exception: " + e.getMessage());
+        }
+    }
+}
+</code>
+</pre>
+</file_content>

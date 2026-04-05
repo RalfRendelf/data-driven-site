@@ -1,0 +1,267 @@
+<h2>std::array</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::array - это контейнер, который оборачивает фиксированный размер массива элементов типа T. Он предоставляет функциональность, подобную массивам C, но с дополнительными возможностями безопасности типов и интерфейсом, подобным STL контейнерам.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::array:</p>
+
+<pre>
+<code>
+// Пример использования std::array на C++
+
+#include &lt;iostream&gt;
+#include &lt;array&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    // Создание массива из 5 целых чисел
+    std::array&lt;int, 5&gt; arr = {1, 2, 3, 4, 5};
+    
+    std::cout << "Размер массива: " << arr.size() << std::endl;
+    
+    // Доступ к элементам
+    for (size_t i = 0; i < arr.size(); ++i) {
+        std::cout << "arr[" << i << "] = " << arr[i] << std::endl;
+    }
+    
+    // Использование итераторов
+    std::cout << "Элементы массива через итераторы: ";
+    for (auto it = arr.begin(); it != arr.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // Использование range-based for loop
+    std::cout << "Элементы массива через range-based for: ";
+    for (const auto&amp; element : arr) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // front и back
+    std::cout << "Первый элемент: " << arr.front() << std::endl;
+    std::cout << "Последний элемент: " << arr.back() << std::endl;
+    
+    // data() возвращает указатель на внутренний массив
+    int* raw_ptr = arr.data();
+    std::cout << "Элемент через data(): " << raw_ptr[2] << std::endl;
+    
+    // Проверка на пустоту
+    std::cout << "Массив пустой? " << (arr.empty() ? "да" : "нет") << std::endl;
+    
+    // Обмен содержимого с другим массивом
+    std::array&lt;int, 5&gt; arr2 = {10, 20, 30, 40, 50};
+    arr.swap(arr2);
+    
+    std::cout << "После обмена arr: ";
+    for (const auto&amp; element : arr) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    std::cout << "После обмена arr2: ";
+    for (const auto&amp; element : arr2) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Заполнение массива значением
+    arr.fill(7);
+    std::cout << "После fill(7): ";
+    for (const auto&amp; element : arr) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o array_example array_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура для массива фиксированного размера
+typedef struct {
+    int* data;
+    size_t size;
+    size_t capacity;
+} Array;
+
+// Инициализация массива с фиксированным размером
+Array* array_create(size_t fixed_size) {
+    Array* arr = malloc(sizeof(Array));
+    arr->data = malloc(fixed_size * sizeof(int));
+    arr->size = fixed_size;
+    arr->capacity = fixed_size;
+    return arr;
+}
+
+// Инициализация массива с начальными значениями
+Array* array_create_with_values(int values[], size_t size) {
+    Array* arr = array_create(size);
+    for (size_t i = 0; i < size; i++) {
+        arr->data[i] = values[i];
+    }
+    return arr;
+}
+
+// Уничтожение массива
+void array_destroy(Array* arr) {
+    if (arr) {
+        if (arr->data) {
+            free(arr->data);
+        }
+        free(arr);
+    }
+}
+
+// Получение размера
+size_t array_size(Array* arr) {
+    return arr ? arr->size : 0;
+}
+
+// Получение емкости
+size_t array_capacity(Array* arr) {
+    return arr ? arr->capacity : 0;
+}
+
+// Доступ к элементу по индексу
+int array_at(Array* arr, size_t index) {
+    if (arr && index < arr->size) {
+        return arr->data[index];
+    }
+    return 0; // значение по умолчанию
+}
+
+// Установка элемента по индексу
+void array_set(Array* arr, size_t index, int value) {
+    if (arr && index < arr->size) {
+        arr->data[index] = value;
+    }
+}
+
+// Получение первого элемента
+int array_front(Array* arr) {
+    if (arr && arr->size > 0) {
+        return arr->data[0];
+    }
+    return 0;
+}
+
+// Получение последнего элемента
+int array_back(Array* arr) {
+    if (arr && arr->size > 0) {
+        return arr->data[arr->size - 1];
+    }
+    return 0;
+}
+
+// Получение указателя на данные
+int* array_data(Array* arr) {
+    return arr ? arr->data : NULL;
+}
+
+// Проверка на пустоту
+int array_empty(Array* arr) {
+    return arr ? (arr->size == 0) : 1;
+}
+
+// Обмен содержимого с другим массивом
+void array_swap(Array* arr1, Array* arr2) {
+    if (!arr1 || !arr2) return;
+    
+    if (arr1->size != arr2->size) return; // для фиксированного размера
+    
+    // Обмен данных
+    for (size_t i = 0; i < arr1->size; i++) {
+        int temp = arr1->data[i];
+        arr1->data[i] = arr2->data[i];
+        arr2->data[i] = temp;
+    }
+}
+
+// Заполнение массива значением
+void array_fill(Array* arr, int value) {
+    if (arr) {
+        for (size_t i = 0; i < arr->size; i++) {
+            arr->data[i] = value;
+        }
+    }
+}
+
+// Печать массива
+void array_print(Array* arr, const char* label) {
+    printf("%s: [", label);
+    for (size_t i = 0; i < array_size(arr); i++) {
+        printf("%d", array_at(arr, i));
+        if (i < array_size(arr) - 1) printf(", ");
+    }
+    printf("] (size: %zu)\n", array_size(arr));
+}
+
+// Пример использования
+int main() {
+    // Создание массива из 5 элементов
+    int init_values[] = {1, 2, 3, 4, 5};
+    Array* arr = array_create_with_values(init_values, 5);
+    
+    array_print(arr, "Исходный массив");
+    printf("Размер массива: %zu\n", array_size(arr));
+    
+    // Доступ к элементам
+    for (size_t i = 0; i < array_size(arr); i++) {
+        printf("arr[%zu] = %d\n", i, array_at(arr, i));
+    }
+    
+    // front и back
+    printf("Первый элемент: %d\n", array_front(arr));
+    printf("Последний элемент: %d\n", array_back(arr));
+    
+    // data()
+    int* raw_ptr = array_data(arr);
+    printf("Элемент через data(): %d\n", raw_ptr[2]);
+    
+    // Проверка на пустоту
+    printf("Массив пустой? %s\n", array_empty(arr) ? "да" : "нет");
+    
+    // Создание второго массива
+    int init_values2[] = {10, 20, 30, 40, 50};
+    Array* arr2 = array_create_with_values(init_values2, 5);
+    array_print(arr2, "Второй массив");
+    
+    // Обмен содержимого
+    array_swap(arr, arr2);
+    array_print(arr, "После обмена arr");
+    array_print(arr2, "После обмена arr2");
+    
+    // Заполнение массива значением
+    array_fill(arr, 7);
+    array_print(arr, "После fill(7)");
+    
+    // Уничтожение массивов
+    array_destroy(arr);
+    array_destroy(arr2);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

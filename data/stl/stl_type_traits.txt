@@ -1,0 +1,194 @@
+<h2>std::type_traits</h2>
+
+<p><strong>Категория:</strong> Язык</p>
+
+<h3>Описание</h3>
+<p>std::type_traits - это библиотека, предоставляющая способ проверки и манипуляции свойствами типов во время компиляции. Она позволяет определять характеристики типов данных, такие как является ли тип фундаментальным, является ли он классом, может ли он быть скопирован, и т.д. Библиотека была добавлена в C++11 и активно развивается.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11 (частично), полная поддержка в C++14/17/20</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::type_traits и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o type_traits_example type_traits_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Макросы для симуляции type_traits
+#define IS_INTEGRAL(type) (IS_SAME(type, char) || IS_SAME(type, short) || IS_SAME(type, int) || IS_SAME(type, long) || IS_SAME(type, long long))
+#define IS_FLOATING_POINT(type) (IS_SAME(type, float) || IS_SAME(type, double) || IS_SAME(type, long double))
+#define IS_ARITHMETIC(type) (IS_INTEGRAL(type) || IS_FLOATING_POINT(type))
+#define IS_SAME(a, b) (sizeof(#a) == sizeof(#b) && memcmp(#a, #b, sizeof(#a)) == 0)
+
+// Структура для хранения информации о типе
+typedef struct {
+    char type_name[50];
+    int is_integral;
+    int is_floating_point;
+    int is_arithmetic;
+    int is_pointer;
+    int is_array;
+    int size;
+} TypeInfo;
+
+// Функция для получения информации о типе (симуляция type_traits)
+TypeInfo get_type_info(const char* type_name, int size, int type_flags) {
+    TypeInfo info;
+    strncpy(info.type_name, type_name, sizeof(info.type_name) - 1);
+    info.type_name[sizeof(info.type_name) - 1] = '\0';
+    
+    info.is_integral = type_flags & 1;      // 1
+    info.is_floating_point = type_flags & 2; // 2
+    info.is_arithmetic = type_flags & 3;    // 1|2
+    info.is_pointer = type_flags & 4;       // 4
+    info.is_array = type_flags & 8;         // 8
+    info.size = size;
+    
+    return info;
+}
+
+#define TYPE_FLAG_INTEGRAL 1
+#define TYPE_FLAG_FLOATING_POINT 2
+#define TYPE_FLAG_POINTER 4
+#define TYPE_FLAG_ARRAY 8
+
+// Макрос для проверки арифметического типа
+#define CHECK_ARITHMETIC(type) _Generic((type){0}, \
+    char: 1, signed char: 1, unsigned char: 1, \
+    short: 1, unsigned short: 1, \
+    int: 1, unsigned int: 1, \
+    long: 1, unsigned long: 1, \
+    long long: 1, unsigned long long: 1, \
+    float: 1, double: 1, long double: 1, \
+    default: 0 \
+)
+
+// Макрос для получения размера типа
+#define SIZE_OF_TYPE(type) sizeof(type)
+
+// Макрос для проверки, является ли тип указателем
+#define IS_POINTER(type) __builtin_types_compatible_p(typeof(type), typeof(*(char*)0))
+
+// Функция для проверки, является ли тип целочисленным (вручную)
+int is_integral_type(const char* type_name) {
+    return (
+        strcmp(type_name, "char") == 0 ||
+        strcmp(type_name, "short") == 0 ||
+        strcmp(type_name, "int") == 0 ||
+        strcmp(type_name, "long") == 0 ||
+        strcmp(type_name, "long long") == 0 ||
+        strcmp(type_name, "signed char") == 0 ||
+        strcmp(type_name, "unsigned char") == 0 ||
+        strcmp(type_name, "unsigned short") == 0 ||
+        strcmp(type_name, "unsigned int") == 0 ||
+        strcmp(type_name, "unsigned long") == 0 ||
+        strcmp(type_name, "unsigned long long") == 0
+    );
+}
+
+// Функция для проверки, является ли тип числом с плавающей точкой
+int is_floating_point_type(const char* type_name) {
+    return (
+        strcmp(type_name, "float") == 0 ||
+        strcmp(type_name, "double") == 0 ||
+        strcmp(type_name, "long double") == 0
+    );
+}
+
+// Функция для проверки, является ли тип арифметическим
+int is_arithmetic_type(const char* type_name) {
+    return is_integral_type(type_name) || is_floating_point_type(type_name);
+}
+
+// Структура для демонстрации
+typedef struct {
+    int id;
+    char name[20];
+} TestStruct;
+
+// Пример использования
+int main() {
+    printf("=== Демонстрация type_traits (аналог) ===\n\n");
+    
+    // Создание TypeInfo для различных типов
+    TypeInfo int_info = get_type_info("int", SIZE_OF_TYPE(int), 
+                                      TYPE_FLAG_INTEGRAL);
+    TypeInfo double_info = get_type_info("double", SIZE_OF_TYPE(double), 
+                                         TYPE_FLAG_FLOATING_POINT);
+    TypeInfo char_info = get_type_info("char", SIZE_OF_TYPE(char), 
+                                       TYPE_FLAG_INTEGRAL);
+    TypeInfo ptr_info = get_type_info("int*", SIZE_OF_TYPE(int*), 
+                                      TYPE_FLAG_POINTER);
+    TypeInfo struct_info = get_type_info("TestStruct", SIZE_OF_TYPE(TestStruct), 
+                                         0); // ни один из флагов
+    
+    // Вывод информации о типах
+    printf("Тип: %s\n", int_info.type_name);
+    printf("  Размер: %d байт\n", int_info.size);
+    printf("  Целочисленный: %s\n", is_integral_type(int_info.type_name) ? "да" : "нет");
+    printf("  Арифметический: %s\n", is_arithmetic_type(int_info.type_name) ? "да" : "нет");
+    printf("  Указатель: %s\n", int_info.is_pointer ? "да" : "нет");
+    printf("\n");
+    
+    printf("Тип: %s\n", double_info.type_name);
+    printf("  Размер: %d байт\n", double_info.size);
+    printf("  Целочисленный: %s\n", is_integral_type(double_info.type_name) ? "да" : "нет");
+    printf("  Число с плавающей точкой: %s\n", is_floating_point_type(double_info.type_name) ? "да" : "нет");
+    printf("  Арифметический: %s\n", is_arithmetic_type(double_info.type_name) ? "да" : "нет");
+    printf("  Указатель: %s\n", double_info.is_pointer ? "да" : "нет");
+    printf("\n");
+    
+    printf("Тип: %s\n", char_info.type_name);
+    printf("  Размер: %d байт\n", char_info.size);
+    printf("  Целочисленный: %s\n", is_integral_type(char_info.type_name) ? "да" : "нет");
+    printf("  Арифметический: %s\n", is_arithmetic_type(char_info.type_name) ? "да" : "нет");
+    printf("\n");
+    
+    printf("Тип: %s\n", ptr_info.type_name);
+    printf("  Размер: %d байт\n", ptr_info.size);
+    printf("  Указатель: %s\n", ptr_info.is_pointer ? "да" : "нет");
+    printf("\n");
+    
+    printf("Тип: %s\n", struct_info.type_name);
+    printf("  Размер: %d байт\n", struct_info.size);
+    printf("  Целочисленный: %s\n", is_integral_type(struct_info.type_name) ? "да" : "нет");
+    printf("  Арифметический: %s\n", is_arithmetic_type(struct_info.type_name) ? "да" : "нет");
+    printf("\n");
+    
+    // Демонстрация проверки арифметических типов
+    int x = 42;
+    double y = 3.14;
+    char z = 'A';
+    
+    printf("Проверка с помощью макроса _Generic:\n");
+    printf("int является арифметическим: %s\n", CHECK_ARITHMETIC(x) ? "да" : "нет");
+    printf("double является арифметическим: %s\n", CHECK_ARITHMETIC(y) ? "да" : "нет");
+    printf("char является арифметическим: %s\n", CHECK_ARITHMETIC(z) ? "да" : "нет");
+    
+    // Пример использования для принятия решения во время компиляции
+    printf("\nПример условного выполнения на основе типа:\n");
+    if (is_arithmetic_type("int")) {
+        printf("int - арифметический тип, можно выполнять математические операции\n");
+    }
+    
+    if (is_integral_type("double")) {
+        printf("double - целочисленный тип\n");
+    } else {
+        printf("double - НЕ целочисленный тип\n");
+    }
+    
+    printf("\nДемонстрация завершена\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

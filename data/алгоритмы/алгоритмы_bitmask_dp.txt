@@ -1,0 +1,155 @@
+<h2>Bitmask DP (Динамическое программирование с битовыми масками)</h2>
+
+<p><strong>Категория:</strong> Динамическое программирование</p>
+
+<h3>Описание</h3>
+<p>Динамическое программирование с битовыми масками - это метод решения задач, в которых состояние можно закодировать с помощью битов. Каждый бит в маске представляет собой состояние одного из элементов. Такой подход часто используется в задачах, где нужно отслеживать, какие элементы уже были использованы.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Использовать битовую маску для представления состояния (например, какие элементы выбраны)</li>
+<li>Комбинировать динамическое программирование с битовыми операциями</li>
+<li>Использовать побитовые операции (AND, OR, XOR, сдвиги) для изменения состояния</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность: O(2^n * poly(n)) в зависимости от задачи</li>
+<li>Пространственная сложность: O(2^n) для хранения состояний</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Эффективное представление состояния с n ≤ 20-25</li>
+<li>Мощный инструмент для решения NP-трудных задач малого размера</li>
+<li>Может значительно упростить реализацию некоторых задач</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Экспоненциальная временная сложность</li>
+<li>Ограниченный размер входных данных</li>
+<li>Сложность понимания и отладки</li>
+</ul>
+
+<h3>Пример на C++: Задача коммивояжера</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;climits&gt;
+
+class TSP {
+public:
+    static int solveTSP(std::vector&lt;std::vector&lt;int&gt;&gt;&amp; dist) {
+        int n = dist.size();
+        std::vector&lt;std::vector&lt;int&gt;&gt; dp(1 &lt;&lt; n, std::vector&lt;int&gt;(n, INT_MAX));
+        
+        // Начинаем с 0 города
+        dp[1][0] = 0;
+        
+        for (int mask = 1; mask &lt; (1 &lt;&lt; n); mask += 2) {  // Только четные маски (0 включен)
+            for (int u = 0; u &lt; n; u++) {
+                if (!(mask &amp; (1 &lt;&lt; u))) continue;  // u не включен в маршрут
+                
+                for (int v = 0; v &lt; n; v++) {
+                    if (u == v || !(mask &amp; (1 &lt;&lt; v))) continue;  // v не включен или u==v
+                    
+                    int prev_mask = mask ^ (1 &lt;&lt; u);  // Убираем u из маски
+                    if (dp[prev_mask][v] != INT_MAX) {
+                        dp[mask][u] = std::min(dp[mask][u], 
+                                              dp[prev_mask][v] + dist[v][u]);
+                    }
+                }
+            }
+        }
+        
+        // Возвращаем минимальное расстояние, чтобы вернуться в начальный город
+        int final_mask = (1 &lt;&lt; n) - 1;
+        int result = INT_MAX;
+        for (int i = 1; i &lt; n; i++) {
+            if (dp[final_mask][i] != INT_MAX) {
+                result = std::min(result, dp[final_mask][i] + dist[i][0]);
+            }
+        }
+        
+        return result;
+    }
+};
+
+int main() {
+    std::vector&lt;std::vector&lt;int&gt;&gt; dist = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+    
+    int result = TSP::solveTSP(dist);
+    std::cout &lt;&lt; "Minimum cost of tour: " &lt;&lt; result &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Задача о распределении работ между работниками</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;limits.h&gt;
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define POPCOUNT(x) __builtin_popcount(x)
+
+// costs[i][j] - стоимость выполнения работы j работником i
+int assignJobs(int **costs, int n) {
+    int dp[1 << n];
+    int i, mask, j;
+    
+    // Инициализация dp массива
+    for (i = 0; i < (1 << n); i++) {
+        dp[i] = INT_MAX;
+    }
+    dp[0] = 0;
+    
+    // Перебираем все возможные маски
+    for (mask = 0; mask < (1 << n) - 1; mask++) {
+        int worker = POPCOUNT(mask);  // Номер текущего работника (количество установленных битов)
+        
+        for (j = 0; j < n; j++) {
+            if (!(mask & (1 << j))) {  // Если работа j не назначена
+                int next_mask = mask | (1 << j);
+                if (dp[mask] != INT_MAX) {
+                    dp[next_mask] = MIN(dp[next_mask], dp[mask] + costs[worker][j]);
+                }
+            }
+        }
+    }
+    
+    return dp[(1 << n) - 1];
+}
+
+int main() {
+    int n = 3;
+    int costs[3][3] = {
+        {4, 2, 8},
+        {3, 5, 2},
+        {8, 6, 1}
+    };
+    
+    // Создаем массив указателей для передачи в функцию
+    int *ptr_costs[3];
+    for (int i = 0; i < 3; i++) {
+        ptr_costs[i] = costs[i];
+    }
+    
+    int result = assignJobs(ptr_costs, n);
+    printf("Minimum cost of assignment: %d\n", result);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

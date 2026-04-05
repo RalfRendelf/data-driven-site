@@ -1,0 +1,158 @@
+<h2>Hash Tables (Хеш-таблицы)</h2>
+
+<p><strong>Категория:</strong> Структуры данных</p>
+
+<h3>Описание</h3>
+<p>Хеш-таблица — это структура данных, которая реализует ассоциативный массив, отображающий ключи в значения. Она использует хеш-функцию для вычисления индекса в массиве, где будет найдено желаемое значение.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Ключ передается в хеш-функцию, которая вычисляет индекс в массиве</li>
+<li>Значение сохраняется по этому индексу</li>
+<li>При поиске значения ключ снова передается в хеш-функцию для получения индекса</li>
+<li>В случае коллизий (когда несколько ключей дают одинаковый индекс) используются методы разрешения конфликта</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность (поиск/вставка/удаление): O(1) в среднем случае, O(n) в худшем случае</li>
+<li>Пространственная сложность: O(n), где n - количество пар ключ-значение</li>
+</ul>
+
+<h3>Методы разрешения коллизий</h3>
+<ol>
+<li>Метод цепочек (chaining) - каждый элемент массива указывает на связанный список элементов</li>
+<li>Открытая адресация (open addressing) - поиск свободного места в массиве при возникновении коллизии</li>
+</ol>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Очень быстрый доступ к данным в среднем случае</li>
+<li>Удобство использования для реализации кэшей и ассоциативных массивов</li>
+<li>Можно легко адаптировать под различные типы ключей</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Низкая производительность при большом количестве коллизий</li>
+<li>Непредсказуемое поведение при худшем случае</li>
+<li>Неэффективное использование памяти</li>
+</ul>
+
+<h3>Пример на C++</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;unordered_map&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::unordered_map&lt;std::string, int&gt; hash_table;
+    
+    // Вставка элементов
+    hash_table["apple"] = 10;
+    hash_table["banana"] = 20;
+    hash_table["orange"] = 15;
+    
+    // Поиск элемента
+    if (hash_table.count("apple") > 0) {
+        std::cout &lt;&lt; "Found apple: " &lt;&lt; hash_table["apple"] &lt;&lt; std::endl;
+    }
+    
+    // Удаление элемента
+    hash_table.erase("banana");
+    
+    // Итерация по элементам
+    for (const auto&amp; pair : hash_table) {
+        std::cout &lt;&lt; pair.first &lt;&lt; ": " &lt;&lt; pair.second &lt;&lt; std::endl;
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#define TABLE_SIZE 100
+
+typedef struct Node {
+    char key[50];
+    int value;
+    struct Node* next;
+} Node;
+
+Node* hash_table[TABLE_SIZE];
+
+// Простая хеш-функция
+unsigned int hash(const char* key) {
+    unsigned int hash_value = 0;
+    while (*key) {
+        hash_value = (hash_value * 31) + *key;
+        key++;
+    }
+    return hash_value % TABLE_SIZE;
+}
+
+void insert(const char* key, int value) {
+    int index = hash(key);
+    
+    Node* new_node = malloc(sizeof(Node));
+    strcpy(new_node->key, key);
+    new_node->value = value;
+    new_node->next = NULL;
+    
+    if (hash_table[index] == NULL) {
+        hash_table[index] = new_node;
+    } else {
+        // Разрешение коллизии методом цепочек
+        Node* current = hash_table[index];
+        while (current->next != NULL) {
+            if (strcmp(current->key, key) == 0) {
+                current->value = value; // Обновляем значение
+                free(new_node);
+                return;
+            }
+            current = current->next;
+        }
+        current->next = new_node;
+    }
+}
+
+int search(const char* key) {
+    int index = hash(key);
+    Node* current = hash_table[index];
+    
+    while (current != NULL) {
+        if (strcmp(current->key, key) == 0) {
+            return current->value;
+        }
+        current = current->next;
+    }
+    
+    return -1; // Не найдено
+}
+
+int main() {
+    // Инициализация хеш-таблицы
+    memset(hash_table, 0, sizeof(hash_table));
+    
+    // Вставка элементов
+    insert("apple", 10);
+    insert("banana", 20);
+    insert("orange", 15);
+    
+    // Поиск элемента
+    printf("Value for 'apple': %d\n", search("apple"));
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

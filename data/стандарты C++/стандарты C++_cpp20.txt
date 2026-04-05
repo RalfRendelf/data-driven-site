@@ -1,0 +1,342 @@
+<h2>C++20 (Стандарт C++20)</h2>
+
+<p><strong>Категория:</strong> Стандарты</p>
+
+<h3>Описание</h3>
+<p>C++20 — это стандарт языка программирования C++, принятый в 2020 году. Он включает в себя множество крупных изменений, включая концепты (concepts), модули (modules), корутины (coroutines), диапазоны (ranges), улучшенную поддержку constexpr и многие другие возможности. Этот стандарт значительно расширяет возможности языка и улучшает удобство разработки.</p>
+
+<h3>Основные особенности</h3>
+<ol>
+<li>Концепты (Concepts)</li>
+<li>Модули (Modules)</li>
+<li>Корутины (Coroutines)</li>
+<li>Диапазоны (Ranges)</li>
+<li>Улучшенная поддержка constexpr</li>
+<li>Контейнеры с инициализацией списком</li>
+<li>Calendar и timezone библиотеки</li>
+<li>Three-way comparison (operator &lt;=&gt;)</li>
+<li>Контекстный синтаксис для выражений и лямбд</li>
+<li>Улучшенные шаблоны</li>
+</ol>
+
+<h3>Сложность</h3>
+<ul>
+<li>Временная сложность: N/A</li>
+<li>Пространственная сложность: N/A</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Более строгая типизация с помощью концептов</li>
+<li>Улучшенная производительность за счет модулей</li>
+<li>Более простая асинхронная разработка с корутинами</li>
+<li>Более удобная работа с диапазонами</li>
+<li>Расширенная возможность вычислений во время компиляции</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Требует современного компилятора</li>
+<li>Кривая обучения для новых возможностей</li>
+<li>Некоторые возможности требуют времени для освоения</li>
+</ul>
+
+<h3>Примеры кода</h3>
+
+<h4>Python</h4>
+<pre>
+<code>
+# Python не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+from typing import Protocol, TypeVar, Generic
+import asyncio
+from datetime import datetime, timezone
+import functools
+
+# Аннотации типов (аналог Concepts)
+T = TypeVar('T')
+
+class Comparable(Protocol):
+    def __lt__(self, other) -> bool: ...
+
+def sort_list(items: list[T]) -> list[T]:
+    return sorted(items)
+
+# Корутины (аналог C++ coroutines)
+async def async_operation():
+    await asyncio.sleep(1)
+    return "Operation completed"
+
+# Three-way comparison (в Python 3+ оператор cmp не существует, но мы можем создать аналог)
+def compare(a, b):
+    if a < b:
+        return -1
+    elif a > b:
+        return 1
+    else:
+        return 0
+
+# Модули (в Python модули есть изначально)
+import json  # импорт модуля
+
+# Работа с датой и временем (аналог Calendar)
+now = datetime.now(timezone.utc)
+print(f"Current time: {now}")
+</code>
+</pre>
+
+<h4>JavaScript</h4>
+<pre>
+<code>
+// JS не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+// Корутины (асинхронные функции в JS)
+async function asyncOperation() {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return "Operation completed";
+}
+
+// Работа с датой и временем (аналог Calendar)
+const now = new Date();
+console.log(`Current time: ${now.toISOString()}`);
+
+// Three-way comparison (создание функции)
+function compare(a, b) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+}
+
+// Generics (через шаблонные строки и типы)
+function identity(arg) {
+    return arg;
+}
+
+// Работа с диапазонами (через генераторы)
+function* range(start, end, step = 1) {
+    for (let i = start; i < end; i += step) {
+        yield i;
+    }
+}
+
+for (const num of range(0, 5)) {
+    console.log(num);
+}
+</code>
+</pre>
+
+<h4>C</h4>
+<pre>
+<code>
+// C не поддерживает возможности C++20, но показываем близкие концепции
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+
+// Макросы для имитации Concepts
+#define REQUIRE_INTEGRAL(x) _Static_assert(_Generic((x), \
+    int: 1, \
+    long: 1, \
+    short: 1, \
+    char: 1, \
+    default: 0), "Type must be integral");
+
+// Three-way comparison (специальная функция)
+int three_way_compare(int a, int b) {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+}
+
+// Работа с датой и временем
+void print_current_time() {
+    time_t rawtime;
+    struct tm *timeinfo;
+    
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    
+    printf("Current time: %s", asctime(timeinfo));
+}
+
+int main() {
+    int a = 10, b = 20;
+    
+    // Имитация трехстороннего сравнения
+    int cmp_result = three_way_compare(a, b);
+    printf("Comparison result: %d\n", cmp_result);
+    
+    // Имитация Concepts (через статическую проверку)
+    REQUIRE_INTEGRAL(a);
+    
+    // Работа с датой и временем
+    print_current_time();
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C++</h4>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;ranges&gt;
+#include &lt;chrono&gt;
+#include &lt;compare&gt;
+#include &lt;concepts&gt;
+#include &lt;coroutine&gt;
+#include &lt;future&gt;
+
+// Концепты (Concepts)
+template&lt;typename T&gt;
+concept Integral = std::integral&lt;T&gt;;
+
+template&lt;Integral T&gt;
+T multiply(T a, T b) {
+    return a * b;
+}
+
+// Three-way comparison
+struct Point {
+    int x, y;
+    
+    // Оператор трехстороннего сравнения
+    auto operator&lt;=&gt;(const Point&amp;) const = default;
+};
+
+// Диапазоны (Ranges)
+void demonstrate_ranges() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    
+    // Фильтрация четных чисел и возведение в квадрат
+    auto result = numbers 
+                | std::views::filter([](int n) { return n % 2 == 0; })
+                | std::views::transform([](int n) { return n * n; });
+    
+    for (int n : result) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+}
+
+// Корутины (упрощенный пример)
+struct SimpleTask {
+    struct promise_type {
+        SimpleTask get_return_object() { return {}; }
+        std::suspend_never initial_suspend() { return {}; }
+        std::suspend_never final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() {}
+    };
+};
+
+SimpleTask async_operation() {
+    std::cout &lt;&lt; "Async operation started" &lt;&lt; std::endl;
+    // Здесь могла бы быть реальная асинхронная логика
+    std::cout &lt;&lt; "Async operation completed" &lt;&lt; std::endl;
+    co_return;
+}
+
+// Улучшенная constexpr
+constexpr int factorial(int n) {
+    if (n &lt;= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    // Концепты
+    auto result = multiply(5, 6);
+    std::cout &lt;&lt; "Multiply result: " &lt;&lt; result &lt;&lt; std::endl;
+    
+    // Three-way comparison
+    Point p1{1, 2};
+    Point p2{3, 4};
+    auto cmp = p1 <=> p2;
+    std::cout &lt;&lt; "Point comparison: " &lt;&lt; (cmp < 0 ? "less" : cmp > 0 ? "greater" : "equal") &lt;&lt; std::endl;
+    
+    // Диапазоны
+    std::cout &lt;&lt; "Filtered and transformed range: ";
+    demonstrate_ranges();
+    
+    // Улучшенная constexpr
+    constexpr int fact5 = factorial(5);
+    std::cout &lt;&lt; "Factorial of 5: " &lt;&lt; fact5 &lt;&lt; std::endl;
+    
+    // Корутины
+    async_operation();
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>Java</h4>
+<pre>
+<code>
+// Java также имеет схожие концепции с C++
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class Cpp20Features {
+    
+    // Использование generics (аналог Concepts)
+    public static <T extends Comparable<T>> List<T> sortList(List<T> items) {
+        return items.stream()
+                   .sorted()
+                   .collect(Collectors.toList());
+    }
+    
+    // Three-way comparison (в Java есть Integer.compare)
+    public static int compare(int a, int b) {
+        return Integer.compare(a, b);  // возвращает -1, 0 или 1
+    }
+    
+    // Работа с датой и временем (аналог Calendar)
+    public static void printCurrentTime() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Current time: " + now.toString());
+    }
+    
+    // Работа с диапазонами (через Stream API)
+    public static void demonstrateRanges() {
+        List<Integer> numbers = IntStream.rangeClosed(1, 10)
+            .boxed()
+            .collect(Collectors.toList());
+        
+        // Фильтрация четных чисел и возведение в квадрат
+        List<Integer> result = numbers.stream()
+            .filter(n -> n % 2 == 0)
+            .map(n -> n * n)
+            .collect(Collectors.toList());
+        
+        System.out.println("Filtered and transformed range: " + result);
+    }
+    
+    public static void main(String[] args) {
+        // Three-way comparison
+        int cmpResult = compare(5, 10);
+        System.out.println("Comparison result: " + cmpResult);
+        
+        // Работа с датой и временем
+        printCurrentTime();
+        
+        // Работа с диапазонами
+        demonstrateRanges();
+        
+        // Использование generics
+        List<Integer> numbers = new ArrayList<>();
+        numbers.add(5);
+        numbers.add(2);
+        numbers.add(8);
+        List<Integer> sortedNumbers = sortList(numbers);
+        System.out.println("Sorted numbers: " + sortedNumbers);
+    }
+}
+</code>
+</pre>
+</file_content>

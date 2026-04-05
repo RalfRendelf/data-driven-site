@@ -1,0 +1,243 @@
+<h2>C++11 (Стандарт C++11)</h2>
+
+<p><strong>Категория:</strong> Стандарты</p>
+
+<h3>Описание</h3>
+<p>C++11 был значительным обновлением языка C++, принятом в 2011 году. Этот стандарт внес множество новых возможностей, направленных на упрощение разработки, повышение безопасности и производительности. Это первый крупный обновление C++ за долгое время.</p>
+
+<h3>Основные особенности</h3>
+<ol>
+<li>Лямбда-выражения</li>
+<li>Автоматическое определение типа (auto)</li>
+<li>Умные указатели (shared_ptr, unique_ptr, weak_ptr)</li>
+<li>Move семантика</li>
+<li>Контейнеры с инициализацией списком</li>
+<li>Многопоточность (thread, mutex и др.)</li>
+<li>Null указатель (nullptr)</li>
+<li>Range-based циклы for</li>
+</ol>
+
+<h3>Сложность</h3>
+<ul>
+<li>Временная сложность: N/A</li>
+<li>Пространственная сложность: N/A</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Упрощение написания кода</li>
+<li>Повышение безопасности (умные указатели, nullptr)</li>
+<li>Лучшая производительность (move семантика)</li>
+<li>Улучшенная поддержка многопоточности</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Кривая обучения для новых возможностей</li>
+<li>Некоторые возможности сложно понять новичкам</li>
+<li>Более строгие требования к компиляторам</li>
+</ul>
+
+<h3>Примеры кода</h3>
+
+<h4>Python</h4>
+<pre>
+<code>
+# Python не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+# Лямбда-функции (аналог лямбд в C++)
+square = lambda x: x ** 2
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(square, numbers))
+
+# Smart указатели аналогично ссылочной семантике в Python
+import weakref
+class MyClass:
+    def __init__(self, value):
+        self.value = value
+
+obj = MyClass(42)
+weak_ref = weakref.ref(obj)  # Аналог weak_ptr в C++
+</code>
+</pre>
+
+<h4>JavaScript</h4>
+<pre>
+<code>
+// JS не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+// Лямбда-функции (стрелочные функции в JS)
+const numbers = [1, 2, 3, 4, 5];
+const squared = numbers.map(x => x ** 2);
+
+// Range-based циклы (for...of в JS)
+for (const num of numbers) {
+    console.log(num);
+}
+
+// Управление памятью через WeakMap (аналог умных указателей)
+const wm = new WeakMap();
+const key = {};
+wm.set(key, "value");
+</code>
+</pre>
+
+<h4>C</h4>
+<pre>
+<code>
+// C не поддерживает возможности C++11, но показываем близкие концепции
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Умные указатели отсутствуют, но можно реализовать базовую версию
+typedef struct {
+    int* data;
+    int* ref_count;
+} SmartPtr;
+
+SmartPtr* make_smart_ptr(int value) {
+    SmartPtr* ptr = malloc(sizeof(SmartPtr));
+    ptr->data = malloc(sizeof(int));
+    *(ptr->data) = value;
+    ptr->ref_count = malloc(sizeof(int));
+    *(ptr->ref_count) = 1;
+    return ptr;
+}
+
+void destroy_smart_ptr(SmartPtr* ptr) {
+    (*(ptr->ref_count))--;
+    if (*(ptr->ref_count) == 0) {
+        free(ptr->data);
+        free(ptr->ref_count);
+        free(ptr);
+    }
+}
+
+int main() {
+    SmartPtr* ptr = make_smart_ptr(42);
+    printf("Value: %d\n", *(ptr->data));
+    destroy_smart_ptr(ptr);
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C++</h4>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;functional&gt;
+#include &lt;thread&gt;
+#include &lt;mutex&gt;
+
+class MyClass {
+private:
+    int value;
+
+public:
+    explicit MyClass(int val) : value(val) {}
+    
+    int getValue() const { return value; }
+};
+
+int main() {
+    // auto - автоматическое определение типа
+    auto number = 42;
+    
+    // Лямбда-выражения
+    auto lambda = [](int x) { return x * x; };
+    std::cout << "Lambda result: " << lambda(5) << std::endl;
+    
+    // Умные указатели
+    std::unique_ptr&lt;MyClass&gt; smartPtr = std::make_unique&lt;MyClass&gt;(42);
+    std::cout << "Smart pointer value: " << smartPtr->getValue() << std::endl;
+    
+    // Range-based for loop
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
+    for (const auto&amp; num : numbers) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+    
+    // nullptr вместо NULL
+    int* ptr = nullptr;
+    
+    // Move семантика
+    std::vector&lt;int&gt; vec1 = {1, 2, 3};
+    std::vector&lt;int&gt; vec2 = std::move(vec1); // vec1 теперь в неопределенном состоянии
+    
+    // Многопоточность
+    std::mutex mtx;
+    std::thread t([&mtx]() {
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
+        std::cout << "Hello from thread!" << std::endl;
+    });
+    
+    t.join();
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>Java</h4>
+<pre>
+<code>
+// Java также имеет схожие концепции с C++
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Cpp11Features {
+    private int value;
+    
+    public Cpp11Features(int val) {
+        this.value = val;
+    }
+    
+    public int getValue() {
+        return value;
+    }
+    
+    public static void main(String[] args) {
+        // Lambda-выражения (начиная с Java 8)
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5);
+        List&lt;Integer&gt; squared = new ArrayList&lt;&gt;();
+        
+        numbers.forEach(x -> squared.add(x * x));
+        
+        // Stream API (аналог цепочек в STL)
+        List&lt;Integer&gt; result = numbers.stream()
+                                    .map(x -> x * x)
+                                    .collect(java.util.stream.Collectors.toList());
+        
+        // Range-based for (enhanced for loop)
+        for (Integer num : numbers) {
+            System.out.println(num);
+        }
+        
+        // Управление памятью через GC (аналог умных указателей)
+        Cpp11Features obj = new Cpp11Features(42);
+        
+        // Многопоточность
+        ReentrantLock lock = new ReentrantLock();
+        Thread t = new Thread(() -> {
+            lock.lock();
+            try {
+                System.out.println("Hello from thread!");
+            } finally {
+                lock.unlock();
+            }
+        });
+        
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code>
+</pre>
+</file_content>

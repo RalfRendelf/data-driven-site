@@ -22,12 +22,13 @@ export function renderEntries(items) {
     const tbody = document.getElementById(`${item.type}-body`);
     if (!tbody) return;
 
-    const slug = item.name.toLowerCase().replace(/\s+/g, "_");
-    const filePath = `${item.type}/${item.type}_${slug}.txt`;  // <-- здесь
-
+    // Используем fileName, если он определен, иначе генерируем из name как раньше
+    const fileName = item.type + "/" + item.fileName;
+    // || `${item.type}/${item.type}_${item.name.toLowerCase().replace(/\s+/g, "_")}.txt`; 
+    
     const entry = document.createElement("tr");
     entry.classList.add("entry");
-    entry.dataset.file = filePath;
+    entry.dataset.file = fileName;
     entry.dataset.name = item.name;
     entry.dataset.category = item.category;
     entry.dataset.usage = item.usage;

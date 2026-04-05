@@ -1,0 +1,237 @@
+<h2>RAII (Resource Acquisition Is Initialization)</h2>
+
+<p><strong>Категория:</strong> Паттерны</p>
+
+<h3>Описание</h3>
+<p>RAII (Resource Acquisition Is Initialization) — это идиома программирования на C++, при которой получение ресурса связано с инициализацией объекта, а освобождение ресурса — с уничтожением объекта. Это позволяет гарантировать корректное освобождение ресурсов даже при возникновении исключений.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>Идиома использовалась с самого начала C++, но стала официально признанной в C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные концепции RAII и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o raii_example raii_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;errno.h&gt;
+
+// Структура для представления RAII-объекта для файлового дескриптора
+typedef struct {
+    FILE* file;
+    char* filename;
+    char* mode;
+} RaiiFile;
+
+// Структура для представления RAII-объекта для выделенной памяти
+typedef struct {
+    void* ptr;
+    size_t size;
+    char* description;
+} RaiiMemory;
+
+// Структура для представления RAII-объекта для мьютекса
+typedef struct {
+    int locked;
+    char* resource_name;
+} RaiiMutex;
+
+// Функция инициализации RAII-объекта для файла
+RaiiFile* raii_file_open(const char* filename, const char* mode) {
+    FILE* file = fopen(filename, mode);
+    if (!file) {
+        printf("Ошибка открытия файла %s: %s\n", filename, strerror(errno));
+        return NULL;
+    }
+    
+    RaiiFile* rf = malloc(sizeof(RaiiFile));
+    rf->file = file;
+    rf->filename = malloc(strlen(filename) + 1);
+    strcpy(rf->filename, filename);
+    rf->mode = malloc(strlen(mode) + 1);
+    strcpy(rf->mode, mode);
+    
+    printf("RAII: Файл %s открыт в режиме %s\n", filename, mode);
+    return rf;
+}
+
+// Функция освобождения RAII-объекта для файла
+void raii_file_close(RaiiFile* rf) {
+    if (rf) {
+        if (rf->file) {
+            fclose(rf->file);
+            printf("RAII: Файл %s закрыт\n", rf->filename);
+        }
+        if (rf->filename) {
+            free(rf->filename);
+        }
+        if (rf->mode) {
+            free(rf->mode);
+        }
+        free(rf);
+    }
+}
+
+// Функция инициализации RAII-объекта для памяти
+RaiiMemory* raii_malloc(size_t size, const char* description) {
+    void* ptr = malloc(size);
+    if (!ptr) {
+        printf("Ошибка выделения памяти размером %zu байт\n", size);
+        return NULL;
+    }
+    
+    RaiiMemory* rm = malloc(sizeof(RaiiMemory));
+    rm->ptr = ptr;
+    rm->size = size;
+    rm->description = malloc(strlen(description) + 1);
+    strcpy(rm->description, description);
+    
+    printf("RAII: Выделено %zu байт памяти для %s\n", size, description);
+    return rm;
+}
+
+// Функция освобождения RAII-объекта для памяти
+void raii_free(RaiiMemory* rm) {
+    if (rm) {
+        if (rm->ptr) {
+            free(rm->ptr);
+            printf("RAII: Освобождено %zu байт памяти для %s\n", rm->size, rm->description);
+        }
+        if (rm->description) {
+            free(rm->description);
+        }
+        free(rm);
+    }
+}
+
+// Функция инициализации RAII-объекта для мьютекса (условная реализация)
+RaiiMutex* raii_mutex_acquire(const char* resource_name) {
+    RaiiMutex* rm = malloc(sizeof(RaiiMutex));
+    rm->locked = 1;
+    rm->resource_name = malloc(strlen(resource_name) + 1);
+    strcpy(rm->resource_name, resource_name);
+    
+    printf("RAII: Ресурс %s заблокирован\n", resource_name);
+    return rm;
+}
+
+// Функция освобождения RAII-объекта для мьютекса
+void raii_mutex_release(RaiiMutex* rm) {
+    if (rm) {
+        if (rm->locked) {
+            printf("RAII: Ресурс %s разблокирован\n", rm->resource_name);
+        }
+        if (rm->resource_name) {
+            free(rm->resource_name);
+        }
+        free(rm);
+    }
+}
+
+// Макрос для имитации RAII с автоматическим освобождением
+#define WITH_RAIIFILE(var, filename, mode) \
+    for(RaiiFile* var = raii_file_open(filename, mode); var; raii_file_close(var), var=NULL)
+
+#define WITH_RAIIMEMORY(var, size, desc) \
+    for(RaiiMemory* var = raii_malloc(size, desc); var; raii_free(var), var=NULL)
+
+// Пример функции, которая может вызвать ошибку
+int potentially_failing_operation(RaiiFile* rf, RaiiMemory* rm) {
+    printf("Выполнение потенциально опасной операции...\n");
+    
+    // Запись в файл
+    if (fprintf(rf->file, "Данные в файле %s\n", rf->filename) < 0) {
+        printf("Ошибка записи в файл\n");
+        return -1;
+    }
+    
+    // Заполнение памяти
+    char* data = (char*)rm->ptr;
+    for (size_t i = 0; i < rm->size && i < 10; i++) {
+        data[i] = 'A' + i;
+    }
+    
+    // Имитация ошибки
+    if (rm->size < 5) {
+        printf("Имитация ошибки: недостаточный размер памяти\n");
+        return -1;  // В нормальной ситуации здесь могло бы быть throw
+    }
+    
+    printf("Операция выполнена успешно\n");
+    return 0;
+}
+
+// Пример использования RAII
+int main() {
+    printf("=== Демонстрация RAII (Resource Acquisition Is Initialization) ===\n\n");
+    
+    // Пример 1: RAII для файла
+    printf("Пример 1: RAII для файловой операции\n");
+    RaiiFile* rf = raii_file_open("test.txt", "w");
+    if (rf) {
+        fprintf(rf->file, "Привет, RAII!\n");
+        raii_file_close(rf);
+    }
+    
+    // Пример 2: RAII для управления памятью
+    printf("\nПример 2: RAII для управления памятью\n");
+    RaiiMemory* rm = raii_malloc(100, "буфер данных");
+    if (rm) {
+        strcpy((char*)rm->ptr, "Данные в выделенной памяти");
+        printf("Записаны данные: %s\n", (char*)rm->ptr);
+        raii_free(rm);
+    }
+    
+    // Пример 3: RAII для синхронизации
+    printf("\nПример 3: RAII для управления ресурсом (условно мьютекс)\n");
+    RaiiMutex* mutex = raii_mutex_acquire("критическая секция");
+    if (mutex) {
+        printf("Работа в критической секции...\n");
+        raii_mutex_release(mutex);
+    }
+    
+    // Пример 4: Использование RAII с потенциально опасной операцией
+    printf("\nПример 4: RAII с потенциально опасной операцией\n");
+    RaiiFile* rf2 = raii_file_open("test2.txt", "w");
+    RaiiMemory* rm2 = raii_malloc(20, "маленький буфер");
+    
+    if (rf2 && rm2) {
+        int result = potentially_failing_operation(rf2, rm2);
+        
+        if (result == -1) {
+            printf("Произошла ошибка, но RAII гарантирует освобождение ресурсов\n");
+        }
+        
+        // RAII гарантирует освобождение ресурсов
+        raii_file_close(rf2);
+        raii_free(rm2);
+    }
+    
+    // Пример 5: Использование условных "операторов" для RAII
+    printf("\nПример 5: Использование конструкций, имитирующих RAII\n");
+    WITH_RAIIFILE(file, "raii_macro_test.txt", "w") {
+        fprintf(file->file, "Запись с использованием макроса WITH_RAIIFILE\n");
+        printf("Файл автоматически закроется после блока\n");
+    }
+    
+    WITH_RAIIMEMORY(mem, 50, "временная память") {
+        strcpy((char*)mem->ptr, "Данные во временной памяти");
+        printf("Данные: %s\n", (char*)mem->ptr);
+        printf("Память автоматически освободится после блока\n");
+    }
+    
+    printf("\nДемонстрация RAII завершена\n");
+    printf("RAII гарантирует, что ресурсы будут освобождены при выходе из области видимости\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

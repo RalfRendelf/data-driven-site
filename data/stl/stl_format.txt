@@ -1,0 +1,285 @@
+<h2>std::format (C++20)</h2>
+
+<p><strong>Категория:</strong> Ввод-вывод</p>
+
+<h3>Описание</h3>
+<p>std::format - это функция форматирования строк, добавленная в C++20. Она предоставляет безопасный и эффективный способ форматирования строк, подобно функциям printf в C, но с типобезопасностью и более гибкими возможностями форматирования.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++20</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные концепции std::format и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o format_example format_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdarg.h&gt;
+
+// Структура для хранения форматированной строки
+typedef struct {
+    char* data;
+    size_t size;
+    size_t capacity;
+} FormattedString;
+
+// Функция для создания форматированной строки (аналог std::format)
+FormattedString format_string(const char* format, ...) {
+    FormattedString result = {0};
+    
+    va_list args;
+    va_start(args, format);
+    
+    // Сначала определяем необходимый размер
+    int size = vsnprintf(NULL, 0, format, args);
+    va_end(args);
+    
+    if (size <= 0) {
+        return result;
+    }
+    
+    // Выделяем память
+    result.data = malloc(size + 1);
+    result.capacity = size + 1;
+    result.size = size;
+    
+    // Форматируем строку
+    va_start(args, format);
+    vsnprintf(result.data, result.capacity, format, args);
+    va_end(args);
+    
+    return result;
+}
+
+// Функция для освобождения памяти
+void free_formatted_string(FormattedString* fs) {
+    if (fs && fs->data) {
+        free(fs->data);
+        fs->data = NULL;
+        fs->size = 0;
+        fs->capacity = 0;
+    }
+}
+
+// Функция для объединения нескольких строк (аналог форматирования с несколькими аргументами)
+char* join_strings(int count, ...) {
+    va_list args;
+    va_start(args, count);
+    
+    // Подсчитываем общий размер
+    size_t total_size = 0;
+    for (int i = 0; i < count; i++) {
+        const char* str = va_arg(args, const char*);
+        total_size += strlen(str);
+    }
+    total_size += 1; // для терминирующего нуля
+    
+    va_end(args);
+    
+    // Выделяем память
+    char* result = malloc(total_size);
+    result[0] = '\0';
+    
+    // Объединяем строки
+    va_start(args, count);
+    for (int i = 0; i < count; i++) {
+        const char* str = va_arg(args, const char*);
+        strcat(result, str);
+    }
+    va_end(args);
+    
+    return result;
+}
+
+// Функция для форматирования чисел в разном виде
+FormattedString format_number(int num, const char* format_type) {
+    if (strcmp(format_type, "decimal") == 0) {
+        return format_string("%d", num);
+    } else if (strcmp(format_type, "hex") == 0) {
+        return format_string("%x", num);
+    } else if (strcmp(format_type, "octal") == 0) {
+        return format_string("%o", num);
+    } else if (strcmp(format_type, "binary") == 0) {
+        // В C нет встроенной поддержки бинарного формата, эмулируем
+        char buffer[33]; // для 32-битного числа + терминатор
+        int n = num;
+        char* ptr = buffer + 32;
+        *ptr = '\0';
+        
+        if (n == 0) {
+            *(--ptr) = '0';
+        } else {
+            while (n > 0) {
+                *(--ptr) = (n & 1) ? '1' : '0';
+                n >>= 1;
+            }
+        }
+        
+        FormattedString result;
+        result.size = strlen(ptr);
+        result.capacity = result.size + 1;
+        result.data = malloc(result.capacity);
+        strcpy(result.data, ptr);
+        return result;
+    }
+    
+    FormattedString empty = {0};
+    return empty;
+}
+
+// Функция для форматирования с ограничением по ширине
+FormattedString format_with_width(const char* text, int width, char pad_char) {
+    size_t text_len = strlen(text);
+    if (text_len >= width) {
+        FormattedString result = {0};
+        result.size = text_len;
+        result.capacity = text_len + 1;
+        result.data = malloc(result.capacity);
+        strcpy(result.data, text);
+        return result;
+    }
+    
+    FormattedString result = {0};
+    result.size = width;
+    result.capacity = width + 1;
+    result.data = malloc(result.capacity);
+    
+    size_t padding = width - text_len;
+    for (size_t i = 0; i < padding; i++) {
+        result.data[i] = pad_char;
+    }
+    strcpy(result.data + padding, text);
+    result.data[width] = '\0';
+    
+    return result;
+}
+
+// Функция для демонстрации форматирования
+void demonstrate_format() {
+    printf("=== Демонстрация std::format (аналог) ===\n\n");
+    
+    // Простое форматирование
+    FormattedString str1 = format_string("Привет, %s! Сегодня %d число.", "мир", 25);
+    printf("1. %s\n", str1.data);
+    free_formatted_string(&str1);
+    
+    // Форматирование чисел
+    FormattedString str2 = format_string("Значение числа %d в шестнадцатеричном виде: %x", 255, 255);
+    printf("2. %s\n", str2.data);
+    free_formatted_string(&str2);
+    
+    // Форматирование с плавающей точкой
+    FormattedString str3 = format_string("Число Пи: %.2f", 3.14159);
+    printf("3. %s\n", str3.data);
+    free_formatted_string(&str3);
+    
+    // Форматирование с разными типами
+    FormattedString str4 = format_string("Строка: %s, Целое: %d, Дробное: %.2f", "test", 42, 3.14159);
+    printf("4. %s\n", str4.data);
+    free_formatted_string(&str4);
+    
+    // Форматирование с выравниванием
+    printf("\nФорматирование с выравниванием:\n");
+    FormattedString padded = format_with_width("42", 5, '0');
+    printf("5. Число с ведущими нулями: %s\n", padded.data);
+    free_formatted_string(&padded);
+    
+    // Форматирование чисел в разных системах счисления
+    printf("\nЧисло 42 в разных системах счисления:\n");
+    FormattedString dec = format_number(42, "decimal");
+    printf("6. Десятичное: %s\n", dec.data);
+    free_formatted_string(&dec);
+    
+    FormattedString hex = format_number(42, "hex");
+    printf("7. Шестнадцатеричное: %s\n", hex.data);
+    free_formatted_string(&hex);
+    
+    FormattedString oct = format_number(42, "octal");
+    printf("8. Восьмеричное: %s\n", oct.data);
+    free_formatted_string(&oct);
+    
+    FormattedString bin = format_number(42, "binary");
+    printf("9. Двоичное: %s\n", bin.data);
+    free_formatted_string(&bin);
+    
+    // Работа с большими строками
+    FormattedString big = format_string("Большая строка с числом %d и текстом %s, длина которой превышает 50 символов", 12345, "демонстрация");
+    printf("10. %s\n", big.data);
+    printf("    Длина строки: %zu символов\n", strlen(big.data));
+    free_formatted_string(&big);
+    
+    // Сравнение с printf
+    printf("\nСравнение с printf:\n");
+    printf("Printf: ");
+    printf("Значение %d и строка %s\n", 100, "test");
+    
+    FormattedString fmt = format_string("Format: Значение %d и строка %s", 100, "test");
+    printf("%s\n", fmt.data);
+    free_formatted_string(&fmt);
+}
+
+// Дополнительная информация о std::format
+void format_detailed_info() {
+    printf("\n--- Подробнее о std::format (C++20) ---\n");
+    printf("\nstd::format предоставляет безопасную альтернативу printf:\n\n");
+    
+    printf("// Примеры использования в C++20:\n");
+    printf("#include <format>\n\n");
+    
+    printf("// Простое форматирование\n");
+    printf("std::string s1 = std::format(\"Привет, {}!\", \"мир\");\n\n");
+    
+    printf("// Форматирование с позиционированием\n");
+    printf("std::string s2 = std::format(\"{1} {0}\", \"мир\", \"Привет\");\n\n");
+    
+    printf("// Форматирование с выравниванием и заполнением\n");
+    printf("std::string s3 = std::format(\"{:>10}\", 42);  // Выравнивание по правому краю\n\n");
+    
+    printf("// Форматирование чисел\n");
+    printf("std::string s4 = std::format(\"{:#x}\", 42);   // Шестнадцатеричный формат с префиксом\n\n");
+    
+    printf("// Форматирование с точностью\n");
+    printf("std::string s5 = std::format(\"{:.2f}\", 3.14159);  // 2 знака после запятой\n\n");
+    
+    printf("Преимущества std::format:\n");
+    printf("- Типобезопасность (ошибки форматирования выявляются на этапе компиляции)\n");
+    printf("- Поддержка пользовательских типов\n");
+    printf("- Возможность локализации\n");
+    printf("- Современный синтаксис, похожий на Python\n");
+    printf("- Лучшая производительность по сравнению с iostream\n");
+}
+
+// Демонстрация безопасности форматирования
+void demonstrate_safety() {
+    printf("\n--- Демонстрация безопасности форматирования ---\n");
+    printf("\nВ отличие от printf, std::format:\n");
+    printf("- Проверяет количество аргументов на этапе выполнения\n");
+    printf("- Выдает исключение при несоответствии типов\n");
+    printf("- Предотвращает уязвимости, связанные с форматированием строк\n\n");
+    
+    printf("Например, в C с printf:\n");
+    printf("printf(user_input); // Уязвимость! Пользователь может ввести %n%n%n\n\n");
+    
+    printf("С std::format это безопасно:\n");
+    printf("std::format(user_input); // Нет уязвимости, строка просто выводится\n");
+}
+
+int main() {
+    demonstrate_format();
+    format_detailed_info();
+    demonstrate_safety();
+    
+    printf("\nstd::format в C++20 обеспечивает безопасное и гибкое форматирование строк.\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

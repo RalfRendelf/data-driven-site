@@ -1,0 +1,171 @@
+<h2>Quickselect (Алгоритм быстрого выбора)</h2>
+
+<p><strong>Категория:</strong> Поиск</p>
+
+<h3>Описание</h3>
+<p>Quickselect - это алгоритм поиска k-го по величине элемента в неотсортированном массиве. Он основан на том же принципе, что и алгоритм быстрой сортировки (quicksort), но вместо рекурсивной сортировки обеих сторон разделения, рекурсивно обрабатывается только одна сторона.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Выбрать опорный элемент из массива</li>
+<li>Разделить массив на элементы меньше и больше опорного</li>
+<li>Определить, в какой из частей находится k-й элемент</li>
+<li>Рекурсивно применить алгоритм к соответствующей части</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Средняя временная сложность: O(n)</li>
+<li>Худшая временная сложность: O(n²)</li>
+<li>Пространственная сложность: O(1) для итеративной реализации, O(log n) для рекурсивной</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Средняя линейная временная сложность</li>
+<li>Не требует дополнительной памяти для хранения элементов</li>
+<li>Работает на месте (in-place)</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Худший случай O(n²) при плохом выборе опорного элемента</li>
+<li>Не является стабильным</li>
+</ul>
+
+<h3>Пример на C++: Реализация Quickselect</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;random&gt;
+#include &lt;algorithm&gt;
+
+class QuickSelect {
+public:
+    static int findKthLargest(std::vector&lt;int&gt;&amp; nums, int k) {
+        return quickSelect(nums, 0, nums.size() - 1, nums.size() - k);
+    }
+    
+private:
+    static int quickSelect(std::vector&lt;int&gt;&amp; nums, int left, int right, int k) {
+        if (left == right) return nums[left];
+        
+        // Выбираем случайный опорный элемент для улучшения производительности в среднем случае
+        int pivotIndex = randomPivot(left, right);
+        pivotIndex = partition(nums, left, right, pivotIndex);
+        
+        if (k == pivotIndex) {
+            return nums[k];
+        } else if (k < pivotIndex) {
+            return quickSelect(nums, left, pivotIndex - 1, k);
+        } else {
+            return quickSelect(nums, pivotIndex + 1, right, k);
+        }
+    }
+    
+    static int partition(std::vector&lt;int&gt;&amp; nums, int left, int right, int pivotIndex) {
+        int pivotValue = nums[pivotIndex];
+        // Помещаем опорный элемент в конец
+        std::swap(nums[pivotIndex], nums[right]);
+        
+        int storeIndex = left;
+        for (int i = left; i < right; i++) {
+            if (nums[i] < pivotValue) {
+                std::swap(nums[storeIndex], nums[i]);
+                storeIndex++;
+            }
+        }
+        
+        // Помещаем опорный элемент на правильную позицию
+        std::swap(nums[right], nums[storeIndex]);
+        return storeIndex;
+    }
+    
+    static int randomPivot(int left, int right) {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution&lt;int&gt; dis(left, right);
+        return dis(gen);
+    }
+};
+
+int main() {
+    std::vector&lt;int&gt; nums = {3, 2, 1, 5, 6, 4};
+    int k = 2;
+    
+    int result = QuickSelect::findKthLargest(nums, k);
+    std::cout &lt;&lt; k &lt;&lt; "-й по величине элемент: " &lt;&lt; result &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Реализация Quickselect</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int partition(int arr[], int left, int right, int pivotIndex) {
+    int pivotValue = arr[pivotIndex];
+    // Помещаем опорный элемент в конец
+    int temp = arr[pivotIndex];
+    arr[pivotIndex] = arr[right];
+    arr[right] = temp;
+    
+    int storeIndex = left;
+    for (int i = left; i < right; i++) {
+        if (arr[i] < pivotValue) {
+            // Меняем arr[i] и arr[storeIndex]
+            temp = arr[storeIndex];
+            arr[storeIndex] = arr[i];
+            arr[i] = temp;
+            storeIndex++;
+        }
+    }
+    
+    // Помещаем опорный элемент на правильную позицию
+    temp = arr[right];
+    arr[right] = arr[storeIndex];
+    arr[storeIndex] = temp;
+    
+    return storeIndex;
+}
+
+int quickSelect(int arr[], int left, int right, int k) {
+    if (left == right) return arr[left];
+    
+    // Выбираем опорный элемент (в данном случае - средний)
+    int pivotIndex = left + (right - left) / 2;
+    pivotIndex = partition(arr, left, right, pivotIndex);
+    
+    if (k == pivotIndex) {
+        return arr[k];
+    } else if (k < pivotIndex) {
+        return quickSelect(arr, left, pivotIndex - 1, k);
+    } else {
+        return quickSelect(arr, pivotIndex + 1, right, k);
+    }
+}
+
+int findKthLargest(int arr[], int n, int k) {
+    // k-й по величине элемент - это (n-k)-й по порядку
+    return quickSelect(arr, 0, n - 1, n - k);
+}
+
+int main() {
+    int arr[] = {3, 2, 1, 5, 6, 4};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int k = 2;
+    
+    int result = findKthLargest(arr, n, k);
+    printf("%d-й по величине элемент: %d\n", k, result);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

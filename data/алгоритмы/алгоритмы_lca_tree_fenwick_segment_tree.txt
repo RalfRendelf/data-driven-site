@@ -1,0 +1,226 @@
+<h2>LCA / Tree / Fenwick / Segment Tree (LCA / Деревья / Фенвика / Сегментное дерево)</h2>
+
+<p><strong>Категория:</strong> Деревья/Структуры данных</p>
+
+<h3>Описание</h3>
+<p>Это группа структур данных и алгоритмов, используемых для решения задач на деревьях и диапазонных запросах:</p>
+<ul>
+<li>LCA (Lowest Common Ancestor) - нахождение наименьшего общего предка двух вершин в дереве</li>
+<li>Fenwick Tree (Binary Indexed Tree) - эффективная структура данных для вычисления частичных сумм</li>
+<li>Segment Tree - структура данных для выполнения различных операций на подотрезках</li>
+</ul>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>LCA: использует предварительную обработку дерева (например, двоичное подъемание) для быстрого ответа на запросы</li>
+<li>Fenwick Tree: использует двоичное представление индексов для эффективного обновления и суммирования</li>
+<li>Segment Tree: строится в виде бинарного дерева, где каждый узел содержит информацию о подотрезке</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность LCA: O(log n) на запрос после O(n log n) предварительной обработки</li>
+<li>Временная сложность Fenwick Tree: O(log n) на операции обновления и суммирования</li>
+<li>Временная сложность Segment Tree: O(log n) на операции обновления и запроса</li>
+<li>Пространственная сложность: O(n) для всех структур</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Высокая эффективность при работе с диапазонными запросами</li>
+<li>Поддержка динамических обновлений</li>
+<li>Применимость к широкому кругу задач</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Сложность реализации</li>
+<li>Требуют дополнительной памяти</li>
+<li>Избыточность для простых задач</li>
+</ul>
+
+<h3>Пример на C++: Реализация Fenwick Tree</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+class FenwickTree {
+private:
+    std::vector&lt;long long&gt; tree;
+    int n;
+    
+public:
+    FenwickTree(int size) {
+        n = size + 1;
+        tree.assign(n, 0);
+    }
+    
+    void update(int idx, long long delta) {
+        for (++idx; idx < n; idx += idx & -idx) {
+            tree[idx] += delta;
+        }
+    }
+    
+    long long pref_sum(int idx) {
+        long long sum = 0;
+        for (++idx; idx > 0; idx -= idx & -idx) {
+            sum += tree[idx];
+        }
+        return sum;
+    }
+    
+    long long range_sum(int l, int r) {
+        if (l == 0) {
+            return pref_sum(r);
+        }
+        return pref_sum(r) - pref_sum(l - 1);
+    }
+};
+
+// Пример реализации LCA с использованием двоичного подъема
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+
+class LCABinaryLifting {
+private:
+    std::vector&lt;std::vector&lt;int&gt;&gt; up;
+    std::vector&lt;int&gt; tin, tout;
+    int timer, lg;
+    
+    void dfs(int u, int p, std::vector&lt;std::vector&lt;int&gt;&gt;& v) {
+        tin[u] = ++timer;
+        up[u][0] = p;
+        for (int i = 1; i <= lg; i++) {
+            up[u][i] = up[up[u][i-1]][i-1];
+        }
+        
+        for (int child : v[u]) {
+            if (child != p) {
+                dfs(child, u, v);
+            }
+        }
+        tout[u] = ++timer;
+    }
+    
+    bool is_ancestor(int u, int v) {
+        return tin[u] <= tin[v] && tout[u] >= tout[v];
+    }
+    
+public:
+    LCABinaryLifting(std::vector&lt;std::vector&lt;int&gt;&gt;& v, int root = 0) {
+        int n = v.size();
+        timer = 0;
+        lg = 1;
+        while ((1 << lg) < n) lg++;
+        
+        up.assign(n, std::vector&lt;int&gt;(lg + 1));
+        tin.assign(n, 0);
+        tout.assign(n, 0);
+        
+        dfs(root, root, v);
+    }
+    
+    int lca(int u, int v) {
+        if (is_ancestor(u, v)) return u;
+        if (is_ancestor(v, u)) return v;
+        
+        for (int i = lg; i >= 0; i--) {
+            if (!is_ancestor(up[u][i], v)) {
+                u = up[u][i];
+            }
+        }
+        return up[u][0];
+    }
+};
+
+int main() {
+    // Пример использования Fenwick Tree
+    FenwickTree ft(10);
+    ft.update(0, 1);
+    ft.update(1, 2);
+    ft.update(2, 3);
+    
+    std::cout << "Sum [0, 2]: " << ft.range_sum(0, 2) << std::endl; // 6
+    
+    // Пример использования LCA
+    std::vector&lt;std::vector&lt;int&gt;&gt; tree = {{1, 2}, {3, 4}, {}, {}, {}};
+    LCABinaryLifting lca(tree, 0);
+    std::cout << "LCA(3, 4): " << lca.lca(3, 4) << std::endl; // 0
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Реализация простого сегментного дерева</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Функция для вычисления максимума
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Рекурсивная функция для построения сегментного дерева
+int constructSTUtil(int arr[], int ss, int se, int *st, int si) {
+    // Если есть только один элемент
+    if (ss == se) {
+        st[si] = arr[ss];
+        return arr[ss];
+    }
+
+    int mid = ss + (se - ss) / 2;
+    st[si] = max(constructSTUtil(arr, ss, mid, st, si * 2 + 1),
+                 constructSTUtil(arr, mid + 1, se, st, si * 2 + 2));
+    return st[si];
+}
+
+// Функция для создания сегментного дерева
+int *constructST(int arr[], int n) {
+    int x = (int)(ceil(log2(n))); // Высота дерева
+    int max_size = 2 * (int)pow(2, x) - 1; // Максимальный размер дерева
+    int *st = (int *)malloc(sizeof(int) * max_size);
+
+    constructSTUtil(arr, 0, n - 1, st, 0);
+    return st;
+}
+
+// Рекурсивная функция для получения максимума на отрезке
+int getMaxUtil(int *st, int ss, int se, int qs, int qe, int si) {
+    if (qs <= ss && qe >= se) // Полное совпадение
+        return st[si];
+
+    if (se < qs || ss > qe) // Нет совпадения
+        return -1;
+
+    int mid = ss + (se - ss) / 2;
+    return max(getMaxUtil(st, ss, mid, qs, qe, 2 * si + 1),
+               getMaxUtil(st, mid + 1, se, qs, qe, 2 * si + 2));
+}
+
+// Обертка для получения максимума на отрезке
+int getMax(int *st, int n, int qs, int qe) {
+    return getMaxUtil(st, 0, n - 1, qs, qe, 0);
+}
+
+int main() {
+    int arr[] = {1, 3, 2, 7, 9, 11};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    int *st = constructST(arr, n);
+
+    int qs = 1;  // Начало запроса
+    int qe = 5;  // Конец запроса
+
+    printf("Max of values in range [%d, %d] is %d\n", qs, qe, getMax(st, n, qs, qe));
+
+    free(st);
+    return 0;
+}
+</code>
+</pre>
+</file_content>

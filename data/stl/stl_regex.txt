@@ -1,0 +1,256 @@
+<h2>std::regex</h2>
+
+<p><strong>Категория:</strong> Регулярные выражения</p>
+
+<h3>Описание</h3>
+<p>std::regex - это библиотека для работы с регулярными выражениями в C++, позволяющая находить, сопоставлять и заменять текстовые паттерны. Она была добавлена в C++11 и предоставляет мощные средства для обработки строк на основе шаблонов.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::regex и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX регулярных выражений
+ * Компиляция: gcc -o regex_example regex_example.c -lregex
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;regex.h&gt;
+
+#define MAX_MATCHES 10
+#define MAX_PATTERN_LENGTH 256
+
+// Структура для представления регулярного выражения
+typedef struct {
+    regex_t regex_compiled;
+    char pattern[MAX_PATTERN_LENGTH];
+    int is_valid;
+} Regex;
+
+// Структура для представления результата сопоставления
+typedef struct {
+    int match_count;
+    char matched_strings[MAX_MATCHES][256];
+    int start_pos[MAX_MATCHES];
+    int end_pos[MAX_MATCHES];
+} RegexMatch;
+
+// Компиляция регулярного выражения
+Regex regex_compile(const char* pattern) {
+    Regex reg;
+    strncpy(reg.pattern, pattern, MAX_PATTERN_LENGTH - 1);
+    reg.pattern[MAX_PATTERN_LENGTH - 1] = '\0';
+    reg.is_valid = 0;
+    
+    int status = regcomp(&reg.regex_compiled, pattern, REG_EXTENDED | REG_NEWLINE);
+    if (status == 0) {
+        reg.is_valid = 1;
+    } else {
+        char error_buffer[256];
+        regerror(status, &reg.regex_compiled, error_buffer, sizeof(error_buffer));
+        printf("Ошибка компиляции регулярного выражения '%s': %s\n", pattern, error_buffer);
+    }
+    
+    return reg;
+}
+
+// Сопоставление строки с регулярным выражением
+int regex_match(Regex* reg, const char* str) {
+    if (!reg || !str || !reg->is_valid) return 0;
+    
+    int status = regexec(&reg->regex_compiled, str, 0, NULL, 0);
+    return (status == 0) ? 1 : 0;
+}
+
+// Поиск сопоставлений в строке
+RegexMatch regex_search(Regex* reg, const char* str) {
+    RegexMatch result = {0};
+    
+    if (!reg || !str || !reg->is_valid) return result;
+    
+    regmatch_t matches[MAX_MATCHES];
+    int status = 0;
+    size_t offset = 0;
+    
+    while (offset < strlen(str) && result.match_count < MAX_MATCHES) {
+        status = regexec(&reg->regex_compiled, str + offset, 1, matches, 0);
+        
+        if (status == REG_NOERROR) {
+            // Найдено совпадение
+            int start = matches[0].rm_so + offset;
+            int end = matches[0].rm_eo + offset;
+            
+            result.start_pos[result.match_count] = start;
+            result.end_pos[result.match_count] = end;
+            
+            // Копируем совпавшую подстроку
+            int len = end - start;
+            if (len < 256) {
+                strncpy(result.matched_strings[result.match_count], str + start, len);
+                result.matched_strings[result.match_count][len] = '\0';
+            } else {
+                strncpy(result.matched_strings[result.match_count], "TOO_LONG", 8);
+                result.matched_strings[result.match_count][8] = '\0';
+            }
+            
+            result.match_count++;
+            
+            // Обновляем смещение
+            offset = end;
+            
+            // Если совпадение нулевой длины, увеличиваем смещение, чтобы избежать зацикливания
+            if (matches[0].rm_so == matches[0].rm_eo) {
+                offset++;
+            }
+        } else {
+            break; // Нет больше совпадений
+        }
+    }
+    
+    return result;
+}
+
+// Замена по регулярному выражению
+char* regex_replace(Regex* reg, const char* str, const char* replacement) {
+    if (!reg || !str || !replacement || !reg->is_valid) return NULL;
+    
+    RegexMatch matches = regex_search(reg, str);
+    
+    if (matches.match_count == 0) {
+        // Нет совпадений, возвращаем копию исходной строки
+        char* result = malloc(strlen(str) + 1);
+        strcpy(result, str);
+        return result;
+    }
+    
+    // Подсчитываем размер результирующей строки
+    size_t result_len = strlen(str) + matches.match_count * (strlen(replacement) - 0); // Заглушка для простой замены
+    for (int i = 0; i < matches.match_count; i++) {
+        result_len -= (matches.end_pos[i] - matches.start_pos[i]); // Вычитаем длину оригинальных совпадений
+    }
+    result_len += matches.match_count * strlen(replacement); // Добавляем длину заменяемых строк
+    
+    char* result = malloc(result_len + 1);
+    result[0] = '\0';
+    
+    // Выполняем замену
+    size_t last_pos = 0;
+    for (int i = 0; i < matches.match_count; i++) {
+        // Добавляем часть строки до совпадения
+        strncat(result, str + last_pos, matches.start_pos[i] - last_pos);
+        
+        // Добавляем замену
+        strcat(result, replacement);
+        
+        last_pos = matches.end_pos[i];
+    }
+    
+    // Добавляем оставшуюся часть строки
+    strcat(result, str + last_pos);
+    
+    return result;
+}
+
+// Освобождение ресурсов регулярного выражения
+void regex_free(Regex* reg) {
+    if (reg && reg->is_valid) {
+        regfree(&reg->regex_compiled);
+        reg->is_valid = 0;
+    }
+}
+
+// Печать результатов сопоставления
+void regex_match_print(RegexMatch* match) {
+    printf("Найдено совпадений: %d\n", match->match_count);
+    for (int i = 0; i < match->match_count; i++) {
+        printf("  #%d: '%s' (позиции %d-%d)\n", 
+               i+1, match->matched_strings[i], 
+               match->start_pos[i], match->end_pos[i]);
+    }
+}
+
+// Пример использования
+int main() {
+    printf("=== Демонстрация регулярных выражений (аналог std::regex) ===\n\n");
+    
+    // Компиляция регулярного выражения для поиска email
+    Regex email_regex = regex_compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+    
+    if (email_regex.is_valid) {
+        printf("Регулярное выражение для email скомпилировано успешно: %s\n\n", email_regex.pattern);
+        
+        // Тестовая строка
+        const char* test_text = "Контактные данные: john@example.com, alice@domain.org и bob@test.co.uk";
+        printf("Тестовая строка: %s\n\n", test_text);
+        
+        // Проверка сопоставления всей строки (для простых случаев)
+        const char* full_match_test = "john@example.com";
+        printf("Проверка сопоставления всей строки '%s': %s\n", 
+               full_match_test, regex_match(&email_regex, full_match_test) ? "совпало" : "не совпало");
+        
+        // Поиск совпадений в строке
+        RegexMatch matches = regex_search(&email_regex, test_text);
+        printf("\nРезультаты поиска в строке:\n");
+        regex_match_print(&matches);
+        
+        // Замена email'ов на [EMAIL]
+        char* replaced = regex_replace(&email_regex, test_text, "[EMAIL]");
+        printf("\nСтрока после замены: %s\n", replaced);
+        free(replaced);
+    } else {
+        printf("Ошибка компиляции регулярного выражения\n");
+    }
+    
+    regex_free(&email_regex);
+    
+    // Пример с числовым шаблоном
+    printf("\n--- Пример с числовым шаблоном ---\n");
+    Regex number_regex = regex_compile("\\d+");
+    
+    if (number_regex.is_valid) {
+        const char* num_text = "У меня есть 12 яблок, 5 апельсинов и 1 вишня";
+        printf("Тестовая строка: %s\n", num_text);
+        
+        RegexMatch num_matches = regex_search(&number_regex, num_text);
+        printf("Результаты поиска чисел:\n");
+        regex_match_print(&num_matches);
+        
+        char* num_replaced = regex_replace(&number_regex, num_text, "[NUMBER]");
+        printf("Строка после замены чисел: %s\n", num_replaced);
+        free(num_replaced);
+    }
+    
+    regex_free(&number_regex);
+    
+    // Пример с шаблоном слов
+    printf("\n--- Пример с шаблоном слов ---\n");
+    Regex word_regex = regex_compile("\\b[a-zA-Z]+\\b");
+    
+    if (word_regex.is_valid) {
+        const char* word_text = "Hello world 123 test 456 end";
+        printf("Тестовая строка: %s\n", word_text);
+        
+        RegexMatch word_matches = regex_search(&word_regex, word_text);
+        printf("Результаты поиска слов:\n");
+        regex_match_print(&word_matches);
+        
+        char* word_replaced = regex_replace(&word_regex, word_text, "[WORD]");
+        printf("Строка после замены слов: %s\n", word_replaced);
+        free(word_replaced);
+    }
+    
+    regex_free(&word_regex);
+    
+    printf("\nДемонстрация завершена\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

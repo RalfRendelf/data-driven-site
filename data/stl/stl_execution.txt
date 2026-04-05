@@ -1,0 +1,259 @@
+<h2>std::execution</h2>
+
+<p><strong>Категория:</strong> Алгоритмы</p>
+
+<h3>Описание</h3>
+<p>std::execution - это namespace, включающий политики выполнения для алгоритмов STL. Политики выполнения позволяют явно указать, как должны выполняться алгоритмы: последовательно, параллельно или параллельно с векторизацией. Введены в C++17.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++17</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::execution:</p>
+
+<pre>
+<code>
+// Пример использования std::execution на C++
+
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;execution&gt;
+#include &lt;numeric&gt;
+#include &lt;chrono&gt;
+#include &lt;thread&gt;
+
+int main() {
+    const size_t SIZE = 10000000;
+    std::vector&lt;double&gt; data(SIZE);
+    
+    // Заполняем вектор значениями
+    std::iota(data.begin(), data.end(), 1.0);
+    
+    // Последовательное выполнение
+    auto start = std::chrono::high_resolution_clock::now();
+    auto seq_result = std::reduce(std::execution::seq, data.begin(), data.end(), 0.0);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto seq_duration = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end - start);
+    
+    std::cout << "Sequential execution result: " << seq_result << std::endl;
+    std::cout << "Sequential execution time: " << seq_duration.count() << " microseconds" << std::endl;
+    
+    // Параллельное выполнение
+    start = std::chrono::high_resolution_clock::now();
+    auto par_result = std::reduce(std::execution::par, data.begin(), data.end(), 0.0);
+    end = std::chrono::high_resolution_clock::now();
+    auto par_duration = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end - start);
+    
+    std::cout << "Parallel execution result: " << par_result << std::endl;
+    std::cout << "Parallel execution time: " << par_duration.count() << " microseconds" << std::endl;
+    
+    // Параллельное выполнение с векторизацией
+    start = std::chrono::high_resolution_clock::now();
+    auto par_vec_result = std::reduce(std::execution::par_unseq, data.begin(), data.end(), 0.0);
+    end = std::chrono::high_resolution_clock::now();
+    auto par_vec_duration = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(end - start);
+    
+    std::cout << "Parallel vectorized execution result: " << par_vec_result << std::endl;
+    std::cout << "Parallel vectorized execution time: " << par_vec_duration.count() << " microseconds" << std::endl;
+    
+    // Пример использования других алгоритмов с политиками выполнения
+    std::vector&lt;int&gt; numbers(SIZE);
+    std::iota(numbers.begin(), numbers.end(), 1);
+    
+    // Умножение всех элементов на 2 с использованием transform с параллельной политикой
+    std::transform(std::execution::par, numbers.begin(), numbers.end(), numbers.begin(),
+                   [](int n) { return n * 2; });
+    
+    // Подсчет четных чисел с использованием count_if с параллельной политикой
+    auto even_count = std::count_if(std::execution::par, numbers.begin(), numbers.end(),
+                                    [](int n) { return n % 2 == 0; });
+    
+    std::cout << "Count of even numbers: " << even_count << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o execution_example execution_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+#include &lt;sys/time.h&gt;
+
+#ifdef _OPENMP
+#include &lt;omp.h&gt;
+#endif
+
+// Структура для имитации политик выполнения
+typedef enum {
+    EXEC_SEQ,    // Последовательное выполнение
+    EXEC_PAR,    // Параллельное выполнение
+    EXEC_PAR_VEC // Параллельное выполнение с векторизацией
+} ExecutionPolicy;
+
+// Функция для получения времени в микросекундах
+long long get_time_usec() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
+
+// Последовательное суммирование
+double reduce_seq(double* data, size_t size) {
+    double sum = 0.0;
+    for (size_t i = 0; i < size; i++) {
+        sum += data[i];
+    }
+    return sum;
+}
+
+// Параллельное суммирование (используя OpenMP если доступно)
+double reduce_par(double* data, size_t size) {
+    double sum = 0.0;
+    
+#ifdef _OPENMP
+    #pragma omp parallel for reduction(+:sum)
+#endif
+    for (int i = 0; i < size; i++) {
+        sum += data[i];
+    }
+    
+    return sum;
+}
+
+// Умножение элементов на 2 с использованием политики выполнения
+void transform_multiply_by_2(double* data, size_t size, ExecutionPolicy policy) {
+    switch(policy) {
+        case EXEC_SEQ:
+            for (size_t i = 0; i < size; i++) {
+                data[i] *= 2;
+            }
+            break;
+        case EXEC_PAR:
+#ifdef _OPENMP
+            #pragma omp parallel for
+#endif
+            for (int i = 0; i < size; i++) {
+                data[i] *= 2;
+            }
+            break;
+        case EXEC_PAR_VEC:
+#ifdef _OPENMP
+            #pragma omp parallel for simd
+#endif
+            for (int i = 0; i < size; i++) {
+                data[i] *= 2;
+            }
+            break;
+    }
+}
+
+// Подсчет четных чисел с использованием политики выполнения
+int count_even(double* data, size_t size, ExecutionPolicy policy) {
+    int count = 0;
+    
+    switch(policy) {
+        case EXEC_SEQ:
+            for (size_t i = 0; i < size; i++) {
+                if ((int)data[i] % 2 == 0) {
+                    count++;
+                }
+            }
+            break;
+        case EXEC_PAR:
+#ifdef _OPENMP
+            #pragma omp parallel for reduction(+:count)
+#endif
+            for (int i = 0; i < size; i++) {
+                if ((int)data[i] % 2 == 0) {
+                    count++;
+                }
+            }
+            break;
+        case EXEC_PAR_VEC:
+#ifdef _OPENMP
+            #pragma omp parallel for simd reduction(+:count)
+#endif
+            for (int i = 0; i < size; i++) {
+                if ((int)data[i] % 2 == 0) {
+                    count++;
+                }
+            }
+            break;
+    }
+    
+    return count;
+}
+
+// Функция для заполнения массива последовательными значениями
+void iota_fill(double* data, size_t size, double start) {
+    for (size_t i = 0; i < size; i++) {
+        data[i] = start + i;
+    }
+}
+
+// Пример использования
+int main() {
+    const size_t SIZE = 10000000;
+    double* data = malloc(SIZE * sizeof(double));
+    
+    if (!data) {
+        fprintf(stderr, "Ошибка выделения памяти\n");
+        return 1;
+    }
+    
+    // Заполняем массив значениями
+    iota_fill(data, SIZE, 1.0);
+    
+    // Последовательное выполнение
+    long long start = get_time_usec();
+    double seq_result = reduce_seq(data, SIZE);
+    long long end = get_time_usec();
+    long long seq_duration = end - start;
+    
+    printf("Sequential execution result: %.2f\n", seq_result);
+    printf("Sequential execution time: %lld microseconds\n", seq_duration);
+    
+    // Заполняем массив заново для следующего теста
+    iota_fill(data, SIZE, 1.0);
+    
+    // Параллельное выполнение
+    start = get_time_usec();
+    double par_result = reduce_par(data, SIZE);
+    end = get_time_usec();
+    long long par_duration = end - start;
+    
+    printf("Parallel execution result: %.2f\n", par_result);
+    printf("Parallel execution time: %lld microseconds\n", par_duration);
+    
+    // Тестирование других алгоритмов с политиками выполнения
+    double* numbers = malloc(SIZE * sizeof(double));
+    iota_fill(numbers, SIZE, 1.0);
+    
+    // Умножение всех элементов на 2 с использованием параллельной политики
+    transform_multiply_by_2(numbers, SIZE, EXEC_PAR);
+    
+    // Подсчет четных чисел с использованием параллельной политики
+    int even_count = count_even(numbers, SIZE, EXEC_PAR);
+    printf("Count of even numbers: %d\n", even_count);
+    
+    // Освобождаем память
+    free(data);
+    free(numbers);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

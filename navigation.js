@@ -24,8 +24,47 @@ export function initSectionToggle() {
           const txt = await fetch(`data/${row.dataset.file}`).then(r => r.text());
           div.innerHTML = txt;
           div.dataset.loaded = "true";
+          
+          // После загрузки контента добавляем кнопки для переключения видимости кода
+          addCodeVisibilityControls(div);
         } catch {
           div.textContent = "❌ Ошибка загрузки.";
+        }
+      });
+    });
+  }
+  
+  // Функция для добавления кнопок переключения видимости кода
+  function addCodeVisibilityControls(container) {
+    // Находим все блоки кода
+    const codeBlocks = container.querySelectorAll('pre');
+    
+    codeBlocks.forEach(block => {
+      // Создаем обертку для блока кода
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-container code-hidden';
+      
+      // Создаем кнопку для переключения видимости
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'show-code-btn';
+      toggleBtn.type = 'button';
+      
+      // Вставляем кнопку перед блоком кода
+      block.parentNode.insertBefore(wrapper, block);
+      wrapper.appendChild(toggleBtn);
+      wrapper.appendChild(block);
+      
+      // Добавляем обработчик событий для кнопки
+      toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = wrapper.classList.contains('code-hidden');
+        
+        if (isHidden) {
+          wrapper.classList.remove('code-hidden');
+          wrapper.classList.add('code-visible');
+        } else {
+          wrapper.classList.remove('code-visible');
+          wrapper.classList.add('code-hidden');
         }
       });
     });
@@ -45,4 +84,3 @@ export function initSectionToggle() {
       });
     });
   }
-  

@@ -1,0 +1,248 @@
+<h2>Отладка и инструменты</h2>
+
+<p><strong>Категория:</strong> Инструменты разработки</p>
+
+<h3>Описание</h3>
+<p>Отладка и использование соответствующих инструментов являются ключевыми аспектами разработки на встраиваемых системах. Эффективное использование отладочных интерфейсов и инструментов помогает быстро находить и устранять проблемы в коде, анализировать производительность и поведение системы.</p>
+
+<h3>SWD / JTAG:</h3>
+<p>Serial Wire Debug (SWD) и Joint Test Action Group (JTAG) - это физические интерфейсы, используемые для отладки микроконтроллеров. SWD - это двухпроводной интерфейс (SWDIO и SWCLK), разработанный ARM для отладки микроконтроллеров, в то время как JTAG - более старый стандарт с большей функциональностью.</p>
+
+<h4>SWD:</h4>
+<ul>
+<li>Использует только 2 провода: SWDIO (двунаправленный) и SWCLK (тактовый сигнал)</li>
+<li>Требует меньше выводов по сравнению с JTAG</li>
+<li>Обеспечивает более быструю передачу данных</li>
+<li>Поддерживается большинством современных ARM-микроконтроллеров</li>
+</ul>
+
+<h4>JTAG:</h4>
+<ul>
+<li>Использует 4 основных контакта: TDI, TDO, TCK, TMS (плюс TRST)</li>
+<li>Позволяет программировать, тестировать и отлаживать устройства</li>
+<li>Поддерживает цепочку устройств (daisy-chaining)</li>
+<li>Более сложный, но многофункциональный интерфейс</li>
+</ul>
+
+<h3>GDB (GNU Debugger):</h3>
+<p>GNU Debugger - мощный инструмент для отладки программ, работающих на встроенных системах. Может использоваться совместно с OpenOCD и отладочными адаптерами.</p>
+
+<pre>
+<code>
+# Пример запуска GDB для ARM-микроконтроллера
+arm-none-eabi-gdb firmware.elf
+
+# Подключение к OpenOCD серверу
+(gdb) target remote localhost:3333
+
+# Загрузка прошивки в микроконтроллер
+(gdb) load
+
+# Установка точек останова
+(gdb) break main
+(gdb) break function_name
+
+# Запуск выполнения
+(gdb) continue
+
+# Печать значений переменных
+(gdb) print variable_name
+
+# Печать содержимого памяти
+(gdb) x/10wx address
+
+# Пошаговое выполнение
+(gdb) step
+(gdb) next
+</code>
+</pre>
+
+<h3>OpenOCD (Open On-Chip Debugger):</h3>
+<p>OpenOCD - это программное обеспечение, которое обеспечивает отладку, программирование и проверку устройств с помощью интерфейсов SWD/JTAG. Поддерживает множество отладочных адаптеров и микроконтроллеров.</p>
+
+<pre>
+<code>
+# Пример запуска OpenOCD
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+
+# Пример конфигурационного файла для ST-Link и STM32F4
+# файл: board_config.cfg
+source [find interface/stlink.cfg]
+transport select hla_swd
+source [find target/stm32f4x.cfg]
+reset_config none
+</code>
+</pre>
+
+<h3>ST-Link / J-Link:</h3>
+<p>ST-Link и J-Link - это аппаратные отладчики, обеспечивающие соединение между ПК и микроконтроллером.</p>
+
+<h4>ST-Link:</h4>
+<ul>
+<li>Отладчик от компании STMicroelectronics</li>
+<li>Встроен в большинство отладочных плат STM32</li>
+<li>Поддерживает SWD интерфейс</li>
+<li>Совместим с OpenOCD и GDB</li>
+</ul>
+
+<h4>J-Link:</h4>
+<ul>
+<li>Отладчики от компании SEGGER</li>
+<li>Поддерживают широкий спектр архитектур</li>
+<li>Быстрый интерфейс программирования</li>
+<li>Поддержка RTT (Real Time Transfer)</li>
+</ul>
+
+<h3>RTT / SWO / ITM:</h3>
+<p>Эти интерфейсы позволяют передавать отладочную информацию без прерывания выполнения программы.</p>
+
+<h4>RTT (Real Time Transfer):</h4>
+<p>Технология SEGGER, позволяющая передавать данные между отлаживаемой системой и хостом в реальном времени через отладочный канал.</p>
+
+<pre>
+<code>
+// Использование RTT в коде (требует библиотеки SEGGER)
+#include "SEGGER_RTT.h"
+
+int main(void) {
+    SEGGER_RTT_Init();
+    
+    while(1) {
+        // Отправка данных через RTT
+        SEGGER_RTT_printf(0, "Counter: %d\r\n", counter++);
+        HAL_Delay(1000);
+    }
+}
+</code>
+</pre>
+
+<h4>SWO (Single Wire Output):</h4>
+<p>Однопроводной вывод отладочной информации от ARM-процессоров Cortex-M. Часть ETM (Embedded Trace Macrocell).</p>
+
+<h4>ITM (Instrumentation Trace Macrocell):</h4>
+<p>Модуль трассировки, позволяющий отправлять сообщения через SWO.</p>
+
+<pre>
+<code>
+// Использование ITM для вывода отладочной информации
+void ITM_SendStr(const char *str) {
+    while (*str) {
+        // Отправка символа через ITM Stimulus Port 0
+        ITM_Port32(0) = *str++;
+    }
+}
+
+int main(void) {
+    // Инициализация SWO на 1.8MHz при тактовой частоте 72MHz
+    // DIV = (72MHz / 1.8MHz) - 1 = 39
+    DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP;
+    DBGMCU->CR |= DBGMCU_APB2_FZ_DBG_TIM1_STOP;
+    
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    *((volatile unsigned int*)0xE0042004) = 0x00000023; // TPI->ACPR
+    *((volatile unsigned int*)0xE0042000) = 0x400003FE; // TPI->SPPR
+    *((volatile unsigned int*)0xE00400F0) = 0x00000002; // DWT->CTRL
+    
+    while(1) {
+        ITM_SendStr("Hello via SWO\r\n");
+        HAL_Delay(1000);
+    }
+}
+</code>
+</pre>
+
+<h3>Logic Analyzer:</h3>
+<p>Логические анализаторы позволяют отслеживать и анализировать цифровые сигналы, такие как SPI, I2C, UART. Это незаменимый инструмент для отладки протоколов связи и синхронизации.</p>
+
+<ul>
+<li>Позволяет визуализировать временные диаграммы сигналов</li>
+<li>Декодирует протоколы (I2C, SPI, UART и др.)</li>
+<li>Помогает находить ошибки синхронизации и установки таймингов</li>
+<li>Может быть аппаратным или программным решением (например, Saleae Logic, PulseView)</li>
+</ul>
+
+<h3>UART-логирование:</h3>
+<p>Простой, но эффективный способ вывода отладочной информации через UART-интерфейс.</p>
+
+<pre>
+<code>
+// Пример UART-логирования
+#include "stm32f4xx_hal.h"
+
+UART_HandleTypeDef huart2;
+
+void debug_log(const char* fmt, ...) {
+    char buffer[256];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+    
+    HAL_UART_Transmit(&huart2, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USART2_UART_Init();
+    
+    debug_log("Система запущена\r\n");
+    
+    while(1) {
+        debug_log("Температура: %.2f°C\r\n", get_temperature());
+        HAL_Delay(1000);
+    }
+}
+</code>
+</pre>
+
+<h3>Профилирование (перформанс-счётчики):</h3>
+<p>Для анализа производительности используются встроенные счетчики производительности в ARM Cortex-M.</p>
+
+<pre>
+<code>
+// Использование встроенных счетчиков производительности
+#include "core_cm4.h"
+
+// Инициализация DWT (Data Watchpoint and Trace)
+void DWT_Init(void) {
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;   // Включить трассировку
+    DWT->CYCCNT = 0;                                  // Сбросить счетчик
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;              // Включить счетчик циклов
+}
+
+// Получить количество прошедших циклов
+uint32_t get_cycle_count(void) {
+    return DWT->CYCCNT;
+}
+
+// Пример использования
+int main(void) {
+    DWT_Init();
+    
+    uint32_t start_cycles = get_cycle_count();
+    
+    // Код, время выполнения которого нужно измерить
+    perform_task();
+    
+    uint32_t end_cycles = get_cycle_count();
+    uint32_t elapsed_cycles = end_cycles - start_cycles;
+    
+    debug_log("Время выполнения: %lu циклов\r\n", elapsed_cycles);
+    
+    while(1) {
+        // Основной цикл
+    }
+}
+</code>
+</pre>
+
+<h3>Рекомендации по использованию отладочных инструментов:</h3>
+<ul>
+<li>Используйте SWO/RTT вместо UART для отладочного вывода, когда важно сохранить периферию</li>
+<li>Применяйте логический анализатор для отладки протоколов связи</li>
+<li>Используйте GDB с точками останова и просмотром переменных</li>
+<li>Профилируйте код для оптимизации производительности</li>
+<li>Используйте разные типы точек останова (hardware breakpoints) для более точной отладки</li>
+</ul>

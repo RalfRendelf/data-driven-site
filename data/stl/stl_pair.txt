@@ -1,0 +1,147 @@
+<h2>std::pair</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::pair - это класс шаблона, который позволяет хранить два элемента разных типов. Это упрощенная версия std::tuple с фиксированным количеством элементов. Пара состоит из двух частей: first и second.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98 (std::pair), C++11 (make_pair с move семантикой)</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::pair:</p>
+
+<pre>
+<code>
+// Пример использования std::pair на C++
+
+#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;string&gt;
+#include &lt;map&gt;
+
+int main() {
+    // Создание pair
+    std::pair&lt;int, std::string&gt; p1(10, "Example");
+    
+    // Создание с помощью make_pair
+    auto p2 = std::make_pair(20, std::string("Test"));
+    
+    // Доступ к элементам через .first и .second
+    std::cout << "First element: " << p1.first << std::endl;
+    std::cout << "Second element: " << p1.second << std::endl;
+    
+    // Изменение значений
+    p1.first = 100;
+    p1.second = "Modified";
+    std::cout << "Modified pair: " << p1.first << ", " << p1.second << std::endl;
+    
+    // Использование pair в контейнерах
+    std::map&lt;int, std::string&gt; m;
+    m.insert(std::make_pair(1, "One"));
+    m.insert(std::make_pair(2, "Two"));
+    
+    for(const auto&amp; item : m) {
+        std::cout << item.first << " -> " << item.second << std::endl;
+    }
+    
+    // Использование structured bindings (C++17)
+#ifdef __cplusplus >= 201703L
+    auto [key, value] = p2;
+    std::cout << "Structured binding: " << key << ", " << value << std::endl;
+#endif
+    
+    // Использование std::tie
+    int a;
+    std::string b;
+    std::tie(a, b) = p2;
+    std::cout << "Tied values: " << a << ", " << b << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o pair_example pair_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура, аналогичная std::pair
+typedef struct {
+    int first;
+    char* second;
+} PairIntString;
+
+// Функция для создания pair
+PairIntString make_pair_int_string(int first, const char* second) {
+    PairIntString p;
+    p.first = first;
+    p.second = malloc(strlen(second) + 1);
+    strcpy(p.second, second);
+    return p;
+}
+
+// Функция для освобождения памяти
+void destroy_pair(PairIntString* p) {
+    if (p && p->second) {
+        free(p->second);
+        p->second = NULL;
+    }
+}
+
+// Функция для получения первого элемента
+int get_first(PairIntString* p) {
+    return p ? p->first : 0;
+}
+
+// Функция для получения второго элемента
+char* get_second(PairIntString* p) {
+    return p ? p->second : NULL;
+}
+
+// Функция для изменения первого элемента
+void set_first(PairIntString* p, int value) {
+    if (p) p->first = value;
+}
+
+// Функция для изменения второго элемента
+void set_second(PairIntString* p, const char* value) {
+    if (p && p->second) {
+        free(p->second);
+        p->second = malloc(strlen(value) + 1);
+        strcpy(p->second, value);
+    }
+}
+
+// Пример использования
+int main() {
+    // Создание pair
+    PairIntString p1 = make_pair_int_string(10, "Example");
+    
+    // Доступ к элементам
+    printf("First element: %d\n", get_first(&p1));
+    printf("Second element: %s\n", get_second(&p1));
+    
+    // Изменение значений
+    set_first(&p1, 100);
+    set_second(&p1, "Modified");
+    printf("Modified pair: %d, %s\n", get_first(&p1), get_second(&p1));
+    
+    // Освобождение памяти
+    destroy_pair(&p1);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

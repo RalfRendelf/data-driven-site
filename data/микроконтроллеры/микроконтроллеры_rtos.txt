@@ -1,0 +1,375 @@
+<h2>Реализация RTOS на микроконтроллерах</h2>
+
+<p><strong>Категория:</strong> Программирование</p>
+
+<h3>Описание</h3>
+<p>RTOS (Real-Time Operating System) - это операционная система реального времени, которая позволяет управлять задачами на микроконтроллере с определенными гарантиями по времени выполнения. RTOS особенно важна в приложениях, где необходимо точно контролировать время выполнения задач, управлять многозадачностью и синхронизировать выполнение различных операций.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>Вытесняющая многозадачность с приоритетами</li>
+<li>Ограниченное время переключения задач</li>
+<li>Средства синхронизации и коммуникации между задачами</li>
+<li>Поддержка таймеров, семафоров, мьютексов</li>
+<li>Оптимизация потребления энергии</li>
+</ul>
+
+<h3>Пример реализации на FreeRTOS:</h3>
+
+<pre>
+<code>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "stm32f4xx_hal.h"
+
+// Определение задач
+TaskHandle_t Task1_Handle = NULL;
+TaskHandle_t Task2_Handle = NULL;
+TaskHandle_t Task3_Handle = NULL;
+
+// Определение семафора
+SemaphoreHandle_t xBinarySemaphore = NULL;
+
+// Задача 1: мигание светодиодом
+void Task1_BlinkLED(void *pvParameters) {
+    while(1) {
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Переключить светодиод
+        vTaskDelay(pdMS_TO_TICKS(500));         // Задержка 500 мс
+    }
+}
+
+// Задача 2: обработка кнопки
+void Task2_ButtonHandler(void *pvParameters) {
+    while(1) {
+        if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) {
+            // Кнопка нажата - отправить сигнал через семафор
+            xSemaphoreGive(xBinarySemaphore);
+            // Долгое время ожидания, чтобы избежать повторных срабатываний
+            vTaskDelay(pdMS_TO_TICKS(200));
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));  // Проверка каждые 10мс
+    }
+}
+
+// Задача 3: обработка сигнала от кнопки
+void Task3_ButtonAction(void *pvParameters) {
+    while(1) {
+        if(xSemaphoreTake(xBinarySemaphore, portMAX_DELAY) == pdTRUE) {
+            // Действие при нажатии кнопки
+            HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);  // Переключить другой светодиод
+        }
+    }
+}
+
+int main(void) {
+    // Инициализация HAL
+    HAL_Init();
+    SystemClock_Config();
+
+    // Настройка GPIO
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    
+    // Настроить PA5 и PB0 как светодиоды
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Настроить PC13 как кнопку (встроенный pull-up)
+    GPIO_InitStruct.Pin = GPIO_PIN_13;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    // Создать бинарный семафор
+    xBinarySemaphore = xSemaphoreCreateBinary();
+    if(xBinarySemaphore == NULL) {
+        // Обработка ошибки
+        while(1);
+    }
+
+    // Создать задачи
+    BaseType_t result1 = xTaskCreate(
+        Task1_BlinkLED,
+        "Task1",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_TASK_PRIO + 1,
+        &Task1_Handle
+    );
+
+    BaseType_t result2 = xTaskCreate(
+        Task2_ButtonHandler,
+        "Task2",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_TASK_PRIO + 2,
+        &Task2_Handle
+    );
+    
+    BaseType_t result3 = xTaskCreate(
+        Task3_ButtonAction,
+        "Task3",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_TASK_PRIO + 1,
+        &Task3_Handle
+    );
+
+    if(result1 != pdPASS || result2 != pdPASS || result3 != pdPASS) {
+        // Обработка ошибки создания задач
+        while(1);
+    }
+
+    // Запустить планировщик
+    vTaskStartScheduler();
+
+    // Если выполнение дошло до этой точки, значит произошла ошибка
+    while(1) {
+        // Ошибка: планировщик не запустился
+    }
+}
+
+// Обработчик системного таймера - необходим для FreeRTOS
+void SysTick_Handler(void) {
+    HAL_IncTick();
+    if(xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+        xPortSysTickHandler();
+    }
+}
+
+// Обязательная функция для FreeRTOS
+void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName) {
+    // Обработка переполнения стека
+    while(1) {
+        // Мигнуть светодиодом или выполнить другое действие
+    }
+}
+</code>
+</pre>
+
+<h3>Пример использования очередей в RTOS:</h3>
+
+<pre>
+<code>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+QueueHandle_t xQueue = NULL;
+
+// Задача отправителя
+void SenderTask(void *pvParameters) {
+    uint32_t ulValueToSend = 0;
+    
+    while(1) {
+        // Отправить значение в очередь
+        if(xQueueSend(xQueue, &ulValueToSend, 0) != pdPASS) {
+            // Очередь заполнена
+        }
+        
+        ulValueToSend++;
+        
+        // Задержка перед следующей отправкой
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+// Задача получателя
+void ReceiverTask(void *pvParameters) {
+    uint32_t ulReceivedValue;
+    
+    while(1) {
+        if(xQueueReceive(xQueue, &ulReceivedValue, portMAX_DELAY) == pdPASS) {
+            // Обработать полученное значение
+            // Например, вывести на дисплей или выполнить вычисления
+        }
+    }
+}
+
+int main(void) {
+    // Инициализация оборудования
+    
+    // Создать очередь на 5 элементов по 4 байта каждый
+    xQueue = xQueueCreate(5, sizeof(uint32_t));
+    if(xQueue == NULL) {
+        // Обработка ошибки
+        while(1);
+    }
+
+    // Создать задачи
+    xTaskCreate(SenderTask, "Sender", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(ReceiverTask, "Receiver", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+
+    // Запустить планировщик
+    vTaskStartScheduler();
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>FreeRTOS задачи (Tasks)</h3>
+<p>Задачи в FreeRTOS представляют собой независимые потоки выполнения. Каждая задача имеет свой собственный стек и контекст выполнения. Задачи создаются с помощью функции <code>xTaskCreate()</code> и могут иметь различные приоритеты. Планировщик FreeRTOS управляет выполнением задач в зависимости от их приоритетов и состояния.</p>
+
+<h3>Очереди, семафоры и мьютексы</h3>
+<p>FreeRTOS предоставляет механизмы синхронизации и обмена данными между задачами:</p>
+<ul>
+<li><strong>Очереди</strong> - используются для передачи данных между задачами или между задачами и прерываниями</li>
+<li><strong>Бинарные семафоры</strong> - используются для синхронизации событий или взаимодействия между задачами</li>
+<li><strong>Счетные семафоры</strong> - используются для контроля доступа к пулу ресурсов</li>
+<li><strong>Мьютексы</strong> - обеспечивают исключительный доступ к ресурсам, предотвращая гонки условий</li>
+<li><strong>Рекурсивные мьютексы</strong> - позволяют одной задаче захватывать мьютекс несколько раз</li>
+</ul>
+
+<h3>Таймеры в FreeRTOS</h3>
+<p>FreeRTOS включает в себя программные таймеры, которые позволяют выполнять функции с задержкой или с интервалом. Таймеры реализуются в рамках одной задачи, что позволяет использовать меньше ресурсов:</p>
+
+<pre>
+<code>
+#include "FreeRTOS.h"
+#include "timers.h"
+
+TimerHandle_t xTimer = NULL;
+
+void vTimerCallback(TimerHandle_t xTimer) {
+    // Этот код будет выполнен по истечении таймера
+    // Обработка события таймера
+}
+
+void SetupTimer(void) {
+    // Создать периодический таймер на 1 секунду
+    xTimer = xTimerCreate(
+        "Timer1",                  // Имя таймера
+        pdMS_TO_TICKS(1000),       // Период в тиках
+        pdTRUE,                    // Автоматическая перезагрузка
+        (void *)0,                 // ID таймера
+        vTimerCallback             // Функция обратного вызова
+    );
+    
+    if(xTimer != NULL) {
+        xTimerStart(xTimer, 0);   // Запустить таймер
+    }
+}
+</code>
+</pre>
+
+<h3>Планировщик в FreeRTOS</h3>
+<p>Планировщик FreeRTOS определяет, какая задача будет выполняться в данный момент. Он использует вытесняющую многозадачность с приоритетами. Каждая задача имеет приоритет, и планировщик всегда выбирает задачу с наивысшим приоритетом, которая готова к выполнению. Если несколько задач имеют одинаковый приоритет, они выполняются поочередно в соответствии с квантами времени.</p>
+<ul>
+<li>Планировщик переключает контекст между задачами</li>
+<li>Поддерживает список задач в различных состояниях (готов, исполнение, заблокирован, приостановлен)</li>
+<li>Обрабатывает прерывания системного таймера для переключения задач</li>
+<li>Выполняет переключение контекста при вызове API-функций (например, при ожидании семафора)</li>
+</ul>
+
+<h3>ISR (Прерывания) и FreeRTOS API</h3>
+<p>В обработчиках прерываний нельзя использовать обычные функции FreeRTOS, но есть специальные версии функций, заканчивающиеся на "FromISR". Эти функции предназначены для использования в контексте прерываний:</p>
+
+<pre>
+<code>
+#include "FreeRTOS.h"
+#include "queue.h"
+
+QueueHandle_t xQueue;
+
+void vAnInterruptServiceRoutine(void) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    int32_t lValueToSend = 10;
+
+    // Отправить в очередь из обработчика прерывания
+    xQueueSendFromISR(
+        xQueue, 
+        &lValueToSend, 
+        &xHigherPriorityTaskWoken
+    );
+
+    // Если xHigherPriorityTaskWoken теперь равен pdTRUE,
+    // то была разбужена задача с более высоким приоритетом
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
+</code>
+</pre>
+
+<h3>Управление памятью (Memory Management)</h3>
+<p>FreeRTOS предоставляет 5 различных схем управления динамической памятью (heap_1.c - heap_5.c). Каждая схема реализует функции <code>pvPortMalloc()</code> и <code>vPortFree()</code>, аналогичные стандартным malloc() и free(), но адаптированные для встраиваемых систем:</p>
+
+<ul>
+<li><strong>heap_1</strong> - самая простая реализация, только выделение памяти, без освобождения. Размер блоков фиксированный.</li>
+<li><strong>heap_2</strong> - позволяет выделять и освобождать память, но без объединения соседних освобожденных блоков.</li>
+<li><strong>heap_3</strong> - просто обертка вокруг malloc и free стандартной библиотеки C (требует поддержки многопоточности).</li>
+<li><strong>heap_4</strong> - выделяет и освобождает память с объединением соседних освобожденных блоков. Обеспечивает защиту от переполнения.</li>
+<li><strong>heap_5</strong> - подобна heap_4, но позволяет использовать до 3-х различных областей памяти.</li>
+</ul>
+
+<h3>Пример настройки heap_4:</h3>
+
+<pre>
+<code>
+#include "FreeRTOS.h"
+
+// В файле FreeRTOSConfig.h
+#define configTOTAL_HEAP_SIZE 16384 // 16 КБ
+
+// В файле main.c
+static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
+
+void *pvPortMalloc(size_t xWantedSize) {
+    void *pvReturn = NULL;
+
+    vTaskSuspendAll();
+    {
+        pvReturn = heap_4_malloc(xWantedSize);
+    }
+    xTaskResumeAll();
+
+    return pvReturn;
+}
+
+void vPortFree(void *pv) {
+    if(pv) {
+        vTaskSuspendAll();
+        {
+            heap_4_free(pv);
+        }
+        xTaskResumeAll();
+    }
+}
+</code>
+</pre>
+
+<h3>Преимущества использования RTOS:</h3>
+<ul>
+<li>Лучшее разделение функций программы на независимые задачи</li>
+<li>Возможность установки приоритетов задачам</li>
+<li>Встроенные механизмы синхронизации и обмена данными</li>
+<li>Эффективное использование процессорного времени</li>
+<li>Поддержка таймеров и отложенного выполнения</li>
+</ul>
+
+<h3>Типичные компоненты RTOS:</h3>
+<ul>
+<li>Планировщик задач (Scheduler)</li>
+<li>Управление задачами (Task Management)</li>
+<li>Механизмы синхронизации (Semaphores, Mutexes, Events)</li>
+<li>Очереди сообщений (Message Queues)</li>
+<li>Таймеры (Timers)</li>
+<li>Управление памятью (Memory Management)</li>
+</ul>
+
+<h3>Рекомендации по использованию RTOS:</h3>
+<ul>
+<li>Тщательно выбирать размер стека для каждой задачи</li>
+<li>Избегать блокировки ресурсов на длительное время</li>
+<li>Использовать приоритеты задач для обеспечения требований по времени</li>
+<li>Избегать использования небезопасных функций в разных задачах</li>
+<li>Тестировать систему на предмет блокировок и голодания задач</li>
+</ul>

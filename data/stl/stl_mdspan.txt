@@ -1,0 +1,284 @@
+<h2>std::mdspan</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::mdspan - это класс, введенный в C++23, который предоставляет многомерное представление данных. Он позволяет работать с многомерными массивами данных без копирования, поддерживая произвольные layouts и extents. Это современная альтернатива C-массивам и gsl::span для многомерных данных.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++23</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::mdspan:</p>
+
+<pre>
+<code>
+// Пример использования std::mdspan на C++
+
+#include &lt;iostream&gt;
+#include &lt;mdspan&gt;
+#include &lt;vector&gt;
+#include &lt;array&gt;
+
+int main() {
+    // Создаем одномерный вектор данных
+    std::vector&lt;int&gt; data(24);  // 2 * 3 * 4 = 24 элемента
+    
+    // Заполняем данными
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = i + 1;
+    }
+    
+    // Создаем трехмерный mdspan 2x3x4
+    std::mdspan&lt;int, std::extents&lt;size_t, 2, 3, 4&gt;&gt; span_3d(
+        data.data()
+    );
+    
+    std::cout << "3D mdspan (2x3x4):" << std::endl;
+    for (size_t i = 0; i < 2; ++i) {
+        std::cout << "Layer " << i << ":" << std::endl;
+        for (size_t j = 0; j < 3; ++j) {
+            for (size_t k = 0; k < 4; ++k) {
+                std::cout << span_3d(i, j, k) << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    
+    // Создаем двумерный mdspan 4x6
+    std::mdspan&lt;int, std::extents&lt;size_t, 4, 6&gt;&gt; span_2d(
+        data.data()
+    );
+    
+    std::cout << "2D mdspan (4x6) с тех же данных:" << std::endl;
+    for (size_t i = 0; i < 4; ++i) {
+        for (size_t j = 0; j < 6; ++j) {
+            std::cout << span_2d(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+    
+    // Пример использования dynamic_extent
+    std::mdspan&lt;int, std::dextents&lt;size_t, 2&gt;&gt; dyn_span(
+        data.data(), 3, 8  // 3x8 динамический размер
+    );
+    
+    std::cout << "\nDynamic mdspan (3x8):" << std::endl;
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 8; ++j) {
+            std::cout << dyn_span(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+    
+    // Демонстрация получения подмассива
+    std::cout << "\nFirst row of 2D span:" << std::endl;
+    for (size_t j = 0; j < 6; ++j) {
+        std::cout << span_2d(0, j) << " ";
+    }
+    std::cout << std::endl;
+    
+    // Размеры
+    std::cout << "\nExtents:" << std::endl;
+    std::cout << "span_3d.extent(0) = " << span_3d.extent(0) << std::endl;
+    std::cout << "span_3d.extent(1) = " << span_3d.extent(1) << std::endl;
+    std::cout << "span_3d.extent(2) = " << span_3d.extent(2) << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o mdspan_example mdspan_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Структура для имитации mdspan
+typedef struct {
+    int* data;
+    size_t* extents;
+    size_t rank;  // количество измерений
+} MDArray;
+
+// Функция для создания многомерного массива
+MDArray* create_md_array(size_t* dimensions, size_t rank) {
+    MDArray* arr = malloc(sizeof(MDArray));
+    arr->rank = rank;
+    arr->extents = malloc(rank * sizeof(size_t));
+    
+    // Копируем размерности
+    for (size_t i = 0; i < rank; i++) {
+        arr->extents[i] = dimensions[i];
+    }
+    
+    // Вычисляем общий размер
+    size_t total_size = 1;
+    for (size_t i = 0; i < rank; i++) {
+        total_size *= dimensions[i];
+    }
+    
+    // Выделяем память
+    arr->data = malloc(total_size * sizeof(int));
+    
+    // Инициализируем нулями
+    for (size_t i = 0; i < total_size; i++) {
+        arr->data[i] = 0;
+    }
+    
+    return arr;
+}
+
+// Функция для освобождения многомерного массива
+void destroy_md_array(MDArray* arr) {
+    if (arr) {
+        if (arr->data) {
+            free(arr->data);
+        }
+        if (arr->extents) {
+            free(arr->extents);
+        }
+        free(arr);
+    }
+}
+
+// Вычисление линейного индекса из многомерного
+size_t compute_index(MDArray* arr, size_t* indices) {
+    size_t linear_index = 0;
+    size_t multiplier = 1;
+    
+    // Вычисляем индекс в линейном массиве
+    for (int i = arr->rank - 1; i >= 0; i--) {
+        linear_index += indices[i] * multiplier;
+        multiplier *= arr->extents[i];
+    }
+    
+    return linear_index;
+}
+
+// Получение значения по многомерному индексу
+int get_value(MDArray* arr, size_t* indices) {
+    size_t linear_index = compute_index(arr, indices);
+    return arr->data[linear_index];
+}
+
+// Установка значения по многомерному индексу
+void set_value(MDArray* arr, size_t* indices, int value) {
+    size_t linear_index = compute_index(arr, indices);
+    arr->data[linear_index] = value;
+}
+
+// Заполнение по порядку
+void fill_sequentially(MDArray* arr) {
+    size_t total_size = 1;
+    for (size_t i = 0; i < arr->rank; i++) {
+        total_size *= arr->extents[i];
+    }
+    
+    for (size_t i = 0; i < total_size; i++) {
+        arr->data[i] = i + 1;
+    }
+}
+
+// Печать многомерного массива (для 3D случая)
+void print_3d_array(MDArray* arr) {
+    if (arr->rank != 3) {
+        printf("Эта функция работает только с 3D массивами\n");
+        return;
+    }
+    
+    for (size_t i = 0; i < arr->extents[0]; i++) {
+        printf("Layer %zu:\n", i);
+        for (size_t j = 0; j < arr->extents[1]; j++) {
+            for (size_t k = 0; k < arr->extents[2]; k++) {
+                size_t indices[3] = {i, j, k};
+                printf("%2d ", get_value(arr, indices));
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+}
+
+// Печать двумерного массива
+void print_2d_array(MDArray* arr) {
+    if (arr->rank != 2) {
+        printf("Эта функция работает только с 2D массивами\n");
+        return;
+    }
+    
+    for (size_t i = 0; i < arr->extents[0]; i++) {
+        for (size_t j = 0; j < arr->extents[1]; j++) {
+            size_t indices[2] = {i, j};
+            printf("%2d ", get_value(arr, indices));
+        }
+        printf("\n");
+    }
+}
+
+// Пример использования
+int main() {
+    // Создаем 3D массив размером 2x3x4
+    size_t dims_3d[] = {2, 3, 4};
+    MDArray* array_3d = create_md_array(dims_3d, 3);
+    
+    // Заполняем последовательными значениями
+    fill_sequentially(array_3d);
+    
+    printf("3D mdspan (2x3x4):\n");
+    print_3d_array(array_3d);
+    
+    // Создаем 2D массив размером 4x6 из тех же данных
+    size_t dims_2d[] = {4, 6};
+    MDArray* array_2d = create_md_array(dims_2d, 2);
+    
+    // Копируем данные из 3D массива в 2D
+    size_t total_size_3d = 1;
+    for (size_t i = 0; i < array_3d->rank; i++) {
+        total_size_3d *= array_3d->extents[i];
+    }
+    
+    size_t total_size_2d = 1;
+    for (size_t i = 0; i < array_2d->rank; i++) {
+        total_size_2d *= array_2d->extents[i];
+    }
+    
+    size_t copy_size = (total_size_3d < total_size_2d) ? total_size_3d : total_size_2d;
+    for (size_t i = 0; i < copy_size; i++) {
+        array_2d->data[i] = array_3d->data[i];
+    }
+    
+    printf("2D mdspan (4x6) с тех же данных:\n");
+    print_2d_array(array_2d);
+    
+    // Демонстрация доступа к элементам
+    printf("\nДоступ к элементам:\n");
+    size_t indices[3] = {1, 2, 3};
+    printf("array_3d[1][2][3] = %d\n", get_value(array_3d, indices));
+    
+    // Изменение значения
+    set_value(array_3d, indices, 999);
+    printf("После изменения array_3d[1][2][3] = %d\n", get_value(array_3d, indices));
+    
+    // Печать обновленного массива
+    printf("Обновленный 3D массив:\n");
+    print_3d_array(array_3d);
+    
+    // Освобождение памяти
+    destroy_md_array(array_3d);
+    destroy_md_array(array_2d);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

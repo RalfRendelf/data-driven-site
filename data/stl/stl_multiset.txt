@@ -1,0 +1,470 @@
+<h2>std::multiset</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::multiset - это ассоциативный контейнер, который содержит упорядоченные элементы, допуская дубликаты. В отличие от std::set, multiset позволяет хранить несколько экземпляров одного и того же значения. Реализован как сбалансированное бинарное дерево поиска.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::multiset:</p>
+
+<h3>C++ Реализация</h3>
+<pre>
+<code>
+// Пример использования std::multiset на C++
+
+#include &lt;iostream&gt;
+#include &lt;set&gt;  // multiset находится в заголовке set
+#include &lt;vector&gt;
+
+int main() {
+    // Создание multiset
+    std::multiset&lt;int&gt; ms = {5, 2, 8, 1, 9, 2, 5};
+    
+    std::cout << "Размер multiset: " << ms.size() << std::endl;
+    
+    // Вставка элементов (включая дубликаты)
+    ms.insert(3);
+    ms.insert(5); // дубликат
+    
+    // Использование итераторов
+    std::cout << "Элементы multiset: ";
+    for (auto it = ms.begin(); it != ms.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // Использование range-based for loop
+    std::cout << "Элементы multiset через range-based for: ";
+    for (const auto&amp; element : ms) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Количество элементов с заданным значением
+    std::cout << "Количество элементов со значением 5: " << ms.count(5) << std::endl;
+    std::cout << "Количество элементов со значением 2: " << ms.count(2) << std::endl;
+    
+    // Использование find (находит первый элемент с заданным значением)
+    auto it = ms.find(8);
+    if (it != ms.end()) {
+        std::cout << "Найден элемент: " << *it << std::endl;
+    }
+    
+    // Использование equal_range для получения диапазона элементов с заданным значением
+    auto range = ms.equal_range(5);
+    std::cout << "Элементы со значением 5: ";
+    for (auto it = range.first; it != range.second; ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // Удаление всех элементов с заданным значением
+    ms.erase(5);
+    std::cout << "После удаления всех элементов со значением 5: ";
+    for (const auto&amp; element : ms) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Очистка multiset
+    ms.clear();
+    std::cout << "После очистки размер: " << ms.size() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>C Реализация</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o multiset_example multiset_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Структура для узла дерева
+typedef struct TreeNode {
+    int data;
+    struct TreeNode* left;
+    struct TreeNode* right;
+    struct TreeNode* parent;
+    int color; // 0 = черный, 1 = красный
+} TreeNode;
+
+// Структура для multiset
+typedef struct {
+    TreeNode* root;
+    TreeNode* nil; // специальный узел для представления NULL
+    size_t size;
+} Multiset;
+
+// Инициализация узла nil
+TreeNode* create_nil_node() {
+    TreeNode* nil = malloc(sizeof(TreeNode));
+    nil->color = 0; // черный
+    nil->left = nil->right = NULL;
+    nil->parent = NULL;
+    nil->data = 0;
+    return nil;
+}
+
+// Инициализация multiset
+Multiset* multiset_create() {
+    Multiset* ms = malloc(sizeof(Multiset));
+    ms->nil = create_nil_node();
+    ms->root = ms->nil;
+    ms->size = 0;
+    return ms;
+}
+
+// Уничтожение узла и его потомков
+void destroy_tree_nodes(TreeNode* node, TreeNode* nil) {
+    if (node != nil) {
+        destroy_tree_nodes(node->left, nil);
+        destroy_tree_nodes(node->right, nil);
+        free(node);
+    }
+}
+
+// Уничтожение multiset
+void multiset_destroy(Multiset* ms) {
+    if (!ms) return;
+    
+    destroy_tree_nodes(ms->root, ms->nil);
+    free(ms->nil);
+    free(ms);
+}
+
+// Создание нового узла
+TreeNode* create_node(Multiset* ms, int data) {
+    TreeNode* node = malloc(sizeof(TreeNode));
+    node->data = data;
+    node->left = ms->nil;
+    node->right = ms->nil;
+    node->parent = NULL;
+    node->color = 1; // новый узел всегда красный
+    return node;
+}
+
+// Левый поворот (для балансировки красно-черного дерева)
+void rotate_left(Multiset* ms, TreeNode* x) {
+    TreeNode* y = x->right;
+    x->right = y->left;
+    
+    if (y->left != ms->nil) {
+        y->left->parent = x;
+    }
+    
+    y->parent = x->parent;
+    
+    if (x->parent == NULL) {
+        ms->root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+    
+    y->left = x;
+    x->parent = y;
+}
+
+// Правый поворот (для балансировки красно-черного дерева)
+void rotate_right(Multiset* ms, TreeNode* y) {
+    TreeNode* x = y->left;
+    y->left = x->right;
+    
+    if (x->right != ms->nil) {
+        x->right->parent = y;
+    }
+    
+    x->parent = y->parent;
+    
+    if (y->parent == NULL) {
+        ms->root = x;
+    } else if (y == y->parent->right) {
+        y->parent->right = x;
+    } else {
+        y->parent->left = x;
+    }
+    
+    x->right = y;
+    y->parent = x;
+}
+
+// Восстановление свойств красно-черного дерева после вставки
+void fix_after_insert(Multiset* ms, TreeNode* z) {
+    while (z->parent && z->parent->color == 1) {
+        if (z->parent == z->parent->parent->left) {
+            TreeNode* y = z->parent->parent->right;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    rotate_left(ms, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_right(ms, z->parent->parent);
+            }
+        } else {
+            TreeNode* y = z->parent->parent->left;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rotate_right(ms, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_left(ms, z->parent->parent);
+            }
+        }
+    }
+    ms->root->color = 0;
+}
+
+// Вставка элемента (допускаются дубликаты)
+void multiset_insert(Multiset* ms, int data) {
+    TreeNode* z = create_node(ms, data);
+    
+    TreeNode* y = NULL;
+    TreeNode* x = ms->root;
+    
+    // В multiset мы ищем место для вставки, допуская дубликаты
+    while (x != ms->nil) {
+        y = x;
+        // В отличие от set, мы вставляем дубликаты в правое поддерево
+        if (data < x->data) {
+            x = x->left;
+        } else { // если значение равно, идем направо (для сохранения порядка вставки)
+            x = x->right;
+        }
+    }
+    
+    z->parent = y;
+    
+    if (y == NULL) {
+        ms->root = z;
+    } else if (z->data < y->data) {
+        y->left = z;
+    } else {
+        y->right = z;
+    }
+    
+    ms->size++;
+    fix_after_insert(ms, z);
+}
+
+// Поиск узла по значению (находит первый элемент с заданным значением)
+TreeNode* tree_search_first(Multiset* ms, int data) {
+    TreeNode* current = ms->root;
+    TreeNode* found = ms->nil;
+    
+    while (current != ms->nil) {
+        if (data < current->data) {
+            current = current->left;
+        } else if (data > current->data) {
+            current = current->right;
+        } else {
+            // нашли элемент с заданным значением
+            found = current;
+            // но продолжаем искать левее, чтобы найти первый
+            current = current->left;
+        }
+    }
+    
+    return found != ms->nil ? found : NULL;
+}
+
+// Подсчет элементов с заданным значением
+size_t multiset_count(Multiset* ms, int data) {
+    if (!ms) return 0;
+    
+    TreeNode* current = ms->root;
+    size_t count = 0;
+    
+    while (current != ms->nil) {
+        if (data < current->data) {
+            current = current->left;
+        } else if (data > current->data) {
+            current = current->right;
+        } else {
+            // нашли элемент с заданным значением, теперь нужно подсчитать все такие элементы
+            count++; // текущий элемент
+            
+            // ищем в левом поддереве
+            TreeNode* left = current->left;
+            while (left != ms->nil) {
+                if (left->data == data) {
+                    count++;
+                    left = left->left; // продолжаем идти влево
+                } else if (left->data < data) {
+                    left = left->right;
+                } else {
+                    left = left->left;
+                }
+            }
+            
+            // ищем в правом поддереве
+            TreeNode* right = current->right;
+            while (right != ms->nil) {
+                if (right->data == data) {
+                    count++;
+                    right = right->right; // идем вправо для поиска других
+                } else if (right->data < data) {
+                    right = right->right;
+                } else {
+                    right = right->left;
+                }
+            }
+            
+            break;
+        }
+    }
+    
+    return count;
+}
+
+// Удаление всех элементов с заданным значением
+void multiset_erase(Multiset* ms, int data) {
+    // Для простоты реализации удалим все узлы с заданным значением
+    // Это сложная операция для сбалансированного дерева, поэтому
+    // реализуем упрощенную версию, создающую новое дерево без этих элементов
+    
+    // Собираем все элементы, кроме тех, у которых значение равно заданному
+    TreeNode* nodes[1000]; // предполагаем, что не более 1000 узлов
+    int nodeCount = 0;
+    
+    // inorder обход для получения отсортированного списка
+    TreeNode* current = ms->root;
+    TreeNode* stack[1000];
+    int top = -1;
+    
+    while (current != ms->nil || top != -1) {
+        while (current != ms->nil) {
+            stack[++top] = current;
+            current = current->left;
+        }
+        current = stack[top--];
+        
+        if (current->data != data) {
+            nodes[nodeCount++] = current;
+        }
+        
+        current = current->right;
+    }
+    
+    // уничтожаем старое дерево
+    destroy_tree_nodes(ms->root, ms->nil);
+    
+    // создаем новое дерево из оставшихся узлов
+    ms->root = ms->nil;
+    ms->size = 0;
+    
+    for (int i = 0; i < nodeCount; i++) {
+        multiset_insert(ms, nodes[i]->data);
+    }
+}
+
+// Вспомогательная функция для inorder обхода дерева
+void inorder_traversal(TreeNode* node, TreeNode* nil, void (*visit)(int*)) {
+    if (node != nil) {
+        inorder_traversal(node->left, nil, visit);
+        visit(&node->data);
+        inorder_traversal(node->right, nil, visit);
+    }
+}
+
+// Вспомогательная функция для печати значения
+void print_value(int* value) {
+    printf("%d ", *value);
+}
+
+// Печать multiset
+void multiset_print(Multiset* ms, const char* label) {
+    printf("%s: [", label);
+    inorder_traversal(ms->root, ms->nil, print_value);
+    printf("] (size: %zu)\n", ms->size);
+}
+
+// Получение размера
+size_t multiset_size(Multiset* ms) {
+    return ms ? ms->size : 0;
+}
+
+// Проверка на пустоту
+int multiset_empty(Multiset* ms) {
+    return ms ? (ms->size == 0) : 1;
+}
+
+// Очистка multiset
+void multiset_clear(Multiset* ms) {
+    if (!ms) return;
+    
+    destroy_tree_nodes(ms->root, ms->nil);
+    ms->root = ms->nil;
+    ms->size = 0;
+}
+
+// Пример использования
+int main() {
+    Multiset* ms = multiset_create();
+    
+    // Вставка начальных значений (включая дубликаты)
+    int initialValues[] = {5, 2, 8, 1, 9, 2, 5};
+    for (int i = 0; i < 7; i++) {
+        multiset_insert(ms, initialValues[i]);
+    }
+    
+    multiset_print(ms, "Исходный multiset");
+    printf("Размер multiset: %zu\n", multiset_size(ms));
+    
+    // Вставка дополнительных элементов
+    multiset_insert(ms, 3);
+    multiset_insert(ms, 5); // дубликат
+    multiset_print(ms, "После вставки 3 и 5");
+    
+    // Количество элементов с заданным значением
+    printf("Количество элементов со значением 5: %zu\n", multiset_count(ms, 5));
+    printf("Количество элементов со значением 2: %zu\n", multiset_count(ms, 2));
+    
+    // Поиск первого элемента с заданным значением
+    TreeNode* found = tree_search_first(ms, 8);
+    if (found) {
+        printf("Найден элемент: %d\n", found->data);
+    }
+    
+    // Удаление всех элементов со значением 5
+    multiset_erase(ms, 5);
+    multiset_print(ms, "После удаления всех элементов со значением 5");
+    
+    // Очистка multiset
+    multiset_clear(ms);
+    printf("После очистки размер: %zu\n", multiset_size(ms));
+    
+    // Уничтожение multiset
+    multiset_destroy(ms);
+    
+    return 0;
+}
+</code>
+</pre>

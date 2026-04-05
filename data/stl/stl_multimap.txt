@@ -1,0 +1,503 @@
+<h2>std::multimap</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::multimap - это ассоциативный контейнер, который содержит пары ключ-значение, где ключи упорядочены по возрастанию. В отличие от std::map, std::multimap может содержать несколько элементов с одинаковым ключом. Реализован как сбалансированное бинарное дерево поиска.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::multimap:</p>
+
+<pre>
+<code>
+// Пример использования std::multimap на C++
+
+#include &lt;iostream&gt;
+#include &lt;map&gt;  // multimap находится в заголовке map
+#include &lt;string&gt;
+
+int main() {
+    // Создание multimap
+    std::multimap&lt;int, std::string&gt; mm;
+    
+    // Вставка элементов (включая дубликаты ключей)
+    mm.insert({1, "one"});
+    mm.insert({3, "three"});
+    mm.insert({2, "two"});
+    mm.insert({3, "three again"});
+    mm.insert({1, "one again"});
+    
+    std::cout << "Размер multimap: " << mm.size() << std::endl;
+    
+    // Использование итераторов
+    std::cout << "Элементы multimap: " << std::endl;
+    for (auto it = mm.begin(); it != mm.end(); ++it) {
+        std::cout << it->first << " => " << it->second << std::endl;
+    }
+    
+    // Использование range-based for loop
+    std::cout << "Элементы multimap через range-based for: " << std::endl;
+    for (const auto&amp; pair : mm) {
+        std::cout << pair.first << " => " << pair.second << std::endl;
+    }
+    
+    // Количество элементов с заданным ключом
+    std::cout << "Количество элементов с ключом 1: " << mm.count(1) << std::endl;
+    std::cout << "Количество элементов с ключом 3: " << mm.count(3) << std::endl;
+    
+    // Использование find (находит первый элемент с заданным ключом)
+    auto it = mm.find(3);
+    if (it != mm.end()) {
+        std::cout << "Найден первый элемент с ключом 3: " << it->first << " => " << it->second << std::endl;
+    }
+    
+    // Использование equal_range для получения диапазона элементов с заданным ключом
+    auto range = mm.equal_range(3);
+    std::cout << "Элементы с ключом 3: " << std::endl;
+    for (auto it = range.first; it != range.second; ++it) {
+        std::cout << "  " << it->first << " => " << it->second << std::endl;
+    }
+    
+    // Удаление всех элементов с заданным ключом
+    mm.erase(1);
+    std::cout << "После удаления всех элементов с ключом 1:" << std::endl;
+    for (const auto&amp; pair : mm) {
+        std::cout << pair.first << " => " << pair.second << std::endl;
+    }
+    
+    // Очистка multimap
+    mm.clear();
+    std::cout << "После очистки размер: " << mm.size() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o multimap_example multimap_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура для пары ключ-значение
+typedef struct {
+    int key;
+    char* value;
+} KeyValuePair;
+
+// Структура для узла дерева
+typedef struct TreeNode {
+    KeyValuePair pair;
+    struct TreeNode* left;
+    struct TreeNode* right;
+    struct TreeNode* parent;
+    int color; // 0 = черный, 1 = красный
+} TreeNode;
+
+// Структура для multimap
+typedef struct {
+    TreeNode* root;
+    TreeNode* nil; // специальный узел для представления NULL
+    size_t size;
+} Multimap;
+
+// Инициализация узла nil
+TreeNode* create_nil_node() {
+    TreeNode* nil = malloc(sizeof(TreeNode));
+    nil->color = 0; // черный
+    nil->left = NULL;
+    nil->right = NULL;
+    nil->parent = NULL;
+    nil->pair.key = 0;
+    nil->pair.value = NULL;
+    return nil;
+}
+
+// Инициализация multimap
+Multimap* multimap_create() {
+    Multimap* mm = malloc(sizeof(Multimap));
+    mm->nil = create_nil_node();
+    mm->root = mm->nil;
+    mm->size = 0;
+    return mm;
+}
+
+// Уничтожение узла и его потомков
+void destroy_tree_nodes(TreeNode* node, TreeNode* nil) {
+    if (node != nil) {
+        destroy_tree_nodes(node->left, nil);
+        destroy_tree_nodes(node->right, nil);
+        if (node->pair.value) {
+            free(node->pair.value);
+        }
+        free(node);
+    }
+}
+
+// Уничтожение multimap
+void multimap_destroy(Multimap* mm) {
+    if (!mm) return;
+    
+    destroy_tree_nodes(mm->root, mm->nil);
+    free(mm->nil);
+    free(mm);
+}
+
+// Создание нового узла
+TreeNode* create_node(Multimap* mm, int key, const char* value) {
+    TreeNode* node = malloc(sizeof(TreeNode));
+    node->pair.key = key;
+    node->pair.value = malloc(strlen(value) + 1);
+    strcpy(node->pair.value, value);
+    node->left = mm->nil;
+    node->right = mm->nil;
+    node->parent = NULL;
+    node->color = 1; // новый узел всегда красный
+    return node;
+}
+
+// Левый поворот (для балансировки красно-черного дерева)
+void rotate_left(Multimap* mm, TreeNode* x) {
+    TreeNode* y = x->right;
+    x->right = y->left;
+    
+    if (y->left != mm->nil) {
+        y->left->parent = x;
+    }
+    
+    y->parent = x->parent;
+    
+    if (x->parent == NULL) {
+        mm->root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+    
+    y->left = x;
+    x->parent = y;
+}
+
+// Правый поворот (для балансировки красно-черного дерева)
+void rotate_right(Multimap* mm, TreeNode* y) {
+    TreeNode* x = y->left;
+    y->left = x->right;
+    
+    if (x->right != mm->nil) {
+        x->right->parent = y;
+    }
+    
+    x->parent = y->parent;
+    
+    if (y->parent == NULL) {
+        mm->root = x;
+    } else if (y == y->parent->right) {
+        y->parent->right = x;
+    } else {
+        y->parent->left = x;
+    }
+    
+    x->right = y;
+    y->parent = x;
+}
+
+// Восстановление свойств красно-черного дерева после вставки
+void fix_after_insert(Multimap* mm, TreeNode* z) {
+    while (z->parent && z->parent->color == 1) {
+        if (z->parent == z->parent->parent->left) {
+            TreeNode* y = z->parent->parent->right;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    rotate_left(mm, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_right(mm, z->parent->parent);
+            }
+        } else {
+            TreeNode* y = z->parent->parent->left;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rotate_right(mm, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_left(mm, z->parent->parent);
+            }
+        }
+    }
+    mm->root->color = 0;
+}
+
+// Вставка элемента (допускаются дубликаты ключей)
+void multimap_insert(Multimap* mm, int key, const char* value) {
+    TreeNode* z = create_node(mm, key, value);
+    
+    TreeNode* y = NULL;
+    TreeNode* x = mm->root;
+    
+    // В multimap мы ищем место для вставки, допуская дубликаты
+    while (x != mm->nil) {
+        y = x;
+        // В отличие от map, мы вставляем дубликаты в правое поддерево
+        if (key < x->pair.key) {
+            x = x->left;
+        } else { // если ключ равен, идем направо (для сохранения порядка вставки)
+            x = x->right;
+        }
+    }
+    
+    z->parent = y;
+    
+    if (y == NULL) {
+        mm->root = z;
+    } else if (z->pair.key < y->pair.key) {
+        y->left = z;
+    } else {
+        y->right = z;
+    }
+    
+    mm->size++;
+    fix_after_insert(mm, z);
+}
+
+// Поиск узла по ключу (находит первый элемент с заданным ключом)
+TreeNode* tree_search_first(Multimap* mm, int key) {
+    TreeNode* current = mm->root;
+    TreeNode* found = mm->nil;
+    
+    while (current != mm->nil) {
+        if (key < current->pair.key) {
+            current = current->left;
+        } else if (key > current->pair.key) {
+            current = current->right;
+        } else {
+            // нашли элемент с заданным ключом
+            found = current;
+            // но продолжаем искать левее, чтобы найти первый
+            current = current->left;
+        }
+    }
+    
+    return found != mm->nil ? found : NULL;
+}
+
+// Подсчет элементов с заданным ключом
+size_t multimap_count(Multimap* mm, int key) {
+    if (!mm) return 0;
+    
+    TreeNode* current = mm->root;
+    size_t count = 0;
+    
+    while (current != mm->nil) {
+        if (key < current->pair.key) {
+            current = current->left;
+        } else if (key > current->pair.key) {
+            current = current->right;
+        } else {
+            // нашли элемент с заданным ключом, теперь нужно подсчитать все такие элементы
+            // для этого обходим поддерево и считаем элементы с таким же ключом
+            count++; // текущий элемент
+            
+            // ищем в левом поддереве
+            TreeNode* left = current->left;
+            while (left != mm->nil) {
+                if (left->pair.key == key) {
+                    count++;
+                    // проверяем оба поддерева этого узла
+                    TreeNode* lsub = left->left;
+                    TreeNode* rsub = left->right;
+                    // подсчет в левом поддереве
+                    while (lsub != mm->nil) {
+                        if (lsub->pair.key == key) {
+                            count++;
+                            lsub = lsub->left; // идем глубже влево
+                        } else {
+                            lsub = lsub->right;
+                        }
+                    }
+                    // подсчет в правом поддереве
+                    while (rsub != mm->nil) {
+                        if (rsub->pair.key == key) {
+                            count++;
+                            rsub = rsub->left; // идем глубже влево
+                        } else {
+                            rsub = rsub->right;
+                        }
+                    }
+                    
+                    left = left->left; // продолжаем идти влево
+                } else if (left->pair.key < key) {
+                    left = left->right;
+                } else {
+                    left = left->left;
+                }
+            }
+            
+            // ищем в правом поддереве
+            TreeNode* right = current->right;
+            while (right != mm->nil) {
+                if (right->pair.key == key) {
+                    count++;
+                    right = right->right; // идем вправо для поиска других
+                } else if (right->pair.key < key) {
+                    right = right->right;
+                } else {
+                    right = right->left;
+                }
+            }
+            
+            break;
+        }
+    }
+    
+    return count;
+}
+
+// Удаление всех элементов с заданным ключом
+void multimap_erase(Multimap* mm, int key) {
+    // Для простоты реализации удалим все узлы с заданным ключом
+    // Это сложная операция для сбалансированного дерева, поэтому
+    // реализуем упрощенную версию, создающую новое дерево без этих элементов
+    
+    // Собираем все элементы, кроме тех, у которых ключ равен заданному
+    TreeNode* nodes[1000]; // предполагаем, что не более 1000 узлов
+    int nodeCount = 0;
+    
+    // inorder обход для получения отсортированного списка
+    TreeNode* current = mm->root;
+    TreeNode* stack[1000];
+    int top = -1;
+    
+    while (current != mm->nil || top != -1) {
+        while (current != mm->nil) {
+            stack[++top] = current;
+            current = current->left;
+        }
+        current = stack[top--];
+        
+        if (current->pair.key != key) {
+            nodes[nodeCount++] = current;
+        }
+        
+        current = current->right;
+    }
+    
+    // уничтожаем старое дерево
+    destroy_tree_nodes(mm->root, mm->nil);
+    
+    // создаем новое дерево из оставшихся узлов
+    mm->root = mm->nil;
+    mm->size = 0;
+    
+    for (int i = 0; i < nodeCount; i++) {
+        multimap_insert(mm, nodes[i]->pair.key, nodes[i]->pair.value);
+    }
+}
+
+// Вспомогательная функция для inorder обхода дерева
+void inorder_traversal(TreeNode* node, TreeNode* nil, void (*visit)(KeyValuePair*)) {
+    if (node != nil) {
+        inorder_traversal(node->left, nil, visit);
+        visit(&node->pair);
+        inorder_traversal(node->right, nil, visit);
+    }
+}
+
+// Вспомогательная функция для печати пары
+void print_pair(KeyValuePair* pair) {
+    printf("%d => %s\n", pair->key, pair->value);
+}
+
+// Печать multimap
+void multimap_print(Multimap* mm, const char* label) {
+    printf("%s:\n", label);
+    inorder_traversal(mm->root, mm->nil, print_pair);
+    printf("(size: %zu)\n", mm->size);
+}
+
+// Получение размера
+size_t multimap_size(Multimap* mm) {
+    return mm ? mm->size : 0;
+}
+
+// Проверка на пустоту
+int multimap_empty(Multimap* mm) {
+    return mm ? (mm->size == 0) : 1;
+}
+
+// Очистка multimap
+void multimap_clear(Multimap* mm) {
+    if (!mm) return;
+    
+    destroy_tree_nodes(mm->root, mm->nil);
+    mm->root = mm->nil;
+    mm->size = 0;
+}
+
+// Пример использования
+int main() {
+    Multimap* mm = multimap_create();
+    
+    // Вставка элементов (включая дубликаты ключей)
+    multimap_insert(mm, 1, "one");
+    multimap_insert(mm, 3, "three");
+    multimap_insert(mm, 2, "two");
+    multimap_insert(mm, 3, "three again");
+    multimap_insert(mm, 1, "one again");
+    
+    multimap_print(mm, "Исходный multimap");
+    printf("Размер multimap: %zu\n", multimap_size(mm));
+    
+    // Количество элементов с заданным ключом
+    printf("Количество элементов с ключом 1: %zu\n", multimap_count(mm, 1));
+    printf("Количество элементов с ключом 3: %zu\n", multimap_count(mm, 3));
+    
+    // Поиск первого элемента с заданным ключом
+    TreeNode* found = tree_search_first(mm, 3);
+    if (found) {
+        printf("Найден первый элемент с ключом 3: %d => %s\n", 
+               found->pair.key, found->pair.value);
+    }
+    
+    // Удаление всех элементов с ключом 1
+    multimap_erase(mm, 1);
+    multimap_print(mm, "После удаления всех элементов с ключом 1");
+    
+    // Очистка multimap
+    multimap_clear(mm);
+    printf("После очистки размер: %zu\n", multimap_size(mm));
+    
+    // Уничтожение multimap
+    multimap_destroy(mm);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

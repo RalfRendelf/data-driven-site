@@ -1,0 +1,419 @@
+<h2>std::deque</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::deque (double-ended queue) - это контейнер, который позволяет эффективно добавлять и удалять элементы как в начале, так и в конце. Он предоставляет доступ к произвольным элементам с такой же эффективностью, как и std::vector, но с лучшей производительностью при вставке/удалении элементов с обоих концов.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::deque:</p>
+
+<pre>
+<code>
+// Пример использования std::deque на C++
+
+#include &lt;iostream&gt;
+#include &lt;deque&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    // Создание deque
+    std::deque&lt;int&gt; dq = {1, 2, 3, 4, 5};
+    
+    std::cout << "Размер deque: " << dq.size() << std::endl;
+    
+    // Добавление элементов в начало и конец
+    dq.push_front(0);
+    dq.push_back(6);
+    
+    // Использование итераторов
+    std::cout << "Элементы deque через итераторы: ";
+    for (auto it = dq.begin(); it != dq.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // Использование range-based for loop
+    std::cout << "Элементы deque через range-based for: ";
+    for (const auto&amp; element : dq) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Доступ к элементам
+    std::cout << "Первый элемент: " << dq.front() << std::endl;
+    std::cout << "Последний элемент: " << dq.back() << std::endl;
+    std::cout << "Элемент по индексу 2: " << dq[2] << std::endl;
+    
+    // Удаление элементов с обоих концов
+    dq.pop_front();
+    dq.pop_back();
+    
+    std::cout << "После pop_front() и pop_back(): ";
+    for (const auto&amp; element : dq) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Вставка элемента в середину
+    auto it = dq.begin();
+    std::advance(it, 2); // перемещаемся к 3-му элементу
+    dq.insert(it, 99);
+    
+    std::cout << "После вставки 99 на 3-ю позицию: ";
+    for (const auto&amp; element : dq) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Удаление элемента
+    it = dq.begin();
+    std::advance(it, 2); // перемещаемся к 3-му элементу (99)
+    dq.erase(it);
+    
+    std::cout << "После удаления 3-го элемента: ";
+    for (const auto&amp; element : dq) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Изменение размера
+    dq.resize(10, 0); // Увеличить до 10 элементов, заполнив 0
+    std::cout << "После resize(10, 0): ";
+    for (const auto&amp; element : dq) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Очистка deque
+    dq.clear();
+    std::cout << "После очистки размер: " << dq.size() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o deque_example deque_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Размер блока для внутреннего хранения
+#define BLOCK_SIZE 8
+
+// Структура для узла блока
+typedef struct Block {
+    int data[BLOCK_SIZE];
+} Block;
+
+// Структура для deque
+typedef struct {
+    Block** blocks;      // массив указателей на блоки
+    size_t block_count;  // количество выделенных блоков
+    size_t size;         // количество элементов
+    size_t front_block;  // индекс первого блока
+    size_t front_index;  // индекс первого элемента в первом блоке
+    size_t back_block;   // индекс последнего блока
+    size_t back_index;   // индекс последнего элемента в последнем блоке
+} Deque;
+
+// Инициализация deque
+Deque* deque_create() {
+    Deque* dq = malloc(sizeof(Deque));
+    dq->blocks = malloc(sizeof(Block*));
+    dq->blocks[0] = malloc(sizeof(Block));
+    dq->block_count = 1;
+    dq->size = 0;
+    dq->front_block = 0;
+    dq->front_index = 0;
+    dq->back_block = 0;
+    dq->back_index = 0;
+    return dq;
+}
+
+// Уничтожение deque
+void deque_destroy(Deque* dq) {
+    if (!dq) return;
+    
+    for (size_t i = 0; i < dq->block_count; i++) {
+        if (dq->blocks[i]) {
+            free(dq->blocks[i]);
+        }
+    }
+    free(dq->blocks);
+    free(dq);
+}
+
+// Увеличение количества блоков
+void expand_blocks_if_needed(Deque* dq) {
+    if ((dq->front_block == 0 && dq->back_block == dq->block_count - 1) ||
+        (dq->front_block == dq->back_block && 
+         (dq->back_index - dq->front_index == BLOCK_SIZE - 1))) {
+        
+        // Выделяем новую область с дополнительными блоками
+        Block** new_blocks = realloc(dq->blocks, (dq->block_count + 1) * sizeof(Block*));
+        new_blocks[dq->block_count] = malloc(sizeof(Block));
+        dq->blocks = new_blocks;
+        dq->block_count++;
+        
+        // Если back_block был последним, сдвигаем его
+        if (dq->back_block == dq->block_count - 2) {
+            dq->back_block++;
+        }
+    }
+}
+
+// Добавление элемента в начало
+void deque_push_front(Deque* dq, int value) {
+    if (!dq) return;
+    
+    if (dq->size == 0) {
+        dq->blocks[0]->data[0] = value;
+        dq->size = 1;
+        dq->front_block = 0;
+        dq->front_index = 0;
+        dq->back_block = 0;
+        dq->back_index = 0;
+        return;
+    }
+    
+    expand_blocks_if_needed(dq);
+    
+    if (dq->front_index == 0) {
+        // Переходим к предыдущему блоку
+        if (dq->front_block == 0) {
+            // Сдвигаем все блоки вправо
+            for (size_t i = dq->block_count - 1; i > 0; i--) {
+                dq->blocks[i] = dq->blocks[i-1];
+            }
+            dq->blocks[0] = malloc(sizeof(Block));
+            dq->front_block = 0;
+            dq->back_block++;
+        } else {
+            dq->front_block--;
+        }
+        dq->front_index = BLOCK_SIZE - 1;
+    } else {
+        dq->front_index--;
+    }
+    
+    dq->blocks[dq->front_block]->data[dq->front_index] = value;
+    dq->size++;
+}
+
+// Добавление элемента в конец
+void deque_push_back(Deque* dq, int value) {
+    if (!dq) return;
+    
+    if (dq->size == 0) {
+        dq->blocks[0]->data[0] = value;
+        dq->size = 1;
+        dq->front_block = 0;
+        dq->front_index = 0;
+        dq->back_block = 0;
+        dq->back_index = 0;
+        return;
+    }
+    
+    expand_blocks_if_needed(dq);
+    
+    if (dq->back_index == BLOCK_SIZE - 1) {
+        // Переходим к следующему блоку
+        if (dq->back_block == dq->block_count - 1) {
+            // Добавляем новый блок
+            dq->blocks = realloc(dq->blocks, (dq->block_count + 1) * sizeof(Block*));
+            dq->blocks[dq->block_count] = malloc(sizeof(Block));
+            dq->block_count++;
+        }
+        dq->back_block++;
+        dq->back_index = 0;
+    } else {
+        dq->back_index++;
+    }
+    
+    dq->blocks[dq->back_block]->data[dq->back_index] = value;
+    dq->size++;
+}
+
+// Удаление элемента из начала
+int deque_pop_front(Deque* dq) {
+    if (!dq || dq->size == 0) return 0;
+    
+    int value = dq->blocks[dq->front_block]->data[dq->front_index];
+    
+    if (dq->size == 1) {
+        dq->size = 0;
+        return value;
+    }
+    
+    if (dq->front_index == BLOCK_SIZE - 1) {
+        dq->front_block++;
+        dq->front_index = 0;
+    } else {
+        dq->front_index++;
+    }
+    
+    dq->size--;
+    return value;
+}
+
+// Удаление элемента из конца
+int deque_pop_back(Deque* dq) {
+    if (!dq || dq->size == 0) return 0;
+    
+    int value = dq->blocks[dq->back_block]->data[dq->back_index];
+    
+    if (dq->size == 1) {
+        dq->size = 0;
+        return value;
+    }
+    
+    if (dq->back_index == 0) {
+        dq->back_block--;
+        dq->back_index = BLOCK_SIZE - 1;
+    } else {
+        dq->back_index--;
+    }
+    
+    dq->size--;
+    return value;
+}
+
+// Получение размера
+size_t deque_size(Deque* dq) {
+    return dq ? dq->size : 0;
+}
+
+// Проверка на пустоту
+int deque_empty(Deque* dq) {
+    return dq ? (dq->size == 0) : 1;
+}
+
+// Получение первого элемента
+int deque_front(Deque* dq) {
+    if (dq && dq->size > 0) {
+        return dq->blocks[dq->front_block]->data[dq->front_index];
+    }
+    return 0;
+}
+
+// Получение последнего элемента
+int deque_back(Deque* dq) {
+    if (dq && dq->size > 0) {
+        return dq->blocks[dq->back_block]->data[dq->back_index];
+    }
+    return 0;
+}
+
+// Получение элемента по индексу
+int deque_at(Deque* dq, size_t index) {
+    if (!dq || index >= dq->size) return 0;
+    
+    // Находим блок и смещение для заданного индекса
+    size_t block_idx = dq->front_block;
+    size_t block_offset = dq->front_index + index;
+    
+    while (block_offset >= BLOCK_SIZE) {
+        block_offset -= BLOCK_SIZE;
+        block_idx++;
+    }
+    
+    return dq->blocks[block_idx]->data[block_offset];
+}
+
+// Установка элемента по индексу
+void deque_set(Deque* dq, size_t index, int value) {
+    if (!dq || index >= dq->size) return;
+    
+    // Находим блок и смещение для заданного индекса
+    size_t block_idx = dq->front_block;
+    size_t block_offset = dq->front_index + index;
+    
+    while (block_offset >= BLOCK_SIZE) {
+        block_offset -= BLOCK_SIZE;
+        block_idx++;
+    }
+    
+    dq->blocks[block_idx]->data[block_offset] = value;
+}
+
+// Печать deque
+void deque_print(Deque* dq, const char* label) {
+    printf("%s: [", label);
+    for (size_t i = 0; i < deque_size(dq); i++) {
+        printf("%d", deque_at(dq, i));
+        if (i < deque_size(dq) - 1) printf(", ");
+    }
+    printf("] (size: %zu)\n", deque_size(dq));
+}
+
+// Пример использования
+int main() {
+    Deque* dq = deque_create();
+    
+    // Заполнение начальными значениями
+    for (int i = 1; i <= 5; i++) {
+        deque_push_back(dq, i);
+    }
+    
+    deque_print(dq, "Исходный deque");
+    printf("Размер deque: %zu\n", deque_size(dq));
+    
+    // Добавление элементов в начало и конец
+    deque_push_front(dq, 0);
+    deque_push_back(dq, 6);
+    deque_print(dq, "После добавления 0 в начало и 6 в конец");
+    
+    // Доступ к элементам
+    printf("Первый элемент: %d\n", deque_front(dq));
+    printf("Последний элемент: %d\n", deque_back(dq));
+    printf("Элемент по индексу 2: %d\n", deque_at(dq, 2));
+    
+    // Удаление элементов с обоих концов
+    deque_pop_front(dq);
+    deque_pop_back(dq);
+    deque_print(dq, "После pop_front() и pop_back()");
+    
+    // Очистка deque
+    deque_clear(dq);
+    printf("После очистки размер: %zu\n", deque_size(dq));
+    
+    // Уничтожение deque
+    deque_destroy(dq);
+    
+    return 0;
+}
+
+// Вспомогательная функция для очистки deque
+void deque_clear(Deque* dq) {
+    if (!dq) return;
+    
+    // Освобождаем все блоки кроме первого
+    for (size_t i = 1; i < dq->block_count; i++) {
+        if (dq->blocks[i]) {
+            free(dq->blocks[i]);
+        }
+    }
+    
+    // Сбрасываем индексы
+    dq->size = 0;
+    dq->front_block = 0;
+    dq->front_index = 0;
+    dq->back_block = 0;
+    dq->back_index = 0;
+}
+</code>
+</pre>
+</file_content>

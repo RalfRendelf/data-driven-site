@@ -1,0 +1,248 @@
+<h2>std::bitset</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::bitset - это контейнер, который хранит биты (двоичные значения 0 или 1) фиксированного размера. Он предоставляет эффективное представление и манипуляцию с битами, что полезно для представления наборов флагов, битовых масок и других приложений, где требуется экономия памяти.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::bitset и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o bitset_example bitset_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;limits.h&gt;
+
+#define BITSET_SIZE 256  // Максимальный размер битсета
+#define ULONG_BITS (sizeof(unsigned long) * CHAR_BIT)
+
+// Структура для представления bitset
+typedef struct {
+    unsigned long data[(BITSET_SIZE + ULONG_BITS - 1) / ULONG_BITS];
+    size_t num_bits;
+} BitSet;
+
+// Инициализация bitset
+BitSet* bitset_create(size_t n_bits) {
+    BitSet* bs = malloc(sizeof(BitSet));
+    memset(bs->data, 0, sizeof(bs->data));
+    bs->num_bits = n_bits;
+    return bs;
+}
+
+// Уничтожение bitset
+void bitset_destroy(BitSet* bs) {
+    if (bs != NULL) {
+        free(bs);
+    }
+}
+
+// Установка бита в 1
+void bitset_set(BitSet* bs, size_t pos) {
+    if (pos >= bs->num_bits) return;
+    
+    size_t word_idx = pos / ULONG_BITS;
+    size_t bit_idx = pos % ULONG_BITS;
+    bs->data[word_idx] |= (1UL << bit_idx);
+}
+
+// Сброс бита в 0
+void bitset_reset(BitSet* bs, size_t pos) {
+    if (pos >= bs->num_bits) return;
+    
+    size_t word_idx = pos / ULONG_BITS;
+    size_t bit_idx = pos % ULONG_BITS;
+    bs->data[word_idx] &= ~(1UL << bit_idx);
+}
+
+// Переключение бита
+void bitset_flip(BitSet* bs, size_t pos) {
+    if (pos >= bs->num_bits) return;
+    
+    size_t word_idx = pos / ULONG_BITS;
+    size_t bit_idx = pos % ULONG_BITS;
+    bs->data[word_idx] ^= (1UL << bit_idx);
+}
+
+// Проверка значения бита
+int bitset_test(BitSet* bs, size_t pos) {
+    if (pos >= bs->num_bits) return 0;
+    
+    size_t word_idx = pos / ULONG_BITS;
+    size_t bit_idx = pos % ULONG_BITS;
+    return (bs->data[word_idx] & (1UL << bit_idx)) != 0;
+}
+
+// Проверка, все ли биты равны 0
+int bitset_none(BitSet* bs) {
+    size_t words = (bs->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+    for (size_t i = 0; i < words; i++) {
+        if (bs->data[i] != 0) return 0;
+    }
+    return 1;
+}
+
+// Проверка, есть ли хотя бы один бит, равный 1
+int bitset_any(BitSet* bs) {
+    size_t words = (bs->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+    for (size_t i = 0; i < words; i++) {
+        if (bs->data[i] != 0) return 1;
+    }
+    return 0;
+}
+
+// Подсчет количества установленных битов
+size_t bitset_count(BitSet* bs) {
+    size_t count = 0;
+    for (size_t i = 0; i < bs->num_bits; i++) {
+        if (bitset_test(bs, i)) count++;
+    }
+    return count;
+}
+
+// Получение размера
+size_t bitset_size(BitSet* bs) {
+    return bs ? bs->num_bits : 0;
+}
+
+// Очистка всех битов (установка в 0)
+void bitset_clear(BitSet* bs) {
+    if (bs != NULL) {
+        size_t words = (bs->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+        memset(bs->data, 0, words * sizeof(unsigned long));
+    }
+}
+
+// Побитовое И
+void bitset_and(BitSet* bs1, BitSet* bs2) {
+    if (!bs1 || !bs2) return;
+    
+    size_t words = (bs1->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+    for (size_t i = 0; i < words; i++) {
+        bs1->data[i] &= bs2->data[i];
+    }
+}
+
+// Побитовое ИЛИ
+void bitset_or(BitSet* bs1, BitSet* bs2) {
+    if (!bs1 || !bs2) return;
+    
+    size_t words = (bs1->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+    for (size_t i = 0; i < words; i++) {
+        bs1->data[i] |= bs2->data[i];
+    }
+}
+
+// Побитовое исключающее ИЛИ
+void bitset_xor(BitSet* bs1, BitSet* bs2) {
+    if (!bs1 || !bs2) return;
+    
+    size_t words = (bs1->num_bits + ULONG_BITS - 1) / ULONG_BITS;
+    for (size_t i = 0; i < words; i++) {
+        bs1->data[i] ^= bs2->data[i];
+    }
+}
+
+// Печать битсета
+void bitset_print(BitSet* bs) {
+    printf("BitSet [");
+    for (size_t i = 0; i < bs->num_bits; i++) {
+        printf("%d", bitset_test(bs, i) ? 1 : 0);
+        if (i < bs->num_bits - 1) printf(" ");
+    }
+    printf("]\n");
+}
+
+// Пример использования
+int main() {
+    BitSet* bs = bitset_create(16);  // Создаем битсет на 16 бит
+    
+    printf("Пустой битсет: ");
+    bitset_print(bs);
+    printf("Размер: %zu, any: %s, none: %s, count: %zu\n", 
+           bitset_size(bs), 
+           bitset_any(bs) ? "true" : "false",
+           bitset_none(bs) ? "true" : "false",
+           bitset_count(bs));
+    
+    // Устанавливаем несколько битов
+    bitset_set(bs, 0);
+    bitset_set(bs, 3);
+    bitset_set(bs, 7);
+    bitset_set(bs, 15);
+    
+    printf("\nПосле установки битов 0, 3, 7, 15: ");
+    bitset_print(bs);
+    printf("Размер: %zu, any: %s, none: %s, count: %zu\n", 
+           bitset_size(bs), 
+           bitset_any(bs) ? "true" : "false",
+           bitset_none(bs) ? "true" : "false",
+           bitset_count(bs));
+    
+    // Проверяем отдельные биты
+    printf("Бит 0: %s\n", bitset_test(bs, 0) ? "установлен" : "сброшен");
+    printf("Бит 1: %s\n", bitset_test(bs, 1) ? "установлен" : "сброшен");
+    printf("Бит 3: %s\n", bitset_test(bs, 3) ? "установлен" : "сброшен");
+    
+    // Переключаем бит 3
+    bitset_flip(bs, 3);
+    printf("\nПосле переключения бита 3: ");
+    bitset_print(bs);
+    printf("Count: %zu\n", bitset_count(bs));
+    
+    // Создаем второй битсет
+    BitSet* bs2 = bitset_create(16);
+    bitset_set(bs2, 1);
+    bitset_set(bs2, 3);
+    bitset_set(bs2, 14);
+    bitset_set(bs2, 15);
+    
+    printf("\nВторой битсет: ");
+    bitset_print(bs2);
+    
+    // Выполняем побитовые операции
+    BitSet* bs3 = bitset_create(16);
+    memcpy(bs3->data, bs->data, sizeof(bs->data));
+    bitset_and(bs3, bs2);
+    printf("\nПобитовое И (bs & bs2): ");
+    bitset_print(bs3);
+    
+    memcpy(bs3->data, bs->data, sizeof(bs->data));
+    bitset_or(bs3, bs2);
+    printf("Побитовое ИЛИ (bs | bs2): ");
+    bitset_print(bs3);
+    
+    memcpy(bs3->data, bs->data, sizeof(bs->data));
+    bitset_xor(bs3, bs2);
+    printf("Побитовое исключающее ИЛИ (bs ^ bs2): ");
+    bitset_print(bs3);
+    
+    // Очищаем битсет
+    bitset_clear(bs);
+    printf("\nПосле очистки: ");
+    bitset_print(bs);
+    printf("Any: %s, None: %s, Count: %zu\n", 
+           bitset_any(bs) ? "true" : "false",
+           bitset_none(bs) ? "true" : "false",
+           bitset_count(bs));
+    
+    // Уничтожаем битсеты
+    bitset_destroy(bs);
+    bitset_destroy(bs2);
+    bitset_destroy(bs3);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

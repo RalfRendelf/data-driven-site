@@ -91,5 +91,50 @@
     font-size: 0.85rem;
     white-space: pre-wrap;     /* перенос внутри блока кода */
     word-break: break-word;
+    margin: 1rem 0;
+    position: relative;
   }
   
+  /* Кнопка для переключения видимости кода */
+  .code-toggle {
+    display: inline-block;
+    background: #555;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    user-select: none;
+  }
+  
+  .code-container {
+    position: relative;
+    margin-top: 0.5rem;
+  }
+  
+  .code-hidden pre {
+    display: none;
+  }
+  
+  .code-hidden .show-code-btn::after {
+    content: "Показать код";
+  }
+  
+  .code-visible .show-code-btn::after {
+    content: "Скрыть код";
+  }
+  
+  .show-code-btn {
+    display: inline-block;
+    background: #4a90e2;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    user-select: none;
+    border: none;
+    outline: none;
+  }

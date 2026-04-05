@@ -1,0 +1,170 @@
+<h2>Прерывания</h2>
+
+<p><strong>Категория:</strong> Периферия</p>
+
+<h3>Описание</h3>
+<p>Прерывания позволяют микроконтроллеру реагировать на события немедленно, приостанавливая выполнение основной программы и переходя к обработке прерывания. Это позволяет эффективно управлять внешними устройствами без постоянного опроса их состояния (polling), что значительно снижает нагрузку на процессор и улучшает реакцию системы.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>Аппаратные и программные прерывания</li>
+<li>Приоритеты прерываний для управления порядком обработки</li>
+<li>Вложенность прерываний (поддержка других прерываний во время обработки)</li>
+<li>Возможность маскиирования и размаскиирования прерываний</li>
+<li>Векторы прерываний для быстрого перехода к обработчику</li>
+</ul>
+
+<h3>Типы прерываний:</h3>
+<ul>
+<li>Внешние прерывания (EXTI) - от внешних источников</li>
+<li>Внутренние прерывания - от периферийных модулей (таймеры, UART, SPI и т.д.)</li>
+<li>Системные прерывания (NMI, HardFault, SVCall и др.)</li>
+<li>Программные прерывания - вызываемые программно</li>
+</ul>
+
+<h3>Пример настройки внешнего прерывания на STM32:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+
+// Обработчик прерывания для EXTI линии 0
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (GPIO_Pin == GPIO_PIN_0) {
+        // Обработка нажатия кнопки на GPIO_PIN_0
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Переключить светодиод
+    }
+}
+
+// Обработчик прерывания от системного таймера
+void SysTick_Handler(void) {
+    HAL_IncTick();
+}
+
+// Обработчик прерывания от UART
+void USART2_IRQHandler(void) {
+    HAL_UART_IRQHandler(&huart2);
+}
+
+// Функция инициализации внешнего прерывания
+void EXTI0_IRQHandler(void) {
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
+
+void ExternalInterrupt_Init() {
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // Включить тактирование GPIOA и SYSCFG
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+    // Настроить GPIO пин как вход для кнопки
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;  // Прерывание по фронту
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Настроить EXTI линию 0
+    HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+int main(void) {
+    // Инициализация HAL
+    HAL_Init();
+
+    // Настройка системного тактирования
+    SystemClock_Config();
+
+    // Инициализация внешнего прерывания
+    ExternalInterrupt_Init();
+
+    // Настройка светодиода на PA5
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    GPIO_InitTypeDef led_init = {0};
+    led_init.Pin = GPIO_PIN_5;
+    led_init.Mode = GPIO_MODE_OUTPUT_PP;
+    led_init.Pull = GPIO_NOPULL;
+    led_init.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &led_init);
+
+    while(1) {
+        // Основной цикл программы
+        // Микроконтроллер может выполнять другие задачи,
+        // пока не произойдет внешнее событие
+    }
+}
+</code>
+</pre>
+
+<h3>Пример обработки прерываний от таймера:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+
+TIM_HandleTypeDef htim2;
+
+// Обработчик прерываний таймера
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if(htim->Instance == TIM2) {
+        // Код, выполняемый при переполнении таймера
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    }
+}
+
+void TimerWithInterrupt_Init() {
+    __HAL_RCC_TIM2_CLK_ENABLE();
+
+    htim2.Instance = TIM2;
+    htim2.Init.Prescaler = 8400 - 1;  // 84MHz / 8400 = 10kHz
+    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim2.Init.Period = 10000 - 1;    // 10kHz / 10000 = 1Hz
+    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    if (HAL_TIM_Base_Init(&htim2) != HAL_OK) {
+        Error_Handler();
+    }
+
+    // Включить прерывание по переполнению
+    HAL_TIM_Base_Start_IT(&htim2);
+
+    // Настроить приоритет прерываний таймера
+    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM2_IRQn);
+}
+
+void TIM2_IRQHandler(void) {
+    HAL_TIM_IRQHandler(&htim2);
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    TimerWithInterrupt_Init();
+
+    while(1) {
+        // Выполнение других задач
+    }
+}
+</code>
+</pre>
+
+<h3>Преимущества использования прерываний:</h3>
+<ul>
+<li>Эффективное использование процессорного времени</li>
+<li>Мгновенная реакция на внешние события</li>
+<li>Возможность реализации многозадачности</li>
+<li>Снижение энергопотребления за счет использования спящих режимов</li>
+</ul>
+
+<h3>Рекомендации по работе с прерываниями:</h3>
+<ul>
+<li>Обработчики прерываний должны быть максимально короткими</li>
+<li>Не рекомендуется использовать в обработчиках сложные функции ввода-вывода</li>
+<li>Важно правильно устанавливать приоритеты прерываний</li>
+<li>При необходимости передавать данные между основной программой и обработчиком использовать атомарные переменные</li>
+</ul>
