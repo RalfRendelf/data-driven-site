@@ -1,0 +1,161 @@
+<h2>Non-overlapping Windows: Fixed Size (Непересекающиеся окна: фиксированного размера)</h2>
+
+<p><strong>Категория:</strong> Массивы</p>
+
+<h3>Описание</h3>
+<p>Алгоритм скользящего окна фиксированного размера используется для оптимизации решения задач, где требуется обработать подмассивы или подстроки одинакового размера. Вместо пересчета заново для каждого положения окна, мы обновляем результат, добавляя новый элемент и удаляя старый.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Создать окно фиксированного размера в начале массива</li>
+<li>Выполнить требуемую операцию для первого окна</li>
+<li>Сдвинуть окно на один элемент вправо</li>
+<li>Обновить результат, убрав влияние самого левого элемента и добавив влияние нового правого элемента</li>
+<li>Повторять до тех пор, пока окно не достигнет конца массива</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность: O(n), где n - длина массива</li>
+<li>Пространственная сложность: O(1) - только для хранения текущего окна и результата</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Значительное улучшение производительности по сравнению с наивным подходом O(n*k)</li>
+<li>Минимальное использование дополнительной памяти</li>
+<li>Простота реализации после понимания принципа</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Применим только к задачам с фиксированным размером окна</li>
+<li>Требует специфических условий задачи</li>
+</ul>
+
+<h3>Пример на C++: Нахождение максимальной суммы подмассива фиксированного размера</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;climits&gt;
+
+int maxSumSubarray(std::vector&lt;int&gt;&amp; arr, int k) {
+    if (arr.empty() || k <= 0 || k > arr.size()) {
+        return 0;
+    }
+    
+    int windowSum = 0;
+    
+    // Вычисляем сумму для первого окна
+    for (int i = 0; i < k; i++) {
+        windowSum += arr[i];
+    }
+    
+    int maxSum = windowSum;
+    
+    // Сдвигаем окно, добавляем новый элемент и удаляем самый левый
+    for (int i = k; i < arr.size(); i++) {
+        windowSum = windowSum + arr[i] - arr[i - k];
+        maxSum = std::max(maxSum, windowSum);
+    }
+    
+    return maxSum;
+}
+
+// Нахождение средних значений для каждого окна
+std::vector&lt;double&gt; slidingWindowAverage(std::vector&lt;int&gt;&amp; arr, int k) {
+    std::vector&lt;double&gt; result;
+    
+    if (arr.empty() || k <= 0 || k > arr.size()) {
+        return result;
+    }
+    
+    int windowSum = 0;
+    
+    // Сумма первого окна
+    for (int i = 0; i < k; i++) {
+        windowSum += arr[i];
+    }
+    
+    result.push_back((double)windowSum / k);
+    
+    // Остальные окна
+    for (int i = k; i < arr.size(); i++) {
+        windowSum = windowSum + arr[i] - arr[i - k];
+        result.push_back((double)windowSum / k);
+    }
+    
+    return result;
+}
+
+int main() {
+    std::vector&lt;int&gt; arr = {2, 1, 5, 1, 3, 2};
+    int k = 3;
+    
+    int maxSum = maxSumSubarray(arr, k);
+    std::cout << "Maximum sum of subarray of size " << k << ": " << maxSum << std::endl;
+    
+    auto averages = slidingWindowAverage(arr, k);
+    std::cout << "Averages of subarrays of size " << k << ": ";
+    for (double avg : averages) {
+        std::cout << avg << " ";
+    }
+    std::cout << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Нахождение минимума в каждом окне фиксированного размера</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;limits.h&gt;
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+void slidingWindowMinimum(int arr[], int size, int k, int result[]) {
+    if (size == 0 || k <= 0 || k > size) {
+        return;
+    }
+    
+    for (int i = 0; i <= size - k; i++) {
+        int minVal = arr[i];
+        
+        // Находим минимум в текущем окне
+        for (int j = i + 1; j < i + k; j++) {
+            if (arr[j] < minVal) {
+                minVal = arr[j];
+            }
+        }
+        
+        result[i] = minVal;
+    }
+}
+
+int main() {
+    int arr[] = {1, 3, -1, -3, 5, 3, 6, 7};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    int k = 3;
+    
+    int result[size - k + 1];
+    
+    slidingWindowMinimum(arr, size, k, result);
+    
+    printf("Minimums in all sliding windows of size %d: ", k);
+    for (int i = 0; i < size - k + 1; i++) {
+        printf("%d ", result[i]);
+    }
+    printf("\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

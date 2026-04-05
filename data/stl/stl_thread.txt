@@ -1,0 +1,98 @@
+<h2>std::thread</h2>
+
+<p><strong>Категория:</strong> Многопоточность</p>
+
+<h3>Описание</h3>
+<p>std::thread - это класс, который предоставляет способ запускать функции в отдельных потоках выполнения. Он позволяет создавать многопоточные приложения, где разные задачи могут выполняться параллельно.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>C++ Реализация</h3>
+<p>Вот пример использования std::thread:</p>
+
+<pre>
+<code>
+// Пример использования std::thread на C++
+
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;chrono&gt;
+
+void worker_function(int id, int iterations) {
+    for (int i = 0; i &lt; iterations; ++i) {
+        std::cout &lt;&lt; "Thread " &lt;&lt; id &lt;&lt; ", iteration: " &lt;&lt; i &lt;&lt; std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+int main() {
+    // Создание потоков
+    std::thread t1(worker_function, 1, 5);
+    std::thread t2(worker_function, 2, 3);
+    
+    // Ожидание завершения потоков
+    t1.join();
+    t2.join();
+    
+    std::cout &lt;&lt; "Все потоки завершены" &lt;&lt; std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>C Реализация</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C с использованием pthread:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX threads
+ * Компиляция: gcc -o thread_example thread_example.c -lpthread
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+
+// Структура для передачи аргументов в поток
+typedef struct {
+    int id;
+    int iterations;
+} ThreadArgs;
+
+// Функция, которая будет выполняться в потоке
+void* worker_function(void* args) {
+    ThreadArgs* thread_args = (ThreadArgs*)args;
+    
+    for (int i = 0; i &lt; thread_args->iterations; i++) {
+        printf("Thread %d, iteration: %d\n", thread_args->id, i);
+        usleep(100000); // 100 мс
+    }
+    
+    return NULL;
+}
+
+// Пример использования
+int main() {
+    pthread_t thread1, thread2;
+    ThreadArgs args1 = {1, 5};
+    ThreadArgs args2 = {2, 3};
+    
+    // Создание потоков
+    pthread_create(&thread1, NULL, worker_function, &args1);
+    pthread_create(&thread2, NULL, worker_function, &args2);
+    
+    // Ожидание завершения потоков
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    
+    printf("Все потоки завершены\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

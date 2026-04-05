@@ -1,0 +1,330 @@
+<h2>std::filesystem</h2>
+
+<p><strong>Категория:</strong> Файловая система</p>
+
+<h3>Описание</h3>
+<p>std::filesystem - это библиотека для работы с файловой системой в C++, включая пути к файлам, операции с файлами и каталогами. Она была добавлена в C++17 и предоставляет переносимые средства для работы с файловой системой, такие как создание, удаление, копирование файлов и каталогов, проверка существования файлов и многое другое.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++17</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::filesystem и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX и стандартной библиотеки C
+ * Компиляция: gcc -o filesystem_example filesystem_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;dirent.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;time.h&gt;
+#include &lt;errno.h&gt;
+
+#define MAX_PATH_LENGTH 1024
+
+// Структура для представления пути
+typedef struct {
+    char path[MAX_PATH_LENGTH];
+} Path;
+
+// Структура для представления информации о файле
+typedef struct {
+    Path path;
+    int exists;
+    int is_directory;
+    int is_regular_file;
+    long long file_size;
+    time_t last_write_time;
+} FileInfo;
+
+// Создание пути
+Path path_create(const char* str_path) {
+    Path p;
+    strncpy(p.path, str_path, MAX_PATH_LENGTH - 1);
+    p.path[MAX_PATH_LENGTH - 1] = '\0';
+    return p;
+}
+
+// Получение родительской директории
+Path path_parent_path(Path* p) {
+    if (!p) {
+        Path empty = {""};
+        return empty;
+    }
+    
+    Path parent;
+    strncpy(parent.path, p->path, MAX_PATH_LENGTH - 1);
+    parent.path[MAX_PATH_LENGTH - 1] = '\0';
+    
+    // Найти последний слэш
+    char* last_slash = strrchr(parent.path, '/');
+    if (!last_slash) {
+        last_slash = strrchr(parent.path, '\\');
+    }
+    
+    if (last_slash) {
+        *(last_slash + 1) = '\0';  // Включаем слэш в путь
+    } else {
+        parent.path[0] = '\0';  // Нет родительской директории
+    }
+    
+    return parent;
+}
+
+// Получение имени файла
+Path path_filename(Path* p) {
+    if (!p) {
+        Path empty = {""};
+        return empty;
+    }
+    
+    // Найти последний слэш
+    const char* last_slash = strrchr(p->path, '/');
+    if (!last_slash) {
+        last_slash = strrchr(p->path, '\\');
+    }
+    
+    Path filename;
+    if (last_slash) {
+        strncpy(filename.path, last_slash + 1, MAX_PATH_LENGTH - 1);
+        filename.path[MAX_PATH_LENGTH - 1] = '\0';
+    } else {
+        strncpy(filename.path, p->path, MAX_PATH_LENGTH - 1);
+        filename.path[MAX_PATH_LENGTH - 1] = '\0';
+    }
+    
+    return filename;
+}
+
+// Объединение путей
+Path path_append(Path* p1, Path* p2) {
+    if (!p1 || !p2) {
+        Path empty = {""};
+        return empty;
+    }
+    
+    Path combined;
+    snprintf(combined.path, MAX_PATH_LENGTH, "%s/%s", p1->path, p2->path);
+    return combined;
+}
+
+// Проверка информации о файле
+FileInfo file_info_get(Path* p) {
+    FileInfo info;
+    info.path = *p;
+    info.exists = 0;
+    info.is_directory = 0;
+    info.is_regular_file = 0;
+    info.file_size = 0;
+    info.last_write_time = 0;
+    
+    struct stat stat_buf;
+    if (stat(p->path, &stat_buf) == 0) {
+        info.exists = 1;
+        info.is_directory = S_ISDIR(stat_buf.st_mode);
+        info.is_regular_file = S_ISREG(stat_buf.st_mode);
+        info.file_size = stat_buf.st_size;
+        info.last_write_time = stat_buf.st_mtime;
+    }
+    
+    return info;
+}
+
+// Создание директории
+int fs_create_directory(Path* p) {
+    if (!p) return 0;
+    return mkdir(p->path, 0755) == 0;
+}
+
+// Удаление файла
+int fs_remove(Path* p) {
+    if (!p) return 0;
+    return remove(p->path) == 0;
+}
+
+// Удаление директории
+int fs_remove_directory(Path* p) {
+    if (!p) return 0;
+    return rmdir(p->path) == 0;
+}
+
+// Копирование файла
+int fs_copy_file(Path* from, Path* to) {
+    if (!from || !to) return 0;
+    
+    FILE* src = fopen(from->path, "rb");
+    if (!src) return 0;
+    
+    FILE* dst = fopen(to->path, "wb");
+    if (!dst) {
+        fclose(src);
+        return 0;
+    }
+    
+    char buffer[8192];
+    size_t bytes_read;
+    
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), src)) > 0) {
+        fwrite(buffer, 1, bytes_read, dst);
+    }
+    
+    fclose(src);
+    fclose(dst);
+    return 1;
+}
+
+// Перемещение файла
+int fs_rename(Path* old_path, Path* new_path) {
+    if (!old_path || !new_path) return 0;
+    return rename(old_path->path, new_path->path) == 0;
+}
+
+// Проверка существования
+int fs_exists(Path* p) {
+    if (!p) return 0;
+    struct stat buffer;
+    return (stat(p->path, &buffer) == 0);
+}
+
+// Получение размера файла
+long long fs_file_size(Path* p) {
+    if (!p) return 0;
+    struct stat stat_buf;
+    if (stat(p->path, &stat_buf) == 0) {
+        return stat_buf.st_size;
+    }
+    return 0;
+}
+
+// Список файлов в директории
+int fs_directory_iterator(Path* dir_path, Path* results, int max_results) {
+    if (!dir_path || !results) return 0;
+    
+    DIR* dir = opendir(dir_path->path);
+    if (!dir) return 0;
+    
+    struct dirent* entry;
+    int count = 0;
+    
+    while ((entry = readdir(dir)) != NULL && count < max_results) {
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+            snprintf(results[count].path, MAX_PATH_LENGTH, "%s/%s", dir_path->path, entry->d_name);
+            count++;
+        }
+    }
+    
+    closedir(dir);
+    return count;
+}
+
+// Печать информации о файле
+void file_info_print(FileInfo* info) {
+    printf("Path: %s\n", info->path.path);
+    printf("Exists: %s\n", info->exists ? "Yes" : "No");
+    printf("Is Directory: %s\n", info->is_directory ? "Yes" : "No");
+    printf("Is Regular File: %s\n", info->is_regular_file ? "Yes" : "No");
+    printf("Size: %lld bytes\n", info->file_size);
+    
+    struct tm* tm_info = localtime(&info->last_write_time);
+    char time_str[100];
+    strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", tm_info);
+    printf("Last Write Time: %s\n", time_str);
+    printf("\n");
+}
+
+// Пример использования
+int main() {
+    printf("=== Демонстрация файловой системы (аналог std::filesystem) ===\n\n");
+    
+    // Создание путей
+    Path root = path_create("/tmp/filesystem_demo");
+    Path subdir = path_create("test_subdir");
+    Path filepath = path_create("test_file.txt");
+    
+    // Создание полного пути к поддиректории
+    Path full_subdir = path_append(&root, &subdir);
+    printf("Путь к поддиректории: %s\n", full_subdir.path);
+    
+    // Создание полного пути к файлу
+    Path full_filepath = path_append(&full_subdir, &filepath);
+    printf("Путь к файлу: %s\n", full_filepath.path);
+    
+    // Получение родительской директории
+    Path parent = path_parent_path(&full_filepath);
+    printf("Родительская директория: %s\n", parent.path);
+    
+    // Получение имени файла
+    Path filename = path_filename(&full_filepath);
+    printf("Имя файла: %s\n", filename.path);
+    
+    // Создание директории
+    printf("\nСоздание директории: %s\n", full_subdir.path);
+    if (fs_create_directory(&full_subdir)) {
+        printf("Директория успешно создана\n");
+    } else {
+        printf("Ошибка создания директории: %s\n", strerror(errno));
+    }
+    
+    // Создание тестового файла
+    FILE* test_file = fopen(full_filepath.path, "w");
+    if (test_file) {
+        fprintf(test_file, "Это тестовый файл для демонстрации.\n");
+        fprintf(test_file, "Содержимое файла.\n");
+        fclose(test_file);
+        printf("Тестовый файл успешно создан\n");
+    } else {
+        printf("Ошибка создания тестового файла: %s\n", strerror(errno));
+    }
+    
+    // Получение информации о файле
+    printf("\nИнформация о файле:\n");
+    FileInfo file_info = file_info_get(&full_filepath);
+    file_info_print(&file_info);
+    
+    // Получение информации о директории
+    printf("Информация о директории:\n");
+    FileInfo dir_info = file_info_get(&full_subdir);
+    file_info_print(&dir_info);
+    
+    // Копирование файла
+    Path copied_file = path_append(&root, path_create("copied_file.txt"));
+    printf("Копирование файла в: %s\n", copied_file.path);
+    if (fs_copy_file(&full_filepath, &copied_file)) {
+        printf("Файл успешно скопирован\n");
+    } else {
+        printf("Ошибка копирования файла\n");
+    }
+    
+    // Проверка размера файла
+    long long size = fs_file_size(&full_filepath);
+    printf("Размер файла: %lld байт\n", size);
+    
+    // Список файлов в директории
+    Path files[10];
+    int file_count = fs_directory_iterator(&full_subdir, files, 10);
+    printf("\nФайлы в директории %s:\n", full_subdir.path);
+    for (int i = 0; i < file_count; i++) {
+        Path fname = path_filename(&files[i]);
+        printf("- %s\n", fname.path);
+    }
+    
+    // Удаление созданных файлов
+    printf("\nУдаление файлов и директорий...\n");
+    fs_remove(&full_filepath);
+    fs_remove(&copied_file);
+    fs_remove_directory(&full_subdir);
+    
+    printf("Демонстрация завершена\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

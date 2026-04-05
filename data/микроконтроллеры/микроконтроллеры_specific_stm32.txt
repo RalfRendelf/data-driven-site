@@ -1,0 +1,381 @@
+<h2>Специфичные темы для STM32</h2>
+
+<p><strong>Категория:</strong> Архитектуры</p>
+
+<h3>Описание</h3>
+<p>STM32 - это серия 32-битных микроконтроллеров на основе ядра ARM Cortex-M, разработанных STMicroelectronics. Эти микроконтроллеры имеют множество специфичных особенностей, отличающих их от других архитектур, таких как AVR или PIC. В этом разделе рассматриваются специфические аспекты STM32, важные для понимания и эффективного использования.</p>
+
+<h3>RCC (Clock configuration):</h3>
+<p>RCC (Reset and Clock Controller) - это блок управления сбросом и тактированием, отвечающий за генерацию и распределение тактовых сигналов по всему микроконтроллеру. RCC позволяет настраивать системную частоту, а также управлять тактированием периферийных модулей.</p>
+
+<h4>Пример настройки тактирования для STM32F4:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+void SystemClock_Config(void) {
+    // Включить HSE (High Speed External) осциллятор
+    RCC->CR |= RCC_CR_HSEON;
+    
+    // Ждать включения HSE
+    while(!(RCC->CR & RCC_CR_HSERDY));
+    
+    // Включить PLL
+    // Настройка PLL: HSE = 8MHz, VCO = 8MHz * 168 = 1344MHz, SYSCLK = 1344/2 = 168MHz
+    RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_HSE |   // Источник: HSE
+                   (168 << RCC_PLLCFGR_PLLN_Pos) |  // Умножение на 168
+                   (7 << RCC_PLLCFGR_PLLM_Pos) |    // Деление на 7
+                   (0 << RCC_PLLCFGR_PLLP_Pos);     // Деление на 2
+    
+    // Включить PLL
+    RCC->CR |= RCC_CR_PLLON;
+    
+    // Ждать включения PLL
+    while(!(RCC->CR & RCC_CR_PLLRDY));
+    
+    // Настроить делители шин
+    // AHB = 168MHz, APB1 = 42MHz, APB2 = 84MHz
+    RCC->CFGR |= RCC_CFGR_HPRE_DIV1 |   // AHB prescaler = 1
+                 RCC_CFGR_PPRE1_DIV4 |  // APB1 prescaler = 4
+                 RCC_CFGR_PPRE2_DIV2;   // APB2 prescaler = 2
+    
+    // Выбрать PLL как источник системного такта
+    RCC->CFGR |= RCC_CFGR_SW_PLL;
+    
+    // Ждать переключения на PLL
+    while((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+}
+
+// Функция отключения тактирования периферии для экономии энергии
+void RCC_Periph_Clock_Disable(void) {
+    // Отключить тактирование неиспользуемой периферии
+    RCC->AHB1ENR &= ~(RCC_AHB1ENR_CRCEN | RCC_AHB1ENR_DMA1EN | RCC_AHB1ENR_DMA2EN);
+    RCC->APB1ENR &= ~(RCC_APB1ENR_USART2EN | RCC_APB1ENR_SPI2EN | RCC_APB1ENR_I2C1EN);
+    RCC->APB2ENR &= ~(RCC_APB2ENR_ADC1EN | RCC_APB2ENR_SPI1EN);
+}
+</code>
+</pre>
+
+<h3>EXTI (External Interrupts):</h3>
+<p>EXTI (External Interrupt Controller) позволяет генерировать прерывания от внешних сигналов, подключенных к GPIO. EXTI может обрабатывать сигналы с любого GPIO-пина, а также от специфичных периферийных модулей.</p>
+
+<h4>Пример настройки внешнего прерывания:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+void EXTI_Setup(void) {
+    // Включить тактирование GPIOA и SYSCFG
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+    
+    // Настроить GPIOA pin 0 как вход
+    GPIOA->MODER &= ~GPIO_MODER_MODER0;  // Вход по умолчанию
+    
+    // Настроить EXTI line 0 для GPIOA
+    SYSCFG->EXTICR[0] |= 0x0000;  // EXTI0 -> PA0
+    
+    // Настроить прерывание по спадающему фронту
+    EXTI->FTSR |= EXTI_FTSR_TR0;   // Прерывание по спадающему фронту
+    EXTI->IMR |= EXTI_IMR_MR0;     // Разрешить прерывание
+    
+    // Настроить NVIC
+    NVIC_EnableIRQ(EXTI0_IRQn);
+    NVIC_SetPriority(EXTI0_IRQn, 1);
+}
+
+// Обработчик прерывания EXTI0
+void EXTI0_IRQHandler(void) {
+    // Проверить, было ли прерывание от EXTI0
+    if(EXTI->PR & EXTI_PR_PR0) {
+        // Очистить флаг прерывания
+        EXTI->PR |= EXTI_PR_PR0;
+        
+        // Обработать прерывание
+        // Например, переключить другой пин
+        GPIOC->ODR ^= (1 << 13);
+    }
+}
+</code>
+</pre>
+
+<h3>SysTick:</h3>
+<p>SysTick - это системный таймер, встроенный в ядро ARM Cortex-M. Обычно используется для генерации периодических прерываний для системного таймера (например, для RTOS или функции delay).</p>
+
+<h4>Пример использования SysTick:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+volatile uint32_t tick_count = 0;
+
+void SysTick_Init(void) {
+    // Настроить SysTick на прерывания каждую миллисекунду
+    // 168MHz / 1000 = 168000 импульсов за 1ms
+    if(SysTick_Config(SystemCoreClock / 1000)) {
+        // Ошибка настройки SysTick
+        while(1);
+    }
+}
+
+// Обработчик прерывания SysTick (автоматически вызывается ядром)
+void SysTick_Handler(void) {
+    tick_count++;
+}
+
+// Функция задержки
+void Delay_ms(uint32_t ms) {
+    uint32_t start = tick_count;
+    while((tick_count - start) < ms);
+}
+
+// Получить количество миллисекунд с момента запуска
+uint32_t Get_Tick_Count(void) {
+    return tick_count;
+}
+</code>
+</pre>
+
+<h3>NVIC (Nested Vectored Interrupt Controller):</h3>
+<p>NVIC - это контроллер вложенных векторных прерываний, встроенный в ядро ARM Cortex-M. Он управляет приоритетами прерываний и обеспечивает быструю обработку прерываний с возможностью вложенного прерывания более высокого приоритета.</p>
+
+<h4>Пример настройки NVIC:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+void NVIC_Setup(void) {
+    // Установить группу приоритетов
+    // 4 бита для подгруппы приоритетов, 0 бит для подприоритета
+    NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+    
+    // Настроить приоритеты для различных прерываний
+    // DMA Stream 0: высокий приоритет
+    NVIC_SetPriority(DMA1_Stream0_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 0, 0));
+    NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+    
+    // UART2: средний приоритет
+    NVIC_SetPriority(USART2_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 5, 0));
+    NVIC_EnableIRQ(USART2_IRQn);
+    
+    // TIM2: низкий приоритет
+    NVIC_SetPriority(TIM2_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 15, 0));
+    NVIC_EnableIRQ(TIM2_IRQn);
+}
+
+// Пример обработчика прерывания от UART2
+void USART2_IRQHandler(void) {
+    if(USART2->SR & USART_SR_RXNE) {
+        // Принят байт
+        uint8_t received_byte = USART2->DR;
+        // Обработка байта...
+    }
+    
+    if(USART2->SR & USART_SR_TXE) {
+        // Буфер передатчика пуст
+        // Отправка следующего байта...
+    }
+}
+</code>
+</pre>
+
+<h3>Backup registers:</h3>
+<p>Резервные регистры (Backup registers) - это специальные регистры, которые сохраняют свои значения даже при сбросе или отключении основного питания (если подключен резервный источник питания, например, батарейка).</p>
+
+<h4>Пример работы с резервными регистрами:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+void Backup_Registers_Init(void) {
+    // Включить тактирование блока резервных регистров и PWR
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    RCC->APB1ENR |= RCC_APB1ENR_BKPRST;
+    RCC->APB1ENR &= ~RCC_APB1ENR_BKPRST;
+    
+    // Снять защиту от записи
+    PWR->CR |= PWR_CR_DBP;
+}
+
+// Записать значение в резервный регистр
+void Backup_Write_Register(uint8_t register_number, uint32_t value) {
+    if(register_number < 20) {  // BKP_DR1-BKP_DR19 доступны
+        (&(RTC->BKP0R))[register_number] = value;
+    }
+}
+
+// Прочитать значение из резервного регистра
+uint32_t Backup_Read_Register(uint8_t register_number) {
+    if(register_number < 20) {
+        return (&(RTC->BKP0R))[register_number];
+    }
+    return 0;
+}
+
+// Пример использования - сохранение счетчика перезагрузок
+void Increment_Reset_Counter(void) {
+    uint32_t reset_count = Backup_Read_Register(0);
+    reset_count++;
+    Backup_Write_Register(0, reset_count);
+}
+</code>
+</pre>
+
+<h3>Flash programming:</h3>
+<p>STM32 позволяет программировать Flash-память во время выполнения программы, что полезно для обновления прошивки (IAP - In Application Programming) или хранения данных.</p>
+
+<h4>Пример программирования Flash:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+// Структура для хранения данных в Flash
+typedef struct {
+    uint32_t signature;
+    uint32_t version;
+    uint8_t config_data[256];
+} flash_config_t;
+
+// Адрес в Flash для хранения конфигурации
+#define CONFIG_FLASH_ADDR 0x0803F000  // Последняя страница в 256KB Flash
+
+// Функция записи данных в Flash
+uint8_t Flash_Write_Config(const flash_config_t* config) {
+    uint32_t* src_addr = (uint32_t*)config;
+    uint32_t* dst_addr = (uint32_t*)CONFIG_FLASH_ADDR;
+    uint32_t data_size = sizeof(flash_config_t) / sizeof(uint32_t);
+    
+    // Разрешить доступ к Flash
+    FLASH->KEYR = 0x45670123;
+    FLASH->KEYR = 0xCDEF89AB;
+    
+    // Стереть страницу
+    FLASH->CR &= ~FLASH_CR_PSIZE;  // Установить размер слова
+    FLASH->CR |= FLASH_CR_SER;     // Выбрать стирание страницы
+    FLASH->CR &= ~FLASH_CR_SNB;    // Выбрать номер страницы (в данном случае последняя)
+    FLASH->CR |= (11 << FLASH_CR_SNB_Pos);  // Для STM32F407 - страница 11
+    FLASH->CR |= FLASH_CR_STRT;    // Запустить стирание
+    
+    // Ждать завершения
+    while(FLASH->SR & FLASH_SR_BSY);
+    
+    if(FLASH->SR & FLASH_SR_ERROR_MASK) {
+        return 1; // Ошибка стирания
+    }
+    
+    // Записать данные
+    FLASH->CR |= FLASH_CR_PG;  // Режим программирования
+    
+    for(uint32_t i = 0; i < data_size; i++) {
+        dst_addr[i] = src_addr[i];
+        
+        // Ждать завершения записи
+        while(FLASH->SR & FLASH_SR_BSY);
+        
+        if(FLASH->SR & FLASH_SR_ERROR_MASK) {
+            FLASH->CR &= ~FLASH_CR_PG;
+            return 2; // Ошибка записи
+        }
+    }
+    
+    // Выключить режим программирования
+    FLASH->CR &= ~FLASH_CR_PG;
+    
+    // Заблокировать доступ к Flash
+    FLASH->CR |= FLASH_CR_LOCK;
+    
+    return 0; // Успешно
+}
+
+// Функция чтения данных из Flash
+void Flash_Read_Config(flash_config_t* config) {
+    uint32_t* src_addr = (uint32_t*)CONFIG_FLASH_ADDR;
+    uint32_t* dst_addr = (uint32_t*)config;
+    uint32_t data_size = sizeof(flash_config_t) / sizeof(uint32_t);
+    
+    for(uint32_t i = 0; i < data_size; i++) {
+        dst_addr[i] = src_addr[i];
+    }
+}
+</code>
+</pre>
+
+<h3>Option bytes:</h3>
+<p>Option bytes - это специальные байты конфигурации, которые влияют на поведение микроконтроллера на уровне чипа. Они находятся вне основной Flash-памяти и содержат настройки защиты, опции запуска и другие параметры.</p>
+
+<h4>Пример работы с Option Bytes:</h4>
+
+<pre>
+<code>
+#include "stm32f4xx.h"
+
+// Структура для чтения/записи Option Bytes
+typedef struct {
+    uint8_t RDP;              // Read protection
+    uint8_t USER;             // User options
+    uint8_t DATA0;            // Data byte 0
+    uint8_t DATA1;            // Data byte 1
+    uint32_t WRP;             // Write protection
+} option_bytes_t;
+
+// Функция для изменения опций (внимание: требует полного стирания Flash!)
+uint8_t Modify_Option_Bytes(option_bytes_t* opt) {
+    // Разрешить доступ к Flash
+    FLASH->OPTKEYR = 0x08192A3B;
+    FLASH->OPTKEYR = 0x4C5D6E7F;
+    
+    // Изменить опции
+    FLASH->OPTCR = 0;  // Сброс
+    FLASH->OPTCR |= (opt->RDP << FLASH_OPTCR_RDP_Pos) & FLASH_OPTCR_RDP;
+    FLASH->OPTCR |= (opt->USER << FLASH_OPTCR_nRST_STOP_Pos) & FLASH_OPTCR_USER;
+    FLASH->OPTCR |= (opt->DATA0 << FLASH_OPTCR_Data0_Pos) & FLASH_OPTCR_Data0;
+    FLASH->OPTCR |= (opt->DATA1 << FLASH_OPTCR_Data1_Pos) & FLASH_OPTCR_Data1;
+    FLASH->OPTCR |= opt->WRP & FLASH_OPTCR_WRP;
+    
+    // Запустить программирование опций
+    FLASH->OPTCR |= FLASH_OPTCR_OPTSTRT;
+    
+    // Ждать завершения
+    while(FLASH->SR & FLASH_SR_BSY);
+    
+    if(FLASH->SR & FLASH_SR_ERROR_MASK) {
+        return 1; // Ошибка
+    }
+    
+    // Сохранить изменения и перезагрузить
+    FLASH->OPTCR |= FLASH_OPTCR_OPTLOCK;
+    
+    // Требуется системный сброс для применения изменений
+    NVIC_SystemReset();
+    
+    return 0; // Не достигается из-за сброса
+}
+
+// Пример: включить защиту от чтения
+void Enable_Read_Protection(void) {
+    option_bytes_t opt;
+    opt.RDP = 0xCC;  // Включить защиту
+    opt.USER = 0x00; // Стандартные настройки
+    opt.DATA0 = 0xFF;
+    opt.DATA1 = 0xFF;
+    opt.WRP = 0xFFFF; // Без защиты записи
+    
+    Modify_Option_Bytes(&opt);
+}
+</code>
+</pre>
+
+<h3>Рекомендации по использованию специфичных возможностей STM32:</h3>
+<ul>
+<li>Всегда проверяйте флаги готовности при настройке тактирования и Flash</li>
+<li>Используйте приоритеты прерываний для обеспечения своевременной реакции на критичные события</li>
+<li>Резервные регистры удобны для хранения критичных данных при сбоях</li>
+<li>Программирование Flash требует особого внимания к защите от сбоев питания</li>
+<li>Изменение Option Bytes требует полного стирания Flash и системного сброса</li>
+</ul>

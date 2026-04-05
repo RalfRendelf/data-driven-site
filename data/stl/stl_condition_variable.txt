@@ -1,0 +1,238 @@
+<h2>std::condition_variable</h2>
+
+<p><strong>Категория:</strong> Многопоточность</p>
+
+<h3>Описание</h3>
+<p>std::condition_variable - это примитив синхронизации, который позволяет одному или нескольким потокам ждать, пока другой поток не уведомит их о наступлении определенного события. Он используется совместно с std::mutex для координации между потоками.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::condition_variable:</p>
+
+<pre>
+<code>
+// Пример использования std::condition_variable на C++
+
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;mutex&gt;
+#include &lt;condition_variable&gt;
+#include &lt;queue&gt;
+
+std::mutex mtx;
+std::condition_variable cv;
+std::queue&lt;int&gt; data_queue;
+bool finished = false;
+
+void consumer(int id) {
+    while (true) {
+        std::unique_lock&lt;std::mutex&gt; lock(mtx);
+        
+        // Ждем, пока не появятся данные или не закончится работа
+        cv.wait(lock, []{ return !data_queue.empty() || finished; });
+        
+        // Обрабатываем все доступные данные
+        while (!data_queue.empty()) {
+            int value = data_queue.front();
+            data_queue.pop();
+            std::cout << "Consumer " << id << " got: " << value << std::endl;
+        }
+        
+        // Если работа закончена и данных больше нет, выходим
+        if (finished && data_queue.empty()) {
+            break;
+        }
+    }
+    std::cout << "Consumer " << id << " finished" << std::endl;
+}
+
+void producer() {
+    for (int i = 1; i <= 10; ++i) {
+        {
+            std::lock_guard&lt;std::mutex&gt; lock(mtx);
+            data_queue.push(i);
+            std::cout << "Produced: " << i << std::endl;
+        }
+        cv.notify_one(); // Уведомляем один ожидающий поток
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    
+    // Сообщаем, что производство закончено
+    {
+        std::lock_guard&lt;std::mutex&gt; lock(mtx);
+        finished = true;
+    }
+    cv.notify_all(); // Уведомляем все потоки
+}
+
+int main() {
+    std::thread prod(producer);
+    std::thread cons1(consumer, 1);
+    std::thread cons2(consumer, 2);
+    
+    prod.join();
+    cons1.join();
+    cons2.join();
+    
+    std::cout << "All threads completed" << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C с использованием pthread condition variables:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX threads
+ * Компиляция: gcc -o condition_variable_example condition_variable_example.c -lpthread
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdbool.h&gt;
+
+// Структура для хранения очереди данных
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;
+    Node* tail;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    bool finished;
+} DataQueue;
+
+// Инициализация очереди
+void init_queue(DataQueue* queue) {
+    queue->head = NULL;
+    queue->tail = NULL;
+    pthread_mutex_init(&queue->mutex, NULL);
+    pthread_cond_init(&queue->cond, NULL);
+    queue->finished = false;
+}
+
+// Добавление элемента в очередь
+void enqueue(DataQueue* queue, int value) {
+    Node* new_node = malloc(sizeof(Node));
+    new_node->data = value;
+    new_node->next = NULL;
+    
+    pthread_mutex_lock(&queue->mutex);
+    
+    if (queue->tail == NULL) {
+        queue->head = queue->tail = new_node;
+    } else {
+        queue->tail->next = new_node;
+        queue->tail = new_node;
+    }
+    
+    pthread_cond_signal(&queue->cond); // Уведомляем один ожидающий поток
+    pthread_mutex_unlock(&queue->mutex);
+}
+
+// Извлечение элемента из очереди
+int dequeue(DataQueue* queue, int* value) {
+    pthread_mutex_lock(&queue->mutex);
+    
+    // Ждем, пока не появятся данные или не закончится работа
+    while (queue->head == NULL && !queue->finished) {
+        pthread_cond_wait(&queue->cond, &queue->mutex);
+    }
+    
+    if (queue->head == NULL) {
+        pthread_mutex_unlock(&queue->mutex);
+        return 0; // Нет данных и работа окончена
+    }
+    
+    Node* node = queue->head;
+    *value = node->data;
+    queue->head = node->next;
+    
+    if (queue->head == NULL) {
+        queue->tail = NULL;
+    }
+    
+    free(node);
+    pthread_mutex_unlock(&queue->mutex);
+    
+    return 1; // Успешно извлечен элемент
+}
+
+// Функция потребителя
+void* consumer(void* args) {
+    int id = *(int*)args;
+    int value;
+    
+    DataQueue* queue = (DataQueue*)args + sizeof(int)/sizeof(void*); // получаем указатель на очередь
+    
+    while (1) {
+        if (dequeue(queue, &value)) {
+            printf("Consumer %d got: %d\n", id, value);
+        } else {
+            // Работа закончена
+            break;
+        }
+    }
+    
+    printf("Consumer %d finished\n", id);
+    return NULL;
+}
+
+// Функция производителя
+void* producer(void* args) {
+    DataQueue* queue = (DataQueue*)args;
+    
+    for (int i = 1; i <= 10; i++) {
+        printf("Produced: %d\n", i);
+        enqueue(queue, i);
+        usleep(100000); // 100 мс
+    }
+    
+    // Сообщаем, что производство закончено
+    pthread_mutex_lock(&queue->mutex);
+    queue->finished = true;
+    pthread_cond_broadcast(&queue->cond); // Уведомляем все потоки
+    pthread_mutex_unlock(&queue->mutex);
+    
+    return NULL;
+}
+
+// Пример использования
+int main() {
+    DataQueue queue;
+    init_queue(&queue);
+    
+    pthread_t prod, cons1, cons2;
+    int id1 = 1, id2 = 2;
+    
+    pthread_create(&prod, NULL, producer, &queue);
+    pthread_create(&cons1, NULL, consumer, &id1);
+    pthread_create(&cons2, NULL, consumer, &id2);
+    
+    pthread_join(prod, NULL);
+    pthread_join(cons1, NULL);
+    pthread_join(cons2, NULL);
+    
+    printf("All threads completed\n");
+    
+    // Очистка
+    pthread_mutex_destroy(&queue.mutex);
+    pthread_cond_destroy(&queue.cond);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

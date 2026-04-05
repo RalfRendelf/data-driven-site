@@ -1,0 +1,334 @@
+<h2>Ranges (C++20)</h2>
+
+<p><strong>Категория:</strong> Алгоритмы</p>
+
+<h3>Описание</h3>
+<p>Ranges - это новая библиотека, добавленная в C++20, которая предоставляет более удобный и выразительный способ работы с коллекциями данных. Она улучшает традиционные STL-алгоритмы, позволяя создавать цепочки операций (pipelines) для обработки последовательностей данных более декларативным способом.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++20</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные концепции Ranges и их реализация на C (для демонстрации аналогов):</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o ranges_example ranges_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура для представления диапазона (range)
+typedef struct {
+    void* begin;
+    void* end;
+    size_t element_size;
+    char type_name[20];
+} Range;
+
+// Структура для хранения результата фильтрации
+typedef struct {
+    void* data;
+    size_t count;
+    size_t capacity;
+    size_t element_size;
+} FilteredRange;
+
+// Функция для создания диапазона
+Range create_range(void* start, void* finish, size_t elem_size, const char* type) {
+    Range r;
+    r.begin = start;
+    r.end = finish;
+    r.element_size = elem_size;
+    strncpy(r.type_name, type, sizeof(r.type_name) - 1);
+    r.type_name[sizeof(r.type_name) - 1] = '\0';
+    return r;
+}
+
+// Функция для получения размера диапазона
+size_t range_size(Range* r) {
+    if (!r) return 0;
+    return ((char*)r->end - (char*)r->begin) / r->element_size;
+}
+
+// Функция для фильтрации диапазона
+FilteredRange filter_range(Range* r, int (*predicate)(void*)) {
+    if (!r || !predicate) return (FilteredRange){0};
+    
+    FilteredRange result;
+    result.element_size = r->element_size;
+    result.capacity = range_size(r);
+    result.data = malloc(result.capacity * result.element_size);
+    result.count = 0;
+    
+    char* current = (char*)r->begin;
+    char* end = (char*)r->end;
+    
+    while (current < end) {
+        if (predicate(current)) {
+            memcpy((char*)result.data + (result.count * result.element_size), current, r->element_size);
+            result.count++;
+        }
+        current += r->element_size;
+    }
+    
+    return result;
+}
+
+// Функция для преобразования (map) диапазона
+FilteredRange map_range(Range* r, void (*transform)(void*, void*)) {
+    if (!r || !transform) return (FilteredRange){0};
+    
+    FilteredRange result;
+    result.element_size = r->element_size;
+    result.capacity = range_size(r);
+    result.data = malloc(result.capacity * result.element_size);
+    result.count = range_size(r);
+    
+    char* src = (char*)r->begin;
+    char* dst = (char*)result.data;
+    char* end = (char*)r->end;
+    size_t count = 0;
+    
+    while (src < end) {
+        transform(src, dst + (count * result.element_size));
+        src += r->element_size;
+        count++;
+    }
+    
+    return result;
+}
+
+// Функция для вывода диапазона
+void print_range_int(Range* r, const char* label) {
+    if (!r || strcmp(r->type_name, "int") != 0) {
+        printf("%s: Некорректный диапазон\n", label);
+        return;
+    }
+    
+    printf("%s: [", label);
+    int* current = (int*)r->begin;
+    int* end = (int*)r->end;
+    
+    while (current < end) {
+        printf("%d", *current);
+        if (current + 1 < end) printf(", ");
+        current++;
+    }
+    printf("]\n");
+}
+
+void print_filtered_range_int(FilteredRange* fr, const char* label) {
+    if (!fr || fr->element_size != sizeof(int)) {
+        printf("%s: Некорректный диапазон\n", label);
+        return;
+    }
+    
+    printf("%s: [", label);
+    int* current = (int*)fr->data;
+    
+    for (size_t i = 0; i < fr->count; i++) {
+        printf("%d", current[i]);
+        if (i < fr->count - 1) printf(", ");
+    }
+    printf("]\n");
+}
+
+// Предикаты для фильтрации
+int is_even(void* value) {
+    int v = *(int*)value;
+    return v % 2 == 0;
+}
+
+int is_positive(void* value) {
+    int v = *(int*)value;
+    return v > 0;
+}
+
+int is_greater_than_10(void* value) {
+    int v = *(int*)value;
+    return v > 10;
+}
+
+// Функции для преобразования
+void square(void* input, void* output) {
+    int val = *(int*)input;
+    *(int*)output = val * val;
+}
+
+void multiply_by_2(void* input, void* output) {
+    int val = *(int*)input;
+    *(int*)output = val * 2;
+}
+
+void negate(void* input, void* output) {
+    int val = *(int*)input;
+    *(int*)output = -val;
+}
+
+// Функция для сортировки диапазона (упрощенная реализация)
+void sort_range_int(Range* r) {
+    if (!r || strcmp(r->type_name, "int") != 0) return;
+    
+    size_t size = range_size(r);
+    int* arr = (int*)r->begin;
+    
+    // Простая сортировка пузырьком
+    for (size_t i = 0; i < size - 1; i++) {
+        for (size_t j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Функция для получения первых N элементов
+FilteredRange take_range(Range* r, size_t n) {
+    if (!r) return (FilteredRange){0};
+    
+    size_t actual_count = range_size(r);
+    if (n > actual_count) n = actual_count;
+    
+    FilteredRange result;
+    result.element_size = r->element_size;
+    result.capacity = n;
+    result.data = malloc(n * r->element_size);
+    result.count = n;
+    
+    memcpy(result.data, r->begin, n * r->element_size);
+    
+    return result;
+}
+
+// Демонстрация работы с ranges
+void demonstrate_ranges() {
+    printf("=== Демонстрация Ranges (аналог) ===\n\n");
+    
+    // Создание массива для работы
+    int numbers[] = {1, -2, 3, 4, -5, 6, 7, 8, 9, 10, 11, 12};
+    size_t count = sizeof(numbers) / sizeof(numbers[0]);
+    
+    // Создание диапазона
+    Range num_range = create_range(&numbers[0], &numbers[count], sizeof(int), "int");
+    print_range_int(&num_range, "Исходный диапазон");
+    
+    // Фильтрация: положительные числа
+    FilteredRange positive_nums = filter_range(&num_range, is_positive);
+    print_filtered_range_int(&positive_nums, "Положительные числа");
+    
+    // Фильтрация: четные числа
+    FilteredRange even_nums = filter_range(&num_range, is_even);
+    print_filtered_range_int(&even_nums, "Четные числа");
+    
+    // Фильтрация: больше 10
+    FilteredRange greater_than_10 = filter_range(&num_range, is_greater_than_10);
+    print_filtered_range_int(&greater_than_10, "Больше 10");
+    
+    // Преобразование: возведение в квадрат
+    FilteredRange squared_nums = map_range(&greater_than_10, square);
+    print_filtered_range_int(&squared_nums, "Квадраты чисел > 10");
+    
+    // Преобразование: умножение на 2
+    FilteredRange doubled_nums = map_range(&positive_nums, multiply_by_2);
+    print_filtered_range_int(&doubled_nums, "Положительные числа * 2");
+    
+    // Получение первых 5 элементов
+    FilteredRange first_five = take_range(&num_range, 5);
+    print_filtered_range_int(&first_five, "Первые 5 элементов");
+    
+    // Комбинированная операция: положительные -> четные -> квадрат
+    printf("\nКомбинированная операция:\n");
+    FilteredRange pos_nums = filter_range(&num_range, is_positive);
+    FilteredRange pos_even_nums = filter_range(&pos_nums, is_even);
+    
+    // Для отображения результатов промежуточного фильтра
+    print_filtered_range_int(&pos_even_nums, "Положительные четные числа");
+    
+    FilteredRange pos_even_squared = map_range(&pos_even_nums, square);
+    print_filtered_range_int(&pos_even_squared, "Квадраты положительных четных чисел");
+    
+    // Очистка памяти
+    free(positive_nums.data);
+    free(even_nums.data);
+    free(greater_than_10.data);
+    free(squared_nums.data);
+    free(doubled_nums.data);
+    free(first_five.data);
+    free(pos_nums.data);
+    free(pos_even_nums.data);
+    free(pos_even_squared.data);
+}
+
+// Дополнительная информация о Ranges
+void ranges_detailed_info() {
+    printf("\n--- Подробнее о Ranges (C++20) ---\n");
+    printf("\nRanges библиотека в C++20 включает:\n\n");
+    
+    printf("1. Range - пара итераторов, представляющая последовательность\n");
+    printf("2. View - ленивое представление диапазона (не копирует данные)\n");
+    printf("3. Iterator - указывает на элемент в диапазоне\n");
+    printf("4. Sentinel - маркер конца диапазона\n\n");
+    
+    printf("Примеры использования в C++20:\n\n");
+    
+    printf("// Фильтрация и преобразование в одну цепочку\n");
+    printf("auto result = vec | std::views::filter(is_positive)\n");
+    printf("              | std::views::transform(square)\n");
+    printf("              | std::views::take(5);\n\n");
+    
+    printf("// Создание собственных view\n");
+    printf("template<std::ranges::range R>\n");
+    printf("auto my_algorithm(R&& r) {\n");
+    printf("    return std::ranges::subrange{\n");
+    printf("        std::ranges::find(r, value),\n");
+    printf("        std::ranges::end(r)\n");
+    printf("    };\n");
+    printf("}\n\n");
+    
+    printf("Ranges позволяют:\n");
+    printf("- Писать более выразительный код\n");
+    printf("- Избегать создания промежуточных контейнеров\n");
+    printf("- Комбинировать алгоритмы в цепочки\n");
+    printf("- Использовать ленивые вычисления\n");
+    printf("- Повысить производительность за счет оптимизаций\n");
+}
+
+// Демонстрация концепции view (ленивое вычисление)
+void demonstrate_lazy_evaluation() {
+    printf("\n--- Демонстрация концепции View (ленивое вычисление) ---\n");
+    
+    printf("\nВ C++20 views работают лениво, т.е. вычисления происходят\n");
+    printf("только при фактическом обращении к элементам.\n\n");
+    
+    printf("// Пример ленивого вычисления в C++:\n");
+    printf("auto squares = vec | std::views::transform([](int x) { return x*x; });\n");
+    printf("// На этом этапе вычисления не производятся\n\n");
+    
+    printf("for (int n : squares) {\n");
+    printf("    std::cout << n << \" \";  // Только здесь происходит вычисление\n");
+    printf("}\n");
+    
+    printf("\nНаши C-реализации не полностью воспроизводят ленивость,\n");
+    printf("но показывают основную идею обработки диапазонов.\n");
+}
+
+int main() {
+    demonstrate_ranges();
+    ranges_detailed_info();
+    demonstrate_lazy_evaluation();
+    
+    printf("\nRanges в C++20 значительно упрощают работу с коллекциями данных\n");
+    printf("и позволяют писать более чистый и выразительный код.\n");
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

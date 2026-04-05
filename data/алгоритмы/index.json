@@ -1,0 +1,191 @@
+[
+  {
+    "type": "алгоритмы",
+    "name": "Binary Search",
+    "fileName": "алгоритмы_binary_search.txt",
+    "category": "Поиск",
+    "usage": "Поиск элемента в отсортированном массиве"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Quick Sort",
+    "fileName": "алгоритмы_quick_sort.txt",
+    "category": "Сортировка",
+    "usage": "Быстрая сортировка массива"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Merge Sort",
+    "fileName": "алгоритмы_merge_sort.txt",
+    "category": "Сортировка",
+    "usage": "Сортировка слиянием"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "DFS",
+    "fileName": "алгоритмы_dfs.txt",
+    "category": "Графы",
+    "usage": "Поиск в глубину"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "BFS",
+    "fileName": "алгоритмы_bfs.txt",
+    "category": "Графы",
+    "usage": "Поиск в ширину"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Dijkstra",
+    "fileName": "алгоритмы_dijkstra.txt",
+    "category": "Графы",
+    "usage": "Поиск кратчайшего пути в взвешенном графе"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Dynamic Programming",
+    "fileName": "алгоритмы_dynamic_programming.txt",
+    "category": "Оптимизация",
+    "usage": "Решение задач с перекрывающимися подзадачами"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "KMP",
+    "fileName": "алгоритмы_kmp.txt",
+    "category": "Поиск",
+    "usage": "Алгоритм поиска подстроки (Knuth-Morris-Pratt)"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Union-Find",
+    "fileName": "алгоритмы/union_find.txt",
+    "category": "Структуры данных",
+    "usage": "Определение принадлежности компонентам связности"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Topological Sort",
+    "fileName": "алгоритмы/topological_sort.txt",
+    "category": "Графы",
+    "usage": "Топологическая сортировка ориентированного ациклического графа"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Hash Tables",
+    "fileName": "алгоритмы_hash_tables.txt",
+    "category": "Структуры данных",
+    "usage": "Хранение пар ключ-значение с быстрым доступом"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers: Left-right",
+    "fileName": "алгоритмы_two_pointers_left_right.txt",
+    "category": "Массивы",
+    "usage": "Два указателя движутся по массиву в одном направлении"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers: Opposite",
+    "fileName": "алгоритмы_two_pointers_opposite.txt",
+    "category": "Массивы",
+    "usage": "Два указателя движутся навстречу друг другу"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers: Fast-slow",
+    "fileName": "алгоритмы_two_pointers_fast_slow.txt",
+    "category": "Массивы Связные списки",
+    "usage": "Один указатель движется быстрее другого"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Non-overlapping Windows: Fixed Size",
+    "fileName": "алгоритмы_non_overlapping_windows_fixed_size.txt",
+    "category": "Массивы",
+    "usage": "Оконно-скользящий алгоритм фиксированного размера"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Non-overlapping Windows: Variable Size",
+    "fileName": "алгоритмы_non_overlapping_windows_variable_size.txt",
+    "category": "Массивы",
+    "usage": "Оконно-скользящий алгоритм переменного размера"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Non-overlapping Windows: Multiple Windows",
+    "fileName": "алгоритмы_non_overlapping_windows_multiple_windows.txt",
+    "category": "Массивы",
+    "usage": "Одновременная обработка нескольких окон"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Prefix Sums",
+    "fileName": "алгоритмы_prefix_sums.txt",
+    "category": "Массивы",
+    "usage": "Вычисление сумм на подотрезках за O(1) после предварительной обработки"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Sliding Window",
+    "fileName": "алгоритмы_sliding_window.txt",
+    "category": "Массивы",
+    "usage": "Нахождение оптимальных подотрезков с использованием скользящего окна"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Monotonic Stack",
+    "fileName": "алгоритмы_monotonic_stack.txt",
+    "category": "Структуры данных",
+    "usage": "Поиск следующего/предыдущего меньшего/большего элемента"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "LCA / Tree / Fenwick / Segment Tree",
+    "fileName": "алгоритмы_lca_tree_fenwick_segment_tree.txt",
+    "category": "Деревья/Структуры данных",
+    "usage": "Алгоритмы и структуры для работы с деревьями и диапазонными запросами"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Z-function / Prefix-function / Manacher",
+    "fileName": "алгоритмы/z_function_prefix_function_manacher.txt",
+    "category": "Строки",
+    "usage": "Алгоритмы для работы с подстроками и палиндромами"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Bitmask DP",
+    "fileName": "алгоритмы_bitmask_dp.txt",
+    "category": "Динамическое программирование",
+    "usage": "Динамическое программирование с битовыми масками"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Tree DP",
+    "fileName": "алгоритмы_tree_dp.txt",
+    "category": "Динамическое программирование",
+    "usage": "Динамическое программирование на деревьях"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Quickselect",
+    "fileName": "алгоритмы_quickselect.txt",
+    "category": "Поиск",
+    "usage": "Нахождение k-го по величине элемента за линейное время в среднем"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Computational Geometry",
+    "fileName": "алгоритмы_computational_geometry.txt",
+    "category": "Геометрия",
+    "usage": "Алгоритмы для решения геометрических задач"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Greedy Patterns",
+    "fileName": "алгоритмы_greedy_patterns.txt",
+    "category": "Жадные алгоритмы",
+    "usage": "Шаблоны жадных алгоритмов для оптимизационных задач"
+  }
+]

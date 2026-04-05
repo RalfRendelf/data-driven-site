@@ -1,0 +1,185 @@
+<h2>Архитектура AVR</h2>
+
+<p><strong>Категория:</strong> Архитектуры</p>
+
+<h3>Описание</h3>
+<p>AVR - это 8-битная семья RISC (Reduced Instruction Set Computing) микроконтроллеров, разработанных Atmel (ныне часть Microchip). Архитектура AVR имеет Harvard архитектуру с отдельными шинами данных для команд и данных.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>8-битная шина данных</li>
+<li>Гарвардская архитектура</li>
+<li>32 8-битных регистра общего назначения</li>
+<li>Встроенный Flash ROM для программ</li>
+<li>Встроенный SRAM</li>
+<li>Встроенный EEPROM</li>
+<li>Возможность однократного программирования ISP</li>
+</ul>
+
+<h3>Пример программы на C для AVR:</h3>
+
+<pre>
+<code>
+// Пример: мигание светодиодом на ATmega328P
+#include &lt;avr/io.h&gt;
+#include &lt;util/delay.h&gt;
+
+int main(void) {
+    // Настройка PB5 (пин 13 на Arduino Uno) как выход
+    DDRB |= (1 << DDB5);
+    
+    while(1) {
+        // Установка высокого уровня
+        PORTB |= (1 << PORTB5);
+        
+        // Задержка 1 секунда
+        _delay_ms(1000);
+        
+        // Установка низкого уровня
+        PORTB &= ~(1 << PORTB5);
+        
+        // Задержка 1 секунда
+        _delay_ms(1000);
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Регистры AVR:</h3>
+<ul>
+<li>SREG - регистр состояния</li>
+<li>SP - указатель стека</li>
+<li>MCUCR - регистр управления режимом микроконтроллера</li>
+<li>DDRB/DDRC/DDRD - регистры направления портов</li>
+<li>PINB/PINC/PIND - регистры ввода портов</li>
+<li>PORTB/PORTC/PORTD - регистры вывода портов</li>
+</ul>
+
+<h3>Аналог в мире C:</h3>
+<p>Архитектура AVR не имеет прямого аналога в мире C, но можно провести аналогию с моделью выполнения программ:</p>
+<ul>
+<li>Регистры - локальные переменные в функциях</li>
+<li>Flash память - исполняемый код программы</li>
+<li>SRAM - переменные во время выполнения</li>
+<li>EEPROM - постоянное хранилище данных</li>
+</ul>
+
+<h3>Пример эмуляции AVR архитектуры на C:</h3>
+
+<pre>
+<code>
+/***
+ * Эмуляция AVR архитектуры
+ * Компиляция: gcc -o avr_simulation avr_simulation.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+// Структура для эмуляции AVR регистров
+typedef struct {
+    uint8_t registers[32];     // 32 регистра общего назначения
+    uint8_t sreg;             // Регистр состояния
+    uint16_t sp;              // Указатель стека
+    uint8_t port_b;           // PORTB
+    uint8_t ddr_b;            // DDRB
+    uint8_t pin_b;            // PINB
+} AvrCore;
+
+// Инициализация AVR ядра
+AvrCore init_avr_core() {
+    AvrCore core;
+    
+    // Инициализация регистров
+    for (int i = 0; i < 32; i++) {
+        core.registers[i] = 0;
+    }
+    
+    core.sreg = 0;
+    core.sp = 0x08FF; // Примерное начальное значение для ATmega328P
+    core.port_b = 0;
+    core.ddr_b = 0;
+    core.pin_b = 0;
+    
+    return core;
+}
+
+// Эмуляция инструкции SBI (Set Bit in I/O Register)
+void sbi(AvrCore* core, uint8_t io_register, uint8_t bit) {
+    if (io_register == 0x05) { // DDRB address
+        core->ddr_b |= (1 << bit);
+    } else if (io_register == 0x08) { // PORTB address
+        core->port_b |= (1 << bit);
+    }
+}
+
+// Эмуляция инструкции CBI (Clear Bit in I/O Register)
+void cbi(AvrCore* core, uint8_t io_register, uint8_t bit) {
+    if (io_register == 0x05) { // DDRB address
+        core->ddr_b &= ~(1 << bit);
+    } else if (io_register == 0x08) { // PORTB address
+        core->port_b &= ~(1 << bit);
+    }
+}
+
+// Эмуляция инструкции IN (Load an I/O Location to Register)
+uint8_t in_reg(AvrCore* core, uint8_t io_register) {
+    if (io_register == 0x05) { // DDRB address
+        return core->ddr_b;
+    } else if (io_register == 0x08) { // PORTB address
+        return core->port_b;
+    } else if (io_register == 0x03) { // PINB address
+        return core->pin_b;
+    }
+    return 0;
+}
+
+// Эмуляция инструкции OUT (Store Register to I/O Location)
+void out_reg(AvrCore* core, uint8_t io_register, uint8_t value) {
+    if (io_register == 0x05) { // DDRB address
+        core->ddr_b = value;
+    } else if (io_register == 0x08) { // PORTB address
+        core->port_b = value;
+    } else if (io_register == 0x03) { // PINB address
+        core->pin_b = value;
+    }
+}
+
+// Печать состояния AVR ядра
+void print_avr_status(AvrCore* core) {
+    printf("DDRB: 0x%02X, PORTB: 0x%02X, PINB: 0x%02X\n", 
+           core->ddr_b, core->port_b, core->pin_b);
+}
+
+int main() {
+    AvrCore avr = init_avr_core();
+    
+    printf("Initial status:\n");
+    print_avr_status(&avr);
+    
+    // Эмуляция команды: DDRB |= (1 << DDB5);
+    sbi(&avr, 0x05, 5);  // Установка 5-го бита DDRB (пин как выход)
+    
+    printf("\nAfter setting DDRB bit 5:\n");
+    print_avr_status(&avr);
+    
+    // Эмуляция команды: PORTB |= (1 << PORTB5);
+    sbi(&avr, 0x08, 5);  // Установка 5-го бита PORTB (высокий уровень)
+    
+    printf("\nAfter setting PORTB bit 5:\n");
+    print_avr_status(&avr);
+    
+    // Эмуляция команды: PORTB &= ~(1 << PORTB5);
+    cbi(&avr, 0x08, 5);  // Сброс 5-го бита PORTB (низкий уровень)
+    
+    printf("\nAfter clearing PORTB bit 5:\n");
+    print_avr_status(&avr);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

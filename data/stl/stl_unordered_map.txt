@@ -1,0 +1,339 @@
+<h2>std::unordered_map</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::unordered_map - это ассоциативный контейнер, который содержит пары ключ-значение с уникальными ключами. Организован как хеш-таблица, что позволяет осуществлять поиск, вставку и удаление за постоянное среднее время. В отличие от std::map, элементы не упорядочены по ключам.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::unordered_map:</p>
+
+<pre>
+<code>
+// Пример использования std::unordered_map на C++
+
+#include &lt;iostream&gt;
+#include &lt;unordered_map&gt;
+#include &lt;string&gt;
+
+int main() {
+    // Создание unordered_map
+    std::unordered_map&lt;int, std::string&gt; myMap;
+    
+    // Вставка элементов
+    myMap[1] = "one";
+    myMap[2] = "two";
+    myMap[3] = "three";
+    
+    // Использование emplace
+    myMap.emplace(4, "four");
+    
+    // Использование insert
+    myMap.insert(std::make_pair(5, "five"));
+    
+    std::cout << "Размер unordered_map: " << myMap.size() << std::endl;
+    
+    // Использование итераторов
+    std::cout << "Элементы unordered_map: " << std::endl;
+    for (auto it = myMap.begin(); it != myMap.end(); ++it) {
+        std::cout << it->first << " => " << it->second << std::endl;
+    }
+    
+    // Использование range-based for loop
+    std::cout << "Элементы unordered_map через range-based for: " << std::endl;
+    for (const auto&amp; pair : myMap) {
+        std::cout << pair.first << " => " << pair.second << std::endl;
+    }
+    
+    // Доступ к элементам
+    std::cout << "Значение по ключу 3: " << myMap.at(3) << std::endl;
+    
+    // Проверка наличия ключа
+    if (myMap.count(2) > 0) {
+        std::cout << "Ключ 2 существует в unordered_map" << std::endl;
+    }
+    
+    // Использование find
+    auto it = myMap.find(4);
+    if (it != myMap.end()) {
+        std::cout << "Найден элемент: " << it->first << " => " << it->second << std::endl;
+    }
+    
+    // Удаление элемента
+    myMap.erase(3);
+    std::cout << "После удаления ключа 3:" << std::endl;
+    for (const auto&amp; pair : myMap) {
+        std::cout << pair.first << " => " << pair.second << std::endl;
+    }
+    
+    // Количество элементов с заданным ключом (всегда 0 или 1 для unordered_map)
+    std::cout << "Количество элементов с ключом 5: " << myMap.count(5) << std::endl;
+    
+    // Очистка unordered_map
+    myMap.clear();
+    std::cout << "После очистки размер: " << myMap.size() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o unordered_map_example unordered_map_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#define INITIAL_CAPACITY 16
+#define LOAD_FACTOR_THRESHOLD 0.75
+
+// Структура для пары ключ-значение
+typedef struct {
+    int key;
+    char* value;
+    int is_occupied;
+} HashNode;
+
+// Структура для unordered_map
+typedef struct {
+    HashNode* buckets;
+    size_t size;
+    size_t capacity;
+} UnorderedMap;
+
+// Хеш-функция для int
+size_t hash_function(int key, size_t capacity) {
+    // Простая хеш-функция
+    unsigned int hash = key;
+    hash ^= hash << 16;
+    hash ^= hash >> 8;
+    return hash % capacity;
+}
+
+// Инициализация unordered_map
+UnorderedMap* unordered_map_create() {
+    UnorderedMap* map = malloc(sizeof(UnorderedMap));
+    map->buckets = calloc(INITIAL_CAPACITY, sizeof(HashNode));
+    map->size = 0;
+    map->capacity = INITIAL_CAPACITY;
+    return map;
+}
+
+// Уничтожение unordered_map
+void unordered_map_destroy(UnorderedMap* map) {
+    if (!map) return;
+    
+    for (size_t i = 0; i < map->capacity; i++) {
+        if (map->buckets[i].is_occupied && map->buckets[i].value) {
+            free(map->buckets[i].value);
+        }
+    }
+    
+    free(map->buckets);
+    free(map);
+}
+
+// Удвоение размера таблицы при превышении порога загрузки
+void resize_if_needed(UnorderedMap* map) {
+    if ((double)map->size / map->capacity <= LOAD_FACTOR_THRESHOLD) {
+        return;
+    }
+    
+    size_t old_capacity = map->capacity;
+    HashNode* old_buckets = map->buckets;
+    
+    map->capacity *= 2;
+    map->buckets = calloc(map->capacity, sizeof(HashNode));
+    map->size = 0;
+    
+    // Перехеширование всех элементов
+    for (size_t i = 0; i < old_capacity; i++) {
+        if (old_buckets[i].is_occupied) {
+            unordered_map_put(map, old_buckets[i].key, old_buckets[i].value);
+            free(old_buckets[i].value);
+        }
+    }
+    
+    free(old_buckets);
+}
+
+// Вставка или обновление элемента
+void unordered_map_put(UnorderedMap* map, int key, const char* value) {
+    if (!map || !value) return;
+    
+    resize_if_needed(map);
+    
+    size_t index = hash_function(key, map->capacity);
+    size_t original_index = index;
+    
+    // Линейный probing для разрешения коллизий
+    do {
+        if (!map->buckets[index].is_occupied) {
+            // Найдена пустая ячейка
+            map->buckets[index].key = key;
+            map->buckets[index].value = malloc(strlen(value) + 1);
+            strcpy(map->buckets[index].value, value);
+            map->buckets[index].is_occupied = 1;
+            map->size++;
+            return;
+        } else if (map->buckets[index].key == key) {
+            // Ключ уже существует, обновляем значение
+            free(map->buckets[index].value);
+            map->buckets[index].value = malloc(strlen(value) + 1);
+            strcpy(map->buckets[index].value, value);
+            return;
+        }
+        
+        // Пробуем следующую ячейку
+        index = (index + 1) % map->capacity;
+    } while (index != original_index);
+    
+    // Таблица полностью заполнена (не должно произойти при правильном управлении размером)
+    printf("Хеш-таблица переполнена\n");
+}
+
+// Поиск элемента по ключу
+char* unordered_map_get(UnorderedMap* map, int key) {
+    if (!map) return NULL;
+    
+    size_t index = hash_function(key, map->capacity);
+    size_t original_index = index;
+    
+    // Линейный probing для поиска
+    do {
+        if (!map->buckets[index].is_occupied) {
+            // Нашли пустую ячейку - элемент не существует
+            return NULL;
+        } else if (map->buckets[index].key == key && map->buckets[index].is_occupied) {
+            // Нашли элемент
+            return map->buckets[index].value;
+        }
+        
+        // Пробуем следующую ячейку
+        index = (index + 1) % map->capacity;
+    } while (index != original_index);
+    
+    // Таблица полностью пройдена - элемент не найден
+    return NULL;
+}
+
+// Проверка наличия ключа
+int unordered_map_contains(UnorderedMap* map, int key) {
+    return unordered_map_get(map, key) != NULL;
+}
+
+// Удаление элемента
+void unordered_map_erase(UnorderedMap* map, int key) {
+    if (!map) return;
+    
+    size_t index = hash_function(key, map->capacity);
+    size_t original_index = index;
+    
+    // Линейный probing для поиска
+    do {
+        if (!map->buckets[index].is_occupied) {
+            // Нашли пустую ячейку - элемент не существует
+            return;
+        } else if (map->buckets[index].key == key && map->buckets[index].is_occupied) {
+            // Нашли элемент для удаления
+            free(map->buckets[index].value);
+            map->buckets[index].is_occupied = 0;
+            map->size--;
+            
+            // При удалении элемента желательно выполнить реструктуризацию
+            // для сохранения свойств линейного пробирования
+            // В упрощенном варианте мы просто помечаем как удаленный
+            return;
+        }
+        
+        // Пробуем следующую ячейку
+        index = (index + 1) % map->capacity;
+    } while (index != original_index);
+}
+
+// Получение размера
+size_t unordered_map_size(UnorderedMap* map) {
+    return map ? map->size : 0;
+}
+
+// Проверка на пустоту
+int unordered_map_empty(UnorderedMap* map) {
+    return map ? (map->size == 0) : 1;
+}
+
+// Очистка unordered_map
+void unordered_map_clear(UnorderedMap* map) {
+    if (!map) return;
+    
+    for (size_t i = 0; i < map->capacity; i++) {
+        if (map->buckets[i].is_occupied && map->buckets[i].value) {
+            free(map->buckets[i].value);
+        }
+        map->buckets[i].is_occupied = 0;
+    }
+    map->size = 0;
+}
+
+// Печать unordered_map
+void unordered_map_print(UnorderedMap* map, const char* label) {
+    printf("%s:\n", label);
+    for (size_t i = 0; i < map->capacity; i++) {
+        if (map->buckets[i].is_occupied) {
+            printf("  %d => %s\n", map->buckets[i].key, map->buckets[i].value);
+        }
+    }
+    printf("(size: %zu, capacity: %zu)\n", unordered_map_size(map), map->capacity);
+}
+
+// Пример использования
+int main() {
+    UnorderedMap* myMap = unordered_map_create();
+    
+    // Вставка элементов
+    unordered_map_put(myMap, 1, "one");
+    unordered_map_put(myMap, 2, "two");
+    unordered_map_put(myMap, 3, "three");
+    unordered_map_put(myMap, 4, "four");
+    unordered_map_put(myMap, 5, "five");
+    
+    unordered_map_print(myMap, "Исходный unordered_map");
+    printf("Размер unordered_map: %zu\n", unordered_map_size(myMap));
+    
+    // Доступ к элементам
+    char* value = unordered_map_get(myMap, 3);
+    if (value) {
+        printf("Значение по ключу 3: %s\n", value);
+    }
+    
+    // Проверка наличия ключа
+    if (unordered_map_contains(myMap, 2)) {
+        printf("Ключ 2 существует в unordered_map\n");
+    }
+    
+    // Удаление элемента
+    unordered_map_erase(myMap, 3);
+    unordered_map_print(myMap, "После удаления ключа 3");
+    
+    // Очистка unordered_map
+    unordered_map_clear(myMap);
+    printf("После очистки размер: %zu\n", unordered_map_size(myMap));
+    
+    // Уничтожение unordered_map
+    unordered_map_destroy(myMap);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

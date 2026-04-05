@@ -1,0 +1,429 @@
+[
+  {
+    "type": "stl",
+    "name": "std::vector",
+    "fileName": "stl_vector.txt",
+    "category": "Контейнеры",
+    "usage": "Динамический массив с автоматическим управлением памятью"
+  },
+  {
+    "type": "stl",
+    "name": "std::array",
+    "fileName": "stl_array.txt",
+    "category": "Контейнеры",
+    "usage": "Статический массив с фиксированным размером"
+  },
+  {
+    "type": "stl",
+    "name": "std::list",
+    "fileName": "stl_list.txt",
+    "category": "Контейнеры",
+    "usage": "Двусвязный список с быстрыми вставками/удалениями"
+  },
+  {
+    "type": "stl",
+    "name": "std::forvard_list",
+    "fileName": "stl_forvard_list.txt",
+    "category": "Контейнеры",
+    "usage": "Односвязный список с быстрыми вставками/удалениями"
+  },
+  {
+    "type": "stl",
+    "name": "std::deque",
+    "fileName": "stl_deque.txt",
+    "category": "Контейнеры",
+    "usage": "Двусторонняя очередь с доступом к обоим концам"
+  },
+  {
+    "type": "stl",
+    "name": "std::map",
+    "fileName": "stl_map.txt",
+    "category": "Контейнеры",
+    "usage": "Ассоциативный контейнер с упорядоченными ключами"
+  },
+  {
+    "type": "stl",
+    "name": "std::set",
+    "fileName": "stl_set.txt",
+    "category": "Контейнеры",
+    "usage": "Множество с уникальными упорядоченными значениями"
+  },
+  {
+    "type": "stl",
+    "name": "std::unordered_map",
+    "fileName": "stl_unordered_map.txt",
+    "category": "Контейнеры",
+    "usage": "Хеш-таблица с неупорядоченными ключами"
+  },
+  {
+    "type": "stl",
+    "name": "std::unordered_set",
+    "fileName": "stl_unordered_set.txt",
+    "category": "Контейнеры",
+    "usage": "Хеш-таблица с уникальными неупорядоченными значениями"
+  },
+  {
+    "type": "stl",
+    "name": "std::multimap",
+    "fileName": "stl_multimap.txt",
+    "category": "Контейнеры",
+    "usage": "Ассоциативный контейнер с упорядоченными ключами, допускающими дубликаты"
+  },
+  {
+    "type": "stl",
+    "name": "std::multiset",
+    "fileName": "stl_multiset.txt",
+    "category": "Контейнеры",
+    "usage": "Множество с упорядоченными значениями, допускающими дубликаты"
+  },
+  {
+    "type": "stl",
+    "name": "std::queue",
+    "fileName": "stl_queue.txt",
+    "category": "Контейнеры",
+    "usage": "Очередь с доступом к первому и последнему элементу"
+  },
+  {
+    "type": "stl",
+    "name": "std::stack",
+    "fileName": "stl_stack.txt",
+    "category": "Контейнеры",
+    "usage": "Стек с доступом к последнему элементу"
+  },
+  {
+    "type": "stl",
+    "name": "std::priority_queue",
+    "fileName": "stl_priority_queue.txt",
+    "category": "Контейнеры",
+    "usage": "Очередь с приоритетом, доступ к наибольшему элементу"
+  },
+  {
+    "type": "stl",
+    "name": "std::thread",
+    "fileName": "stl_thread.txt",
+    "category": "Многопоточность",
+    "usage": "Представление потока выполнения"
+  },
+  {
+    "type": "stl",
+    "name": "std::mutex",
+    "fileName": "stl_mutex.txt",
+    "category": "Многопоточность",
+    "usage": "Примитив синхронизации для защиты разделяемых данных"
+  },
+  {
+    "type": "stl",
+    "name": "std::atomic",
+    "fileName": "stl_atomic.txt",
+    "category": "Многопоточность",
+    "usage": "Атомарные операции над разделяемыми данными"
+  },
+  {
+    "type": "stl",
+    "name": "std::condition_variable",
+    "fileName": "stl_condition_variable.txt",
+    "category": "Многопоточность",
+    "usage": "Средство синхронизации потоков на основе условия"
+  },
+  {
+    "type": "stl",
+    "name": "std::future/std::promise",
+    "fileName": "stl_future_promise.txt",
+    "category": "Многопоточность",
+    "usage": "Механизмы для асинхронной передачи значений между потоками"
+  },
+  {
+    "type": "stl",
+    "name": "std::shared_mutex",
+    "fileName": "stl_shared_mutex.txt",
+    "category": "Многопоточность",
+    "usage": "Мьютекс для многопоточного чтения и эксклюзивной записи"
+  },
+  {
+    "type": "stl",
+    "name": "std::coroutine",
+    "fileName": "stl_coroutine.txt",
+    "category": "Корутины",
+    "usage": "Поддержка корутин в C++20"
+  },
+  {
+    "type": "stl",
+    "name": "std::future",
+    "fileName": "stl_future.txt",
+    "category": "Многопоточность",
+    "usage": "Асинхронное получение результатов"
+  },
+  {
+    "type": "stl",
+    "name": "std::unique_ptr",
+    "fileName": "stl_unique_ptr.txt",
+    "category": "Умные указатели",
+    "usage": "Умный указатель с единственным владением"
+  },
+  {
+    "type": "stl",
+    "name": "std::shared_ptr",
+    "fileName": "stl_shared_ptr.txt",
+    "category": "Умные указатели",
+    "usage": "Умный указатель с подсчетом ссылок"
+  },
+  {
+    "type": "stl",
+    "name": "std::weak_ptr",
+    "fileName": "stl_weak_ptr.txt",
+    "category": "Умные указатели",
+    "usage": "Умный указатель без владения"
+  },
+  {
+    "type": "stl",
+    "name": "std::make_unique",
+    "fileName": "stl_make_unique.txt",
+    "category": "Умные указатели",
+    "usage": "Функция для создания unique_ptr"
+  },
+  {
+    "type": "stl",
+    "name": "std::make_shared",
+    "fileName": "stl_make_shared.txt",
+    "category": "Умные указатели",
+    "usage": "Функция для создания shared_ptr"
+  },
+  {
+    "type": "stl",
+    "name": "Функторы",
+    "fileName": "stl_functors.txt",
+    "category": "Функторы",
+    "usage": "Объекты, действующие как функции"
+  },
+  {
+    "type": "stl",
+    "name": "Шаблонные функции",
+    "fileName": "stl_templates.txt",
+    "category": "Шаблоны",
+    "usage": "Создание обобщенных функций"
+  },
+  {
+    "type": "stl",
+    "name": "Импорт библиотек",
+    "fileName": "stl_imports.txt",
+    "category": "Модули",
+    "usage": "Подключение заголовочных файлов и модулей"
+  },
+   {
+    "type": "stl",
+    "name": "std::optional",
+    "fileName": "stl_optional.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения опционального значения"
+  },
+  {
+    "type": "stl",
+    "name": "std::variant",
+    "fileName": "stl_variant.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения одного из нескольких возможных значений"
+  },
+  {
+    "type": "stl",
+    "name": "std::algorithm",
+    "fileName": "stl_algorithm.txt",
+    "category": "Алгоритмы",
+    "usage": "Коллекция алгоритмов для работы с контейнерами"
+  },
+  {
+    "type": "stl",
+    "name": "std::string / std::string_view",
+    "fileName": "stl_string.txt",
+    "category": "Контейнеры",
+    "usage": "Классы для работы со строками"
+  },
+  {
+    "type": "stl",
+    "name": "std::span",
+    "fileName": "stl_span.txt",
+    "category": "Контейнеры",
+    "usage": "Небезопасное представление диапазона элементов"
+  },
+  {
+    "type": "stl",
+    "name": "std::bitset",
+    "fileName": "stl_bitset.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения битов фиксированного размера"
+  },
+  {
+    "type": "stl",
+    "name": "std::chrono",
+    "fileName": "stl_chrono.txt",
+    "category": "Временные библиотеки",
+    "usage": "Работа с временными точками, продолжительностью и часовыми"
+  },
+  {
+    "type": "stl",
+    "name": "std::filesystem",
+    "fileName": "stl_filesystem.txt",
+    "category": "Файловая система",
+    "usage": "Операции с файлами и каталогами"
+  },
+  {
+    "type": "stl",
+    "name": "std::regex",
+    "fileName": "stl_regex.txt",
+    "category": "Регулярные выражения",
+    "usage": "Поиск и замена по регулярным выражениям"
+  },
+  {
+    "type": "stl",
+    "name": "std::any",
+    "fileName": "stl_any.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения значений любого типа"
+  },
+  {
+    "type": "stl",
+    "name": "std::type_traits",
+    "fileName": "stl_type_traits.txt",
+    "category": "Язык",
+    "usage": "Инструменты для проверки свойств типов"
+  },
+  {
+    "type": "stl",
+    "name": "std::enable_shared_from_this",
+    "fileName": "stl_enable_shared_from_this.txt",
+    "category": "Умные указатели",
+    "usage": "Базовый класс для получения shared_ptr из объекта"
+  },
+  {
+    "type": "stl",
+    "name": "RAII",
+    "fileName": "stl_raii.txt",
+    "category": "Паттерны",
+    "usage": "Идиома Resource Acquisition Is Initialization"
+  },
+  {
+    "type": "stl",
+    "name": "Move semantics",
+    "fileName": "stl_move_semantics.txt",
+    "category": "Язык",
+    "usage": "Семантика перемещения объектов"
+  },
+  {
+    "type": "stl",
+    "name": "Exceptions",
+    "fileName": "stl_exceptions.txt",
+    "category": "Язык",
+    "usage": "Обработка исключений"
+  },
+  {
+    "type": "stl",
+    "name": "ranges",
+    "fileName": "stl_ranges.txt",
+    "category": "Алгоритмы",
+    "usage": "Библиотека для работы с диапазонами (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::format",
+    "fileName": "stl_format.txt",
+    "category": "Ввод-вывод",
+    "usage": "Форматированный вывод (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::expected",
+    "fileName": "stl_expected.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения значения или ошибки (C++23)"
+  },
+  {
+    "type": "stl",
+    "name": "std::tuple",
+    "fileName": "stl_tuple.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер фиксированного размера с элементами разных типов"
+  },
+  {
+    "type": "stl",
+    "name": "std::pair",
+    "fileName": "stl_pair.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для хранения двух значений разных типов"
+  },
+  {
+    "type": "stl",
+    "name": "numeric",
+    "fileName": "stl_numeric.txt",
+    "category": "Алгоритмы",
+    "usage": "Числовые алгоритмы для работы с последовательностями"
+  },
+  {
+    "type": "stl",
+    "name": "iterator",
+    "fileName": "stl_iterator.txt",
+    "category": "Алгоритмы",
+    "usage": "Интерфейс для итерирования по контейнерам"
+  },
+  {
+    "type": "stl",
+    "name": "std::jthread",
+    "fileName": "stl_jthread.txt",
+    "category": "Многопоточность",
+    "usage": "Присоединяемый поток с возможностью отмены (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::stop_token",
+    "fileName": "stl_stop_token.txt",
+    "category": "Многопоточность",
+    "usage": "Механизм для запроса отмены асинхронных операций (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::scoped_lock",
+    "fileName": "stl_scoped_lock.txt",
+    "category": "Многопоточность",
+    "usage": "RAII-обертка для автоматической разблокировки (C++17)"
+  },
+  {
+    "type": "stl",
+    "name": "std::initializer_list",
+    "fileName": "stl_initializer_list.txt",
+    "category": "Контейнеры",
+    "usage": "Контейнер для инициализации с помощью списка инициализации"
+  },
+  {
+    "type": "stl",
+    "name": "std::memory_resource",
+    "fileName": "stl_memory_resource.txt",
+    "category": "Умные указатели",
+    "usage": "Интерфейс для пользовательского распределения памяти (C++17)"
+  },
+  {
+    "type": "stl",
+    "name": "std::barrier",
+    "fileName": "stl_barrier.txt",
+    "category": "Многопоточность",
+    "usage": "Синхронизация группы потоков (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::latch",
+    "fileName": "stl_latch.txt",
+    "category": "Многопоточность",
+    "usage": "Синхронизация потоков с однократным сбросом (C++20)"
+  },
+  {
+    "type": "stl",
+    "name": "std::execution",
+    "fileName": "stl_execution.txt",
+    "category": "Алгоритмы",
+    "usage": "Политики выполнения для параллельных алгоритмов (C++17)"
+  },
+  {
+    "type": "stl",
+    "name": "std::mdspan",
+    "fileName": "stl_mdspan.txt",
+    "category": "Контейнеры",
+    "usage": "Многомерное представление данных (C++23)"
+  }
+]

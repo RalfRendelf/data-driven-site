@@ -1,0 +1,206 @@
+<h2>C++14 (Стандарт C++14)</h2>
+
+<p><strong>Категория:</strong> Стандарты</p>
+
+<h3>Описание</h3>
+<p>C++14 был принятым стандартом в 2014 году как технический корректировочный стандарт для C++11. Он включает в себя небольшие улучшения и расширения возможностей C++11, включая улучшенный вывод типов, бинарные литералы, дженерики лямбд и другие улучшения.</p>
+
+<h3>Основные особенности</h3>
+<ol>
+<li>Универсальная лямбда (generic lambdas)</li>
+<li>Улучшенный вывод типа для возвращаемых значений</li>
+<li>Бинарные литералы</li>
+<li>Универсальные переменные constexpr</li>
+<li>Улучшенная поддержка alias templates</li>
+<li>Расширенные aggregate initialization</li>
+<li>Улучшенный вывод типа для auto</li>
+<li>Binary literals и digit separators</li>
+</ol>
+
+<h3>Сложность</h3>
+<ul>
+<li>Временная сложность: N/A</li>
+<li>Пространственная сложность: N/A</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Улучшение удобства использования языка</li>
+<li>Более строгая типизация</li>
+<li>Улучшенная производительность благодаря constexpr</li>
+<li>Более читаемый и понятный код</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Требует более современных компиляторов</li>
+<li>Некоторые возможности требуют времени для освоения</li>
+<li>Небольшие изменения по сравнению с C++11</li>
+</ul>
+
+<h3>Примеры кода</h3>
+
+<h4>Python</h4>
+<pre>
+<code>
+# Python не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+# Универсальные лямбды (аналог generic lambdas в C++)
+from typing import Callable, TypeVar
+
+T = TypeVar('T')
+U = TypeVar('U')
+
+def universal_lambda(func: Callable[[T], U]) -> Callable[[T], U]:
+    return func
+
+# Бинарные литералы (в Python есть встроенная поддержка)
+binary_num = 0b101010  # 42 в десятичной системе
+print(f"Binary 0b101010 equals {binary_num}")
+
+# Универсальные функции
+def make_constexpr_like(value):
+    """Имитация constexpr переменной"""
+    return value
+</code>
+</pre>
+
+<h4>JavaScript</h4>
+<pre>
+<code>
+// JS не имеет отношения к стандартам C++, но демонстрируем схожие концепции
+// Универсальные лямбды (в JS все функции универсальные)
+const universalLambda = (func) => func;
+
+// Бинарные литералы (начиная с ES6)
+const binaryNum = 0b101010; // 42 в десятичной системе
+console.log(`Binary 0b101010 equals ${binaryNum}`);
+
+// Универсальные функции
+const makeConstexprLike = (value) => value;
+
+// Digit separators (начиная с ES2021)
+const largeNumber = 1_000_000; // более читаемый способ записи числа
+</code>
+</pre>
+
+<h4>C</h4>
+<pre>
+<code>
+// C не поддерживает возможности C++14, но показываем близкие концепции
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Макрос для имитации constexpr
+#define CONSTEXPR_LIKE(x) (x)
+
+// Бинарные литералы отсутствуют в C, но можно использовать макросы
+// или вычисления для их имитации
+#define BINARY_LITERAL(bits) strtol(#bits, NULL, 2)
+
+int main() {
+    // Имитация бинарных литералов
+    unsigned int binary_num = 0x2A; // 0b101010 (если бы поддерживалось)
+    printf("Hex 0x2A equals %d in decimal\n", binary_num);
+    
+    // Использование "constexpr" через макрос
+    int value = CONSTEXPR_LIKE(42);
+    printf("Constexpr-like value: %d\n", value);
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C++</h4>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+#include &lt;type_traits&gt;
+
+int main() {
+    // Универсальные лямбды (generic lambdas)
+    auto universal_lambda = [] (auto x) { return x; };
+    
+    std::cout << "Universal lambda with int: " << universal_lambda(42) << std::endl;
+    std::cout << "Universal lambda with double: " << universal_lambda(3.14) << std::endl;
+    
+    // Бинарные литералы
+    auto binary_literal = 0b101010; // 42 в десятичной системе
+    std::cout << "Binary literal 0b101010 equals: " << binary_literal << std::endl;
+    
+    // Digit separators (разделители разрядов)
+    auto large_number = 1'000'000; // более читаемый способ записи 1000000
+    std::cout << "Large number with separators: " << large_number << std::endl;
+    
+    // Универсальные переменные constexpr
+    constexpr auto square = [](int x) { return x * x; };
+    constexpr int result = square(5);
+    std::cout << "Constexpr lambda result: " << result << std::endl;
+    
+    // Улучшенный вывод типа для auto
+    auto func = []() -> int { return 42; };
+    std::cout << "Auto return type function: " << func() << std::endl;
+    
+    // Улучшенная инициализация aggregate
+    struct Point {
+        int x, y;
+    };
+    Point p = {1, 2}; // C++11
+    Point q{3, 4};    // C++11+, улучшена в C++14
+    
+    // Использование decltype(auto) - C++14
+    auto calc = [](int a, int b) { return a * b; };
+    decltype(auto) result2 = calc(3, 4);
+    std::cout << "Result of calculation: " << result2 << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h4>Java</h4>
+<pre>
+<code>
+// Java также имеет схожие концепции с C++
+import java.util.*;
+import java.util.function.Function;
+
+public class Cpp14Features {
+    
+    public static void main(String[] args) {
+        // Универсальные лямбды (в Java все лямбды по своей природе универсальны)
+        Function<Integer, Integer> square = x -> x * x;
+        Function<Double, Double> doubleSquare = x -> x * x;
+        
+        System.out.println("Integer square: " + square.apply(5));
+        System.out.println("Double square: " + doubleSquare.apply(5.5));
+        
+        // Бинарные литералы (начиная с Java 7)
+        int binaryNum = 0b101010; // 42 в десятичной системе
+        System.out.println("Binary literal 0b101010 equals: " + binaryNum);
+        
+        // Digit separators (начиная с Java 7)
+        int largeNumber = 1_000_000; // более читаемый способ записи 1000000
+        System.out.println("Large number with separators: " + largeNumber);
+        
+        // Использование final переменных (аналог constexpr)
+        final int constexprValue = 42;
+        System.out.println("Constexpr-like value: " + constexprValue);
+        
+        // Улучшенная инициализация коллекций
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+        
+        // Stream API для обработки данных
+        List<Integer> squared = numbers.stream()
+                                     .map(x -> x * x)
+                                     .collect(java.util.stream.Collectors.toList());
+        
+        System.out.println("Squared numbers: " + squared);
+    }
+}
+</code>
+</pre>
+</file_content>

@@ -1,0 +1,235 @@
+<h2>std::latch</h2>
+
+<p><strong>Категория:</strong> Многопоточность</p>
+
+<h3>Описание</h3>
+<p>std::latch - это примитив синхронизации, который позволяет одному или нескольким потокам ожидать, пока не будет выполнено определенное количество событий. В отличие от std::barrier, latch может использоваться только один раз и не может быть сброшен. Введен в C++20.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++20</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::latch:</p>
+
+<pre>
+<code>
+// Пример использования std::latch на C++
+
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;vector&gt;
+#include &lt;latch&gt;
+#include &lt;chrono&gt;
+
+int main() {
+    const size_t num_workers = 5;
+    std::vector&lt;std::thread&gt; workers;
+    
+    // Создаем latch с начальным значением 5
+    std::latch start_latch(num_workers);
+    std::latch completion_latch(num_workers);
+    
+    // Запускаем рабочие потоки
+    for (size_t i = 0; i < num_workers; ++i) {
+        workers.emplace_back([&start_latch, &completion_latch, i]() {
+            std::cout << "Worker " << i << " ожидает сигнала старта" << std::endl;
+            
+            // Ждем сигнала старта
+            start_latch.arrive_and_wait();
+            
+            std::cout << "Worker " << i << " начинает работу" << std::endl;
+            
+            // Имитация работы
+            std::this_thread::sleep_for(std::chrono::milliseconds(100 * (i + 1)));
+            
+            std::cout << "Worker " << i << " завершает работу" << std::endl;
+            
+            // Сигнализируем о завершении
+            completion_latch.count_down();
+        });
+    }
+    
+    std::cout << "Главный поток: все рабочие запущены, даю сигнал старт" << std::endl;
+    
+    // Даем сигнал всем рабочим потокам начать работу
+    start_latch.count_down();
+    
+    std::cout << "Главный поток: жду завершения всех рабочих" << std::endl;
+    
+    // Ждем завершения всех рабочих потоков
+    completion_latch.wait();
+    
+    std::cout << "Главный поток: все рабочие завершены" << std::endl;
+    
+    // Ожидаем завершения всех потоков
+    for (auto&amp; w : workers) {
+        w.join();
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX threads
+ * Компиляция: gcc -o latch_example latch_example.c -lpthread
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+
+// Структура для имитации std::latch
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    int counter;
+    int max_count;
+} Latch;
+
+// Инициализация latch
+int latch_init(Latch* latch, int count) {
+    latch->counter = count;
+    latch->max_count = count;
+    return pthread_mutex_init(&latch->mutex, NULL) ||
+           pthread_cond_init(&latch->cond, NULL);
+}
+
+// Уничтожение latch
+int latch_destroy(Latch* latch) {
+    int result = pthread_mutex_destroy(&latch->mutex);
+    result |= pthread_cond_destroy(&latch->cond);
+    return result;
+}
+
+// Уменьшение счетчика
+void latch_count_down(Latch* latch) {
+    pthread_mutex_lock(&latch->mutex);
+    latch->counter--;
+    
+    if (latch->counter <= 0) {
+        pthread_cond_broadcast(&latch->cond);
+    }
+    
+    pthread_mutex_unlock(&latch->mutex);
+}
+
+// Ожидание до тех пор, пока счетчик не станет 0
+void latch_wait(Latch* latch) {
+    pthread_mutex_lock(&latch->mutex);
+    
+    while (latch->counter > 0) {
+        pthread_cond_wait(&latch->cond, &latch->mutex);
+    }
+    
+    pthread_mutex_unlock(&latch->mutex);
+}
+
+// Один вызов arrive_and_wait: уменьшает счетчик на 1 и ждет, пока он не станет 0
+void latch_arrive_and_wait(Latch* latch) {
+    pthread_mutex_lock(&latch->mutex);
+    int current_count = latch->counter;
+    pthread_mutex_unlock(&latch->mutex);
+    
+    // Ждем, пока счетчик не станет 0
+    latch_wait(latch);
+    
+    // Восстанавливаем предыдущее значение счетчика
+    pthread_mutex_lock(&latch->mutex);
+    latch->counter = current_count;
+    pthread_mutex_unlock(&latch->mutex);
+}
+
+// Структура для передачи данных в поток
+typedef struct {
+    Latch* start_latch;
+    Latch* completion_latch;
+    int id;
+} WorkerData;
+
+// Функция потока-работника
+void* worker_function(void* arg) {
+    WorkerData* data = (WorkerData*)arg;
+    
+    printf("Worker %d ожидает сигнала старта\n", data->id);
+    
+    // Ждем сигнала старта
+    latch_arrive_and_wait(data->start_latch);
+    
+    printf("Worker %d начинает работу\n", data->id);
+    
+    // Имитация работы
+    usleep(100000 * (data->id + 1));  // спим разное время для каждого потока
+    
+    printf("Worker %d завершает работу\n", data->id);
+    
+    // Сигнализируем о завершении
+    latch_count_down(data->completion_latch);
+    
+    return NULL;
+}
+
+// Пример использования
+int main() {
+    const int num_workers = 5;
+    pthread_t workers[num_workers];
+    Latch start_latch, completion_latch;
+    
+    // Инициализация latch с начальным значением 5
+    if (latch_init(&start_latch, num_workers) != 0 || 
+        latch_init(&completion_latch, num_workers) != 0) {
+        fprintf(stderr, "Ошибка инициализации latch\n");
+        return 1;
+    }
+    
+    // Подготовка данных для потоков
+    WorkerData worker_data[num_workers];
+    for (int i = 0; i < num_workers; i++) {
+        worker_data[i].start_latch = &start_latch;
+        worker_data[i].completion_latch = &completion_latch;
+        worker_data[i].id = i;
+    }
+    
+    // Создание рабочих потоков
+    for (int i = 0; i < num_workers; i++) {
+        if (pthread_create(&workers[i], NULL, worker_function, &worker_data[i]) != 0) {
+            fprintf(stderr, "Ошибка создания потока %d\n", i);
+            return 1;
+        }
+    }
+    
+    printf("Главный поток: все рабочие запущены, даю сигнал старт\n");
+    
+    // Даем сигнал всем рабочим потокам начать работу
+    latch_count_down(&start_latch);
+    
+    printf("Главный поток: жду завершения всех рабочих\n");
+    
+    // Ждем завершения всех рабочих потоков
+    latch_wait(&completion_latch);
+    
+    printf("Главный поток: все рабочие завершены\n");
+    
+    // Ожидаем завершения всех потоков
+    for (int i = 0; i < num_workers; i++) {
+        pthread_join(workers[i], NULL);
+    }
+    
+    // Уничтожение latch
+    if (latch_destroy(&start_latch) != 0 || 
+        latch_destroy(&completion_latch) != 0) {
+        fprintf(stderr, "Ошибка уничтожения latch\n");
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

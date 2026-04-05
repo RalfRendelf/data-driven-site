@@ -1,0 +1,215 @@
+<h2>std::future</h2>
+
+<p><strong>Категория:</strong> Многопоточность</p>
+
+<h3>Описание</h3>
+<p>std::future - это класс, который предоставляет способ получения значения из асинхронной операции в будущем. Значение обычно устанавливается объектом std::promise, связанным с этим std::future. Также может быть возвращено из std::async или других асинхронных функций.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::future:</p>
+
+<pre>
+<code>
+// Пример использования std::future на C++
+
+#include &lt;iostream&gt;
+#include &lt;future&gt;
+#include &lt;thread&gt;
+#include &lt;chrono&gt;
+
+int calculate_value() {
+    std::this_thread::sleep_for(std::chrono::seconds(2)); // имитация длительной операции
+    return 42;
+}
+
+int main() {
+    // Создание асинхронной задачи с возвращением future
+    std::future&lt;int&gt; future = std::async(std::launch::async, calculate_value);
+    
+    std::cout << "Ожидание результата..." << std::endl;
+    
+    // Ожидание и получение результата
+    int result = future.get();
+    
+    std::cout << "Результат: " << result << std::endl;
+    
+    // Пример с packaged_task
+    std::packaged_task&lt;int()&gt; task(calculate_value);
+    std::future&lt;int&gt; future2 = task.get_future();
+    
+    std::thread t(std::move(task));
+    
+    std::cout << "Ожидание результата от packaged_task..." << std::endl;
+    int result2 = future2.get();
+    std::cout << "Результат: " << result2 << std::endl;
+    
+    t.join();
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка POSIX threads
+ * Компиляция: gcc -o future_example future_example.c -lpthread
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdbool.h&gt;
+
+// Структура для future
+typedef struct {
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    void* result;
+    bool ready;
+    bool has_error;
+    char* error_message;
+} Future;
+
+// Инициализация future
+Future* future_create() {
+    Future* f = malloc(sizeof(Future));
+    pthread_mutex_init(&f->mutex, NULL);
+    pthread_cond_init(&f->cond, NULL);
+    f->result = NULL;
+    f->ready = false;
+    f->has_error = false;
+    f->error_message = NULL;
+    return f;
+}
+
+// Уничтожение future
+void future_destroy(Future* f) {
+    if (f) {
+        pthread_mutex_destroy(&f->mutex);
+        pthread_cond_destroy(&f->cond);
+        if (f->error_message) {
+            free(f->error_message);
+        }
+        free(f);
+    }
+}
+
+// Получение результата (блокирующее)
+void* future_get(Future* f) {
+    if (!f) return NULL;
+    
+    pthread_mutex_lock(&f->mutex);
+    
+    // Ожидание готовности результата
+    while (!f->ready) {
+        pthread_cond_wait(&f->cond, &f->mutex);
+    }
+    
+    void* result = f->result;
+    
+    pthread_mutex_unlock(&f->mutex);
+    
+    return result;
+}
+
+// Установка результата
+void future_set_result(Future* f, void* result) {
+    if (!f) return;
+    
+    pthread_mutex_lock(&f->mutex);
+    
+    f->result = result;
+    f->ready = true;
+    
+    pthread_cond_signal(&f->cond);
+    
+    pthread_mutex_unlock(&f->mutex);
+}
+
+// Установка ошибки
+void future_set_error(Future* f, const char* error_msg) {
+    if (!f) return;
+    
+    pthread_mutex_lock(&f->mutex);
+    
+    f->has_error = true;
+    f->error_message = malloc(strlen(error_msg) + 1);
+    strcpy(f->error_message, error_msg);
+    f->ready = true;
+    
+    pthread_cond_signal(&f->cond);
+    
+    pthread_mutex_unlock(&f->mutex);
+}
+
+// Проверка, готов ли результат
+bool future_is_ready(Future* f) {
+    if (!f) return false;
+    
+    pthread_mutex_lock(&f->mutex);
+    bool ready = f->ready;
+    pthread_mutex_unlock(&f->mutex);
+    
+    return ready;
+}
+
+// Структура для передачи аргументов в поток
+typedef struct {
+    Future* future;
+    int delay_seconds;
+} TaskArgs;
+
+// Функция, имитирующая длительную операцию
+void* calculate_value(void* args) {
+    TaskArgs* task_args = (TaskArgs*)args;
+    
+    printf("Выполнение длительной операции...\n");
+    sleep(task_args->delay_seconds); // имитация длительной операции
+    printf("Длительная операция завершена\n");
+    
+    // Установка результата
+    int* result = malloc(sizeof(int));
+    *result = 42;
+    future_set_result(task_args->future, result);
+    
+    return NULL;
+}
+
+// Пример использования
+int main() {
+    Future* future = future_create();
+    
+    // Подготовка аргументов для задачи
+    TaskArgs args = {future, 2}; // 2 секунды задержки
+    
+    pthread_t thread;
+    pthread_create(&thread, NULL, calculate_value, &args);
+    
+    printf("Ожидание результата...\n");
+    
+    // Ожидание и получение результата
+    int* result = (int*)future_get(future);
+    
+    printf("Результат: %d\n", *result);
+    
+    // Ожидание завершения потока
+    pthread_join(thread, NULL);
+    
+    // Освобождение ресурсов
+    free(result);
+    future_destroy(future);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

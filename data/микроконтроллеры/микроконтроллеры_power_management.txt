@@ -1,0 +1,398 @@
+<h2>Энергосбережение</h2>
+
+<p><strong>Категория:</strong> Оптимизация</p>
+
+<h3>Описание</h3>
+<p>Энергосбережение является критически важным аспектом при разработке встраиваемых систем, особенно тех, что работают от батареек или аккумуляторов. Современные микроконтроллеры предоставляют множество механизмов для снижения энергопотребления, включая различные режимы сна, динамическое управление напряжением и тактовой частотой, а также возможность отключения питания от неиспользуемых периферийных модулей.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>Режимы сна с различными уровнями энергосбережения</li>
+<li>Возможность отключения тактирования периферии</li>
+<li>Снижение частоты и напряжения при малой нагрузке</li>
+<li>Наличие встроенного управления питанием</li>
+<li>Возможность пробуждения от внешних и внутренних источников</li>
+</ul>
+
+<h3>Режимы энергопотребления:</h3>
+<ul>
+<li>Режим нормальной работы (Run Mode)</li>
+<li>Режим пониженного энергопотребления (Sleep Mode)</li>
+<li>Режим глубокого сна (Stop Mode)</li>
+<li>Режим остановки с сохранением состояния (Standby Mode)</li>
+<li>Режим выключения (Shutdown Mode)</li>
+</ul>
+
+<h3>Пример управления режимами сна на STM32:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+// Функция инициализации управления питанием
+void PowerManagement_Init() {
+    // Включить тактирование блока управления питанием
+    __HAL_RCC_PWR_CLK_ENABLE();
+}
+
+// Функция перехода в режим сна
+void Enter_Sleep_Mode() {
+    // Войти в режим сна при выполнении условия
+    __WFI();  // Wait for Interrupt
+}
+
+// Функция перехода в режим STOP
+void Enter_Stop_Mode() {
+    // Отключить все тактовые сигналы кроме RTC и LSE
+    HAL_PWREx_EnterSTOPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI);
+    
+    // После пробуждения возобновить тактирование
+    SystemClock_Config();
+}
+
+// Функция перехода в режим STANDBY
+void Enter_Standby_Mode() {
+    // Отключить всё питание кроме RTC и LSE
+    HAL_PWR_EnterSTANDBYMode();
+}
+
+// Пример основной программы с энергосбережением
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+
+    // Инициализация управления питанием
+    PowerManagement_Init();
+
+    // Настройка GPIO
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Настройка кнопки для пробуждения
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Настройка прерываний для пробуждения
+    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+    while(1) {
+        // Выполнить полезную работу
+        
+        // Переключить светодиод
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+        
+        // Задержка для демонстрации
+        HAL_Delay(500);
+        
+        // Перейти в режим сна для экономии энергии
+        Enter_Sleep_Mode();
+    }
+}
+
+// Обработчик прерывания от кнопки
+void EXTI0_IRQHandler(void) {
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if(GPIO_Pin == GPIO_PIN_0) {
+        // Пробуждение произошло от кнопки
+        // Планировщик выполнит пробуждение и продолжит выполнение
+    }
+}
+</code>
+</pre>
+
+<h3>Пример динамического изменения частоты для экономии энергии:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+// Структура для хранения текущего режима
+typedef enum {
+    POWER_MODE_NORMAL = 0,
+    POWER_MODE_LOW_POWER = 1,
+    POWER_MODE_ULTRA_LOW = 2
+} PowerMode_t;
+
+static PowerMode_t current_power_mode = POWER_MODE_NORMAL;
+
+// Функция переключения на более низкий режим энергопотребления
+void SwitchPowerMode(PowerMode_t mode) {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    if(mode > current_power_mode) {
+        switch(mode) {
+            case POWER_MODE_LOW_POWER:
+                // Переключиться на внутренний источник 16MHz HSI
+                RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+                RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+                RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+                RCC_OscInitStruct.PLL.PLLState = RCC_PLL_OFF;
+                if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+                    Error_Handler();
+                }
+
+                // Настроить тактирование с более низкой частотой
+                RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+                                            | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+                RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+                RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+                RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+                RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+                if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
+                    Error_Handler();
+                }
+                
+                current_power_mode = POWER_MODE_LOW_POWER;
+                break;
+
+            case POWER_MODE_ULTRA_LOW:
+                // Отключить все неиспользуемые периферийные устройства
+                __HAL_RCC_GPIOA_CLK_DISABLE();
+                __HAL_RCC_GPIOB_CLK_DISABLE();
+                __HAL_RCC_GPIOC_CLK_DISABLE();
+                __HAL_RCC_USART1_CLK_DISABLE();
+                __HAL_RCC_SPI1_CLK_DISABLE();
+                __HAL_RCC_I2C1_CLK_DISABLE();
+                
+                current_power_mode = POWER_MODE_ULTRA_LOW;
+                break;
+        }
+    } else if(mode < current_power_mode) {
+        // Вернуться к нормальному режиму работы
+        SystemClock_Config(); // Восстановить нормальную конфигурацию тактового сигнала
+        current_power_mode = POWER_MODE_NORMAL;
+    }
+}
+
+// Функция пробуждения из режима сна
+void WakeUpFromLowPower() {
+    if(current_power_mode != POWER_MODE_NORMAL) {
+        // Восстановить нормальную частоту тактирования
+        SystemClock_Config();
+        current_power_mode = POWER_MODE_NORMAL;
+    }
+    
+    // Включить необходимые периферийные устройства
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+
+    // Инициализация периферии
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    while(1) {
+        // Выполнить основную работу
+        
+        // Проверить, можно ли перейти в режим энергосбережения
+        if(CanEnterLowPowerMode()) {
+            SwitchPowerMode(POWER_MODE_LOW_POWER);
+            
+            // Перейти в режим сна
+            Enter_Sleep_Mode();
+            
+            // После пробуждения восстановить нормальный режим
+            WakeUpFromLowPower();
+        }
+        
+        HAL_Delay(100);
+    }
+}
+
+// Вспомогательная функция проверки возможности перехода в режим энергосбережения
+uint8_t CanEnterLowPowerMode() {
+    // Здесь реализовать проверку условий для перехода в режим сна
+    // Например, нет активных задач, нет ожидающих данных и т.д.
+    return 1; // Условно разрешаем переход
+}
+</code>
+</pre>
+
+<h3>Дерево тактирования (Clock Tree)</h3>
+<p>Дерево тактирования определяет пути распространения тактовых сигналов по микроконтроллеру. Понимание структуры дерева тактирования позволяет эффективно управлять энергопотреблением, так как разные периферийные устройства могут использовать разные источники тактирования и иметь разные частоты работы.</p>
+
+<p>В микроконтроллерах STM32 дерево тактирования включает в себя:</p>
+<ul>
+<li>Внешние кварцевые резонаторы (HSE, LSE)</li>
+<li>Внутренние RC-генераторы (HSI, LSI)</li>
+<li>Фазово-частотный детектор (PLL)</li>
+<li>Системные шины (AHB, APB1, APB2)</li>
+<li>Индивидуальные делители частоты для периферии</li>
+</ul>
+
+<h3>PLL (Phase-Locked Loop), HSE, LSE</h3>
+<p>PLL (фазово-частотный автоподстрой) используется для генерации высокочастотных тактовых сигналов из низкочастотных источников. HSE (High Speed External) и LSE (Low Speed External) - внешние кварцевые резонаторы, обеспечивающие точные частоты.</p>
+
+<h4>HSE (High Speed External)</h4>
+<ul>
+<li>Внешний кварцевый резонатор (обычно 4-26 МГц)</li>
+<li>Обеспечивает высокую точность тактирования</li>
+<li>Используется для системного тактирования и USB</li>
+<li>Более высокое энергопотребление по сравнению с внутренними генераторами</li>
+</ul>
+
+<h4>LSE (Low Speed External)</h4>
+<ul>
+<li>Внешний кварцевый резонатор (обычно 32.768 кГц)</li>
+<li>Используется для RTC (часов реального времени)</li>
+<li>Низкое энергопотребление</li>
+<li>Продолжает работать в режимах пониженного энергопотребления</li>
+</ul>
+
+<h4>PLL (Phase-Locked Loop)</h4>
+<ul>
+<li>Умножает частоту входного сигнала</li>
+<li>Позволяет достичь максимальной частоты работы процессора</li>
+<li>Может быть отключен для экономии энергии</li>
+<li>Требует время на переключение между режимами</li>
+</ul>
+
+<h3>Динамическое масштабирование частоты (Dynamic Frequency Scaling)</h3>
+<p>Техника, позволяющая динамически изменять частоту тактирования микроконтроллера в зависимости от текущих требований к производительности. Это позволяет достичь значительной экономии энергии без потери функциональности.</p>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+// Структура для хранения конфигурации тактирования
+typedef struct {
+    uint32_t sys_clk_freq;     // Системная частота
+    uint32_t ahb_freq;         // Частота AHB шины
+    uint32_t apb1_freq;        // Частота APB1 шины
+    uint32_t apb2_freq;        // Частота APB2 шины
+    uint32_t flash_latency;    // Задержка флэш-памяти
+} ClockConfig_t;
+
+// Основные конфигурации частот
+ClockConfig_t clock_configs[] = {
+    // Высокая производительность
+    {168000000, 168000000, 42000000, 84000000, FLASH_LATENCY_5}, // 168 MHz
+    // Баланс производительности и энергопотребления
+    {84000000, 84000000, 42000000, 84000000, FLASH_LATENCY_2},   // 84 MHz
+    // Низкое энергопотребление
+    {16000000, 16000000, 16000000, 16000000, FLASH_LATENCY_0},   // 16 MHz (HSI)
+    // Ультра низкое энергопотребление
+    {8000000, 8000000, 8000000, 8000000, FLASH_LATENCY_0}        // 8 MHz (HSI)
+};
+
+static uint8_t current_config_idx = 0;
+
+// Функция переключения частоты
+void ChangeFrequency(uint8_t config_idx) {
+    if(config_idx >= sizeof(clock_configs)/sizeof(ClockConfig_t)) {
+        return; // Неверный индекс
+    }
+
+    if(config_idx == current_config_idx) {
+        return; // Уже на нужной частоте
+    }
+
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+
+    // Настройка параметров осциллятора
+    if(config_idx <= 1) { // Высокая частота - используем HSE и PLL
+        RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+        RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+        RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+        RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+        RCC_OscInitStruct.PLL.PLLM = 8; // Предполагаем 8MHz кварц
+        
+        if(config_idx == 0) { // 168 MHz
+            RCC_OscInitStruct.PLL.PLLN = 336;
+            RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2; // 336*2/2 = 336/1 = 336 MHz VCO -> 168 MHz
+            RCC_OscInitStruct.PLL.PLLQ = 7;
+        } else { // 84 MHz
+            RCC_OscInitStruct.PLL.PLLN = 336;
+            RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4; // 336*2/4 = 168 MHz
+            RCC_OscInitStruct.PLL.PLLQ = 7;
+        }
+    } else { // Низкая частота - используем HSI
+        RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+        RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+        RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+        RCC_OscInitStruct.PLL.PLLState = RCC_PLL_OFF;
+    }
+
+    if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+        Error_Handler();
+    }
+
+    // Настройка системных часов
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+                                | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = (config_idx <= 1) ? RCC_SYSCLKSOURCE_PLLCLK : RCC_SYSCLKSOURCE_HSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = (config_idx == 0) ? RCC_HCLK_DIV4 : RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = (config_idx == 0) ? RCC_HCLK_DIV2 : RCC_HCLK_DIV1;
+
+    if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, clock_configs[config_idx].flash_latency) != HAL_OK) {
+        Error_Handler();
+    }
+
+    current_config_idx = config_idx;
+}
+
+// Пример использования в системе управления энергопотреблением
+void PowerManager_Task(void) {
+    static uint32_t last_activity_time = 0;
+    uint32_t current_time = HAL_GetTick();
+    
+    // Если активности не было последние 10 секунд, переключиться на низкую частоту
+    if((current_time - last_activity_time) > 10000) {
+        ChangeFrequency(2); // Переключиться на низкое энергопотребление
+    } 
+    // Если активности не было последние 30 секунд, переключиться на ультра-низкое энергопотребление
+    else if((current_time - last_activity_time) > 30000) {
+        ChangeFrequency(3); // Переключиться на ультра низкое энергопотребление
+    }
+    
+    // При получении активности переключиться на более высокую частоту
+    if(new_activity_detected()) {
+        last_activity_time = current_time;
+        ChangeFrequency(1); // Баланс производительности и энергопотребления
+    }
+}
+</code>
+</pre>
+
+<h3>Преимущества энергосбережения:</h3>
+<ul>
+<li>Увеличение времени автономной работы</li>
+<li>Снижение тепловыделения устройства</li>
+<li>Увеличение срока службы аккумуляторов</li>
+<li>Снижение общей стоимости эксплуатации</li>
+</ul>
+
+<h3>Рекомендации по энергосбережению:</h3>
+<ul>
+<li>Отключение тактирования неиспользуемых периферийных модулей</li>
+<li>Использование режимов сна при отсутствии активности</li>
+<li>Применение прерываний вместо опроса состояния</li>
+<li>Использование низковольтных режимов при малой производительности</li>
+<li>Оптимизация кода для минимизации времени активности процессора</li>
+</ul>

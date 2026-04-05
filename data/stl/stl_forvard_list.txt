@@ -1,0 +1,176 @@
+<h2>std::forward_list</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::forward_list — это контейнер, реализующий односвязный список. Он оптимизирован по памяти и обеспечивает быстрые вставки и удаления в любом месте списка, но не поддерживает доступ по индексу и двустороннюю итерацию.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::forward_list и их реализация на C (для демонстрации аналогов):</p>
+
+<h4>C++</h4>
+<pre>
+<code>
+// =======================
+// C++ пример std::forward_list
+// =======================
+
+#include &lt;forward_list&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::forward_list&lt;int&gt; fl;
+
+    fl.push_front(10);
+    fl.push_front(20);
+    fl.push_front(30);
+
+    std::cout &lt;&lt; "Elements: ";
+    for (int v : fl) {
+        std::cout &lt;&lt; v &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    fl.pop_front();
+
+    std::cout &lt;&lt; "After pop_front: ";
+    for (int v : fl) {
+        std::cout &lt;&lt; v &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    auto it = fl.begin();
+    fl.insert_after(it, 99);
+
+    std::cout &lt;&lt; "After insert_after: ";
+    for (int v : fl) {
+        std::cout &lt;&lt; v &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C реализация</h4>
+<pre>
+<code>
+// Пример реализации аналога std::forward_list на C
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Узел списка
+typedef struct Node {
+    void* data;
+    struct Node* next;
+} Node;
+
+// Односвязный список
+typedef struct {
+    Node* head;
+    size_t size;
+} ForwardList;
+
+// Создание списка
+ForwardList* fl_create() {
+    ForwardList* fl = malloc(sizeof(ForwardList));
+    fl->head = NULL;
+    fl->size = 0;
+    return fl;
+}
+
+// Уничтожение списка
+void fl_destroy(ForwardList* fl) {
+    Node* current = fl->head;
+    while (current != NULL) {
+        Node* next = current->next;
+        free(current);
+        current = next;
+    }
+    free(fl);
+}
+
+// Вставка в начало
+void fl_push_front(ForwardList* fl, void* data) {
+    Node* node = malloc(sizeof(Node));
+    node->data = data;
+    node->next = fl->head;
+    fl->head = node;
+    fl->size++;
+}
+
+// Удаление первого элемента
+void fl_pop_front(ForwardList* fl) {
+    if (fl->head != NULL) {
+        Node* old = fl->head;
+        fl->head = fl->head->next;
+        free(old);
+        fl->size--;
+    }
+}
+
+// Вставка после узла
+Node* fl_insert_after(Node* pos, void* data) {
+    if (!pos) return NULL;
+    Node* node = malloc(sizeof(Node));
+    node->data = data;
+    node->next = pos->next;
+    pos->next = node;
+    return node;
+}
+
+// Пример использования
+int main() {
+    ForwardList* fl = fl_create();
+
+    int* a = malloc(sizeof(int)); *a = 10;
+    int* b = malloc(sizeof(int)); *b = 20;
+    int* c = malloc(sizeof(int)); *c = 30;
+
+    fl_push_front(fl, a);
+    fl_push_front(fl, b);
+    fl_push_front(fl, c);
+
+    printf("List: ");
+    Node* cur = fl->head;
+    while (cur) {
+        printf("%d ", *(int*)cur->data);
+        cur = cur->next;
+    }
+    printf("\n");
+
+    fl_pop_front(fl);
+
+    printf("After pop_front: ");
+    cur = fl->head;
+    while (cur) {
+        printf("%d ", *(int*)cur->data);
+        cur = cur->next;
+    }
+    printf("\n");
+
+    fl_insert_after(fl->head, a);
+
+    printf("After insert_after: ");
+    cur = fl->head;
+    while (cur) {
+        printf("%d ", *(int*)cur->data);
+        cur = cur->next;
+    }
+    printf("\n");
+
+    fl_destroy(fl);
+    free(a);
+    free(b);
+    free(c);
+
+    return 0;
+}
+</code>
+</pre>
+</file_content>

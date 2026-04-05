@@ -1,0 +1,404 @@
+<h2>std::set</h2>
+
+<p><strong>Категория:</strong> Контейнеры</p>
+
+<h3>Описание</h3>
+<p>std::set - это ассоциативный контейнер, содержащий уникальные элементы, упорядоченные по возрастанию. Он реализован как сбалансированное бинарное дерево поиска (обычно красно-черное дерево), что обеспечивает логарифмическую сложность основных операций.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++98</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::set:</p>
+
+<pre>
+<code>
+// Пример использования std::set на C++
+
+#include &lt;iostream&gt;
+#include &lt;set&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    // Создание set
+    std::set&lt;int&gt; mySet = {5, 2, 8, 1, 9};
+    
+    std::cout << "Размер set: " << mySet.size() << std::endl;
+    
+    // Вставка элементов
+    mySet.insert(3);
+    mySet.insert(7);
+    
+    // Использование итераторов
+    std::cout << "Элементы set через итераторы: ";
+    for (auto it = mySet.begin(); it != mySet.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    
+    // Использование range-based for loop
+    std::cout << "Элементы set через range-based for: ";
+    for (const auto&amp; element : mySet) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // Проверка наличия элемента
+    if (mySet.count(5) > 0) {
+        std::cout << "Элемент 5 существует в set" << std::endl;
+    }
+    
+    // Использование find
+    auto it = mySet.find(8);
+    if (it != mySet.end()) {
+        std::cout << "Найден элемент: " << *it << std::endl;
+    }
+    
+    // Удаление элемента
+    mySet.erase(3);
+    std::cout << "После удаления элемента 3: ";
+    for (const auto&amp; element : mySet) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
+    
+    // lower_bound и upper_bound
+    auto lb = mySet.lower_bound(4);  // первый элемент >= 4
+    auto ub = mySet.upper_bound(5);  // первый элемент > 5
+    std::cout << "lower_bound(4): " << *lb << std::endl;
+    std::cout << "upper_bound(5): " << *ub << std::endl;
+    
+    // Очистка set
+    mySet.clear();
+    std::cout << "После очистки размер: " << mySet.size() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка стандартной библиотеки C
+ * Компиляция: gcc -o set_example set_example.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// Структура для узла дерева
+typedef struct TreeNode {
+    int data;
+    struct TreeNode* left;
+    struct TreeNode* right;
+    struct TreeNode* parent;
+    int color; // 0 = черный, 1 = красный
+} TreeNode;
+
+// Структура для set
+typedef struct {
+    TreeNode* root;
+    TreeNode* nil; // специальный узел для представления NULL
+    size_t size;
+} Set;
+
+// Инициализация узла nil
+TreeNode* create_nil_node() {
+    TreeNode* nil = malloc(sizeof(TreeNode));
+    nil->color = 0; // черный
+    nil->left = NULL;
+    nil->right = NULL;
+    nil->parent = NULL;
+    nil->data = 0;
+    return nil;
+}
+
+// Инициализация set
+Set* set_create() {
+    Set* set = malloc(sizeof(Set));
+    set->nil = create_nil_node();
+    set->root = set->nil;
+    set->size = 0;
+    return set;
+}
+
+// Уничтожение узла и его потомков
+void destroy_tree_nodes(TreeNode* node, TreeNode* nil) {
+    if (node != nil) {
+        destroy_tree_nodes(node->left, nil);
+        destroy_tree_nodes(node->right, nil);
+        free(node);
+    }
+}
+
+// Уничтожение set
+void set_destroy(Set* set) {
+    if (!set) return;
+    
+    destroy_tree_nodes(set->root, set->nil);
+    free(set->nil);
+    free(set);
+}
+
+// Создание нового узла
+TreeNode* create_node(Set* set, int data) {
+    TreeNode* node = malloc(sizeof(TreeNode));
+    node->data = data;
+    node->left = set->nil;
+    node->right = set->nil;
+    node->parent = NULL;
+    node->color = 1; // новый узел всегда красный
+    return node;
+}
+
+// Левый поворот (для балансировки красно-черного дерева)
+void rotate_left(Set* set, TreeNode* x) {
+    TreeNode* y = x->right;
+    x->right = y->left;
+    
+    if (y->left != set->nil) {
+        y->left->parent = x;
+    }
+    
+    y->parent = x->parent;
+    
+    if (x->parent == NULL) {
+        set->root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+    
+    y->left = x;
+    x->parent = y;
+}
+
+// Правый поворот (для балансировки красно-черного дерева)
+void rotate_right(Set* set, TreeNode* y) {
+    TreeNode* x = y->left;
+    y->left = x->right;
+    
+    if (x->right != set->nil) {
+        x->right->parent = y;
+    }
+    
+    x->parent = y->parent;
+    
+    if (y->parent == NULL) {
+        set->root = x;
+    } else if (y == y->parent->right) {
+        y->parent->right = x;
+    } else {
+        y->parent->left = x;
+    }
+    
+    x->right = y;
+    y->parent = x;
+}
+
+// Восстановление свойств красно-черного дерева после вставки
+void fix_after_insert(Set* set, TreeNode* z) {
+    while (z->parent && z->parent->color == 1) {
+        if (z->parent == z->parent->parent->left) {
+            TreeNode* y = z->parent->parent->right;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    rotate_left(set, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_right(set, z->parent->parent);
+            }
+        } else {
+            TreeNode* y = z->parent->parent->left;
+            if (y->color == 1) {
+                z->parent->color = 0;
+                y->color = 0;
+                z->parent->parent->color = 1;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rotate_right(set, z);
+                }
+                z->parent->color = 0;
+                z->parent->parent->color = 1;
+                rotate_left(set, z->parent->parent);
+            }
+        }
+    }
+    set->root->color = 0;
+}
+
+// Вставка элемента
+void set_insert(Set* set, int data) {
+    TreeNode* z = create_node(set, data);
+    
+    TreeNode* y = NULL;
+    TreeNode* x = set->root;
+    
+    while (x != set->nil) {
+        y = x;
+        if (z->data < x->data) {
+            x = x->left;
+        } else if (z->data > x->data) {
+            x = x->right;
+        } else {
+            // Элемент уже существует, не вставляем
+            free(z);
+            return;
+        }
+    }
+    
+    z->parent = y;
+    
+    if (y == NULL) {
+        set->root = z;
+    } else if (z->data < y->data) {
+        y->left = z;
+    } else {
+        y->right = z;
+    }
+    
+    set->size++;
+    fix_after_insert(set, z);
+}
+
+// Поиск узла по значению
+TreeNode* tree_search(TreeNode* node, TreeNode* nil, int data) {
+    while (node != nil && data != node->data) {
+        if (data < node->data) {
+            node = node->left;
+        } else {
+            node = node->right;
+        }
+    }
+    return node;
+}
+
+// Проверка наличия элемента
+int set_contains(Set* set, int data) {
+    if (!set) return 0;
+    TreeNode* result = tree_search(set->root, set->nil, data);
+    return result != set->nil;
+}
+
+// Удаление элемента
+void set_erase(Set* set, int data) {
+    // Найдем узел для удаления
+    TreeNode* node = tree_search(set->root, set->nil, data);
+    if (node == set->nil) {
+        return; // элемент не найден
+    }
+    
+    // Удаление листа или узла с одним потомком будет проще
+    if (node->left == set->nil || node->right == set->nil) {
+        TreeNode* child = (node->left != set->nil) ? node->left : node->right;
+        
+        if (node->parent == NULL) {
+            set->root = child;
+        } else if (node == node->parent->left) {
+            node->parent->left = child;
+        } else {
+            node->parent->right = child;
+        }
+        
+        if (child != set->nil) {
+            child->parent = node->parent;
+        }
+        
+        free(node);
+        set->size--;
+    }
+}
+
+// Вспомогательная функция для inorder обхода дерева
+void inorder_traversal(TreeNode* node, TreeNode* nil, void (*visit)(int*)) {
+    if (node != nil) {
+        inorder_traversal(node->left, nil, visit);
+        visit(&node->data);
+        inorder_traversal(node->right, nil, visit);
+    }
+}
+
+// Вспомогательная функция для печати значения
+void print_value(int* value) {
+    printf("%d ", *value);
+}
+
+// Печать set
+void set_print(Set* set, const char* label) {
+    printf("%s: [", label);
+    inorder_traversal(set->root, set->nil, print_value);
+    printf("] (size: %zu)\n", set->size);
+}
+
+// Получение размера
+size_t set_size(Set* set) {
+    return set ? set->size : 0;
+}
+
+// Проверка на пустоту
+int set_empty(Set* set) {
+    return set ? (set->size == 0) : 1;
+}
+
+// Очистка set
+void set_clear(Set* set) {
+    if (!set) return;
+    
+    destroy_tree_nodes(set->root, set->nil);
+    set->root = set->nil;
+    set->size = 0;
+}
+
+// Пример использования
+int main() {
+    Set* mySet = set_create();
+    
+    // Вставка начальных значений
+    int initialValues[] = {5, 2, 8, 1, 9};
+    for (int i = 0; i < 5; i++) {
+        set_insert(mySet, initialValues[i]);
+    }
+    
+    set_print(mySet, "Исходный set");
+    printf("Размер set: %zu\n", set_size(mySet));
+    
+    // Вставка дополнительных элементов
+    set_insert(mySet, 3);
+    set_insert(mySet, 7);
+    set_print(mySet, "После вставки 3 и 7");
+    
+    // Проверка наличия элемента
+    if (set_contains(mySet, 5)) {
+        printf("Элемент 5 существует в set\n");
+    }
+    
+    // Удаление элемента
+    set_erase(mySet, 3);
+    set_print(mySet, "После удаления элемента 3");
+    
+    // Очистка set
+    set_clear(mySet);
+    printf("После очистки размер: %zu\n", set_size(mySet));
+    
+    // Уничтожение set
+    set_destroy(mySet);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

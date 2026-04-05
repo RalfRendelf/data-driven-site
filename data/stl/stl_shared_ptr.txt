@@ -1,0 +1,162 @@
+<h2>std::shared_ptr</h2>
+
+<p><strong>Категория:</strong> Умные указатели</p>
+
+<h3>Описание</h3>
+<p>std::shared_ptr — это умный указатель, который реализует разделяемое владение объектом. Несколько shared_ptr могут указывать на один и тот же объект, и он будет автоматически удалён, когда последний shared_ptr, владеющий им, будет уничтожен. Для этого используется счётчик ссылок.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::shared_ptr и их реализация на C (для демонстрации аналогов):</p>
+
+<h4>C++</h4>
+<pre>
+<code>
+#include &lt;memory&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::shared_ptr&lt;int&gt; p1 = std::make_shared&lt;int&gt;(42);
+
+    std::cout &lt;&lt; *p1 &lt;&lt; "\n";
+    std::cout &lt;&lt; p1.use_count() &lt;&lt; "\n";
+
+    std::shared_ptr&lt;int&gt; p2 = p1;
+    std::cout &lt;&lt; p1.use_count() &lt;&lt; "\n";
+
+    p1.reset();
+    std::cout &lt;&lt; p2.use_count() &lt;&lt; "\n";
+
+    return 0;
+}
+</code>
+</pre>
+
+<h4>C реализация</h4>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+
+typedef struct {
+    void* ptr;
+    int* ref_count;
+    void (*deleter)(void*);
+    pthread_mutex_t mutex;
+} SharedObject;
+
+typedef struct {
+    SharedObject* obj;
+} SharedPtr;
+
+SharedPtr* shared_ptr_create(void* ptr) {
+    SharedPtr* sptr = malloc(sizeof(SharedPtr));
+    sptr->obj = malloc(sizeof(SharedObject));
+    sptr->obj->ptr = ptr;
+    sptr->obj->ref_count = malloc(sizeof(int));
+    *(sptr->obj->ref_count) = 1;
+    sptr->obj->deleter = &free;
+    pthread_mutex_init(&sptr->obj->mutex, NULL);
+    return sptr;
+}
+
+SharedPtr* shared_ptr_create_with_deleter(void* ptr, void (*custom_deleter)(void*)) {
+    SharedPtr* sptr = shared_ptr_create(ptr);
+    sptr->obj->deleter = custom_deleter;
+    return sptr;
+}
+
+SharedPtr* shared_ptr_copy(SharedPtr* original) {
+    if (!original || !original->obj)
+        return NULL;
+
+    SharedPtr* copy = malloc(sizeof(SharedPtr));
+    copy->obj = original->obj;
+
+    pthread_mutex_lock(&original->obj->mutex);
+    (*(original->obj->ref_count))++;
+    pthread_mutex_unlock(&original->obj->mutex);
+
+    return copy;
+}
+
+void* shared_ptr_get(SharedPtr* sptr) {
+    if (sptr && sptr->obj)
+        return sptr->obj->ptr;
+    return NULL;
+}
+
+int shared_ptr_use_count(SharedPtr* sptr) {
+    if (sptr && sptr->obj) {
+        pthread_mutex_lock(&sptr->obj->mutex);
+        int count = *(sptr->obj->ref_count);
+        pthread_mutex_unlock(&sptr->obj->mutex);
+        return count;
+    }
+    return 0;
+}
+
+void shared_ptr_destroy(SharedPtr* sptr) {
+    if (sptr && sptr->obj) {
+        pthread_mutex_lock(&sptr->obj->mutex);
+        (*(sptr->obj->ref_count))--;
+
+        if (*(sptr->obj->ref_count) == 0) {
+            if (sptr->obj->ptr && sptr->obj->deleter)
+                sptr->obj->deleter(sptr->obj->ptr);
+
+            free(sptr->obj->ref_count);
+            pthread_mutex_unlock(&sptr->obj->mutex);
+            pthread_mutex_destroy(&sptr->obj->mutex);
+            free(sptr->obj);
+        } else {
+            pthread_mutex_unlock(&sptr->obj->mutex);
+        }
+    }
+    free(sptr);
+}
+
+int shared_ptr_is_null(SharedPtr* sptr) {
+    if (sptr && sptr->obj)
+        return sptr->obj->ptr == NULL;
+    return 1;
+}
+
+void custom_deleter(void* ptr) {
+    if (ptr) {
+        printf("Освобождение объекта: %p\n", ptr);
+        free(ptr);
+    }
+}
+
+int main() {
+    int* raw_ptr = malloc(sizeof(int));
+    *raw_ptr = 42;
+
+    SharedPtr* sptr1 = shared_ptr_create(raw_ptr);
+
+    printf("%d\n", *(int*)shared_ptr_get(sptr1));
+    printf("%d\n", shared_ptr_use_count(sptr1));
+
+    SharedPtr* sptr2 = shared_ptr_copy(sptr1);
+    printf("%d\n", shared_ptr_use_count(sptr1));
+
+    SharedPtr* sptr3 = shared_ptr_copy(sptr1);
+    printf("%d\n", shared_ptr_use_count(sptr1));
+
+    shared_ptr_destroy(sptr1);
+    printf("%d\n", shared_ptr_use_count(sptr2));
+
+    printf("%d\n", *(int*)shared_ptr_get(sptr2));
+
+    shared_ptr_destroy(sptr2);
+    shared_ptr_destroy(sptr3);
+
+    return 0;
+}
+</code>
+</pre>
+</file_content>

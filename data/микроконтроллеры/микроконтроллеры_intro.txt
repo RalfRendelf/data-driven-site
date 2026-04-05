@@ -1,0 +1,146 @@
+<h2>Введение в микроконтроллеры</h2>
+
+<p><strong>Категория:</strong> Основы</p>
+
+<h3>Описание</h3>
+<p>Микроконтроллер — это миниатюрный компьютер на одном интегральном чипе, содержащий процессор, память, таймеры и периферийные устройства. Он предназначен для управления электронными устройствами и системами.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>Процессорное ядро (например, ARM Cortex-M, AVR, PIC)</li>
+<li>Память (Flash, RAM, EEPROM)</li>
+<li>Периферийные устройства (GPIO, UART, SPI, I2C, ADC)</li>
+<li>Таймеры и счетчики</li>
+<li>Системы прерываний</li>
+</ul>
+
+<h3>Применение:</h3>
+<ul>
+<li>Встроенные системы</li>
+<li>Автомобильная промышленность</li>
+<li>Промышленная автоматизация</li>
+<li>Потребительская электроника</li>
+<li>Интернет вещей (IoT)</li>
+</ul>
+
+<h3>Пример программы на C для Arduino (на базе ATmega328P):</h3>
+
+<pre>
+<code>
+// Пример: мигание светодиодом
+void setup() {
+  // Настройка пина 13 как выход
+  DDRB |= (1 << DDB5);
+}
+
+void loop() {
+  // Установка высокого уровня
+  PORTB |= (1 << PORTB5);
+  
+  // Задержка 1 секунда
+  delay(1000);
+  
+  // Установка низкого уровня
+  PORTB &= ~(1 << PORTB5);
+  
+  // Задержка 1 секунда
+  delay(1000);
+}
+</code>
+</pre>
+
+<h3>Аналог в мире C:</h3>
+<p>Микроконтроллеры не имеют прямого аналога в мире C, но можно провести аналогию с системой, где:</p>
+<ul>
+<li>Процессор - это CPU, исполняющий инструкции</li>
+<li>Периферийные устройства - это внешние библиотеки и драйверы</li>
+<li>Регистры управления - это переменные и структуры данных</li>
+</ul>
+
+<h3>Пример на C для эмуляции некоторых функций микроконтроллера:</h3>
+
+<pre>
+<code>
+/***
+ * Эмуляция работы с GPIO микроконтроллера
+ * Компиляция: gcc -o gpio_simulation gpio_simulation.c
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+// Структура для эмуляции GPIO порта
+typedef struct {
+    uint8_t port;      // Регистр порта
+    uint8_t direction; // Регистр направления
+    uint8_t pin;       // Регистр состояния пинов
+} GpioPort;
+
+// Инициализация GPIO порта
+GpioPort init_gpio_port() {
+    GpioPort port;
+    port.port = 0;
+    port.direction = 0;
+    port.pin = 0;
+    return port;
+}
+
+// Установка направления пина (ввод/вывод)
+void set_pin_direction(GpioPort* port, uint8_t pin_number, bool is_output) {
+    if (is_output) {
+        port->direction |= (1 << pin_number); // Установка бита в 1
+    } else {
+        port->direction &= ~(1 << pin_number); // Установка бита в 0
+    }
+}
+
+// Установка значения на пине
+void set_pin_value(GpioPort* port, uint8_t pin_number, bool value) {
+    if ((port->direction >> pin_number) & 1) { // Проверка, что пин настроен как выход
+        if (value) {
+            port->port |= (1 << pin_number); // Установка бита
+        } else {
+            port->port &= ~(1 << pin_number); // Сброс бита
+        }
+    }
+}
+
+// Чтение значения с пина
+bool read_pin_value(GpioPort* port, uint8_t pin_number) {
+    if (!((port->direction >> pin_number) & 1)) { // Проверка, что пин настроен как вход
+        // Здесь в реальной системе происходило бы чтение с физического пина
+        return (port->pin >> pin_number) & 1;
+    }
+    return false;
+}
+
+// Печать состояния порта
+void print_port_status(GpioPort* port) {
+    printf("PORT: 0x%02X, DDR: 0x%02X, PIN: 0x%02X\n", 
+           port->port, port->direction, port->pin);
+}
+
+int main() {
+    // Инициализация порта
+    GpioPort my_port = init_gpio_port();
+    print_port_status(&my_port);
+    
+    // Настройка 5-го пина как выход
+    set_pin_direction(&my_port, 5, true);
+    print_port_status(&my_port);
+    
+    // Установка высокого уровня на 5-м пине
+    set_pin_value(&my_port, 5, true);
+    print_port_status(&my_port);
+    
+    // Настройка 3-го пина как вход
+    set_pin_direction(&my_port, 3, false);
+    my_port.pin = 0x08; // Имитация состояния входного регистра (бит 3 = 1)
+    printf("Pin 3 value: %d\n", read_pin_value(&my_port, 3));
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

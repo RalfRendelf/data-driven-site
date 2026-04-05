@@ -1,0 +1,208 @@
+<h2>Non-overlapping Windows: Multiple Windows (Непересекающиеся окна: множественные окна)</h2>
+
+<p><strong>Категория:</strong> Массивы</p>
+
+<h3>Описание</h3>
+<p>Алгоритм множественных скользящих окон используется для решения задач, где необходимо одновременно отслеживать несколько подмассивов или подстрок. Может применяться для поиска двух/трех непересекающихся подмассивов с определенными свойствами или для сравнения характеристик различных участков массива.</p>
+
+<h3>Принцип работы</h3>
+<ol>
+<li>Определить количество требуемых окон и их размеры</li>
+<li>Использовать подходящую структуру данных для отслеживания состояния каждого окна</li>
+<li>Синхронизировать движение окон с учетом условия непересечения</li>
+<li>Отслеживать оптимальные результаты для всех окон одновременно</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность: O(n^k) в худшем случае, где n - длина массива, k - количество окон (но часто может быть оптимизирована до O(n))</li>
+<li>Пространственная сложность: O(k) или O(n), в зависимости от реализации</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Решение сложных задач с несколькими подмассивами</li>
+<li>Возможность оптимизации до линейного времени в некоторых случаях</li>
+<li>Гибкость в условиях задачи</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Сложность реализации и тестирования</li>
+<li>Высокая потенциальная временная сложность</li>
+<li>Требует хорошего понимания базовых алгоритмов</li>
+</ul>
+
+<h3>Пример на C++: Найти два непересекающихся подмассива с максимальной суммой</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;climits&gt;
+
+class Solution {
+public:
+    int maxSumTwoNoOverlap(std::vector&lt;int&gt;&amp; nums, int L, int M) {
+        int n = nums.size();
+        // Вычисляем префиксные суммы
+        std::vector&lt;int&gt; prefixSum(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            prefixSum[i + 1] = prefixSum[i] + nums[i];
+        }
+        
+        // Максимальные суммы для подмассивов длины L и M до текущего индекса
+        int maxL = prefixSum[L] - prefixSum[0]; // Максимальная сумма подмассива длины L до текущей позиции
+        int maxM = prefixSum[M] - prefixSum[0]; // Максимальная сумма подмассива длины M до текущей позиции
+        int result = prefixSum[L + M] - prefixSum[0]; // Сумма первых двух подряд идущих подмассивов
+        
+        for (int i = L + M; i <= n; i++) {
+            // Обновляем максимальную сумму подмассива длины L до позиции i-M
+            maxL = std::max(maxL, prefixSum[i - M] - prefixSum[i - M - L]);
+            
+            // Обновляем максимальную сумму подмассива длины M до позиции i-L
+            maxM = std::max(maxM, prefixSum[i - L] - prefixSum[i - L - M]);
+            
+            // Обновляем результат, проверяя оба возможных варианта:
+            // 1. Подмассив длины L до подмассива длины M
+            // 2. Подмассив длины M до подмассива длины L
+            result = std::max(result, 
+                std::max(
+                    maxL + (prefixSum[i] - prefixSum[i - M]),  // L до M
+                    maxM + (prefixSum[i] - prefixSum[i - L])   // M до L
+                )
+            );
+        }
+        
+        return result;
+    }
+};
+
+// Найти три непересекающихся подмассива одинаковой длины с максимальной общей суммой
+std::vector&lt;int&gt; maxSumOfThreeSubarrays(std::vector&lt;int&gt;&amp; nums, int k) {
+    int n = nums.size();
+    std::vector&lt;int&gt; sum(n - k + 1, 0);
+    int currentSum = 0;
+    
+    // Вычисляем сумму каждого окна длины k
+    for (int i = 0; i < n; i++) {
+        currentSum += nums[i];
+        if (i >= k) currentSum -= nums[i - k];
+        if (i >= k - 1) sum[i - k + 1] = currentSum;
+    }
+    
+    int maxIdx = 0;
+    std::vector&lt;int&gt; leftBest(n - k + 1, 0);
+    std::vector&lt;int&gt; rightBest(n - k + 1, 0);
+    
+    // Слева: индекс с максимальной суммой до текущей позиции
+    for (int i = 0; i < sum.size(); i++) {
+        if (sum[i] > sum[maxIdx]) maxIdx = i;
+        leftBest[i] = maxIdx;
+    }
+    
+    // Справа: индекс с максимальной суммой после текущей позиции
+    maxIdx = sum.size() - 1;
+    for (int i = sum.size() - 1; i >= 0; i--) {
+        if (sum[i] >= sum[maxIdx]) maxIdx = i;
+        rightBest[i] = maxIdx;
+    }
+    
+    std::vector&lt;int&gt; result = {-1, -1, -1};
+    long long maxSum = 0;
+    
+    // Перебираем среднюю позицию
+    for (int j = k; j < sum.size() - k; j++) {
+        int i = leftBest[j - k];
+        int k_pos = rightBest[j + k];
+        
+        long long total = sum[i] + sum[j] + sum[k_pos];
+        if (total > maxSum) {
+            maxSum = total;
+            result[0] = i;
+            result[1] = j;
+            result[2] = k_pos;
+        }
+    }
+    
+    return result;
+}
+
+int main() {
+    Solution sol;
+    std::vector&lt;int&gt; nums = {0, 6, 5, 2, 2, 5, 1, 9, 4};
+    int L = 1, M = 2;
+    
+    int result = sol.maxSumTwoNoOverlap(nums, L, M);
+    std::cout << "Maximum sum of two non-overlapping subarrays: " << result << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Найти два непересекающихся подмассива с одинаковой суммой</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+bool findTwoEqualSumSubarrays(int arr[], int n, int *start1, int *end1, int *start2, int *end2) {
+    // Проверяем все возможные пары подмассивов
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            // Подсчитываем сумму первого подмассива [i..j]
+            int sum1 = 0;
+            for (int k = i; k <= j; k++) {
+                sum1 += arr[k];
+            }
+            
+            // Ищем второй подмассив после первого
+            for (int p = j + 1; p < n; p++) {
+                int sum2 = 0;
+                for (int q = p; q < n; q++) {
+                    sum2 += arr[q];
+                    
+                    // Если суммы равны и второй подмассив не пересекается с первым
+                    if (sum1 == sum2) {
+                        *start1 = i;
+                        *end1 = j;
+                        *start2 = p;
+                        *end2 = q;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    
+    return false;
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5, 1, 6};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    
+    int start1, end1, start2, end2;
+    
+    if (findTwoEqualSumSubarrays(arr, n, &start1, &end1, &start2, &end2)) {
+        printf("Found two non-overlapping subarrays with equal sums:\n");
+        printf("First: indexes [%d, %d] = ", start1, end1);
+        for (int i = start1; i <= end1; i++) {
+            printf("%d ", arr[i]);
+        }
+        printf("\nSecond: indexes [%d, %d] = ", start2, end2);
+        for (int i = start2; i <= end2; i++) {
+            printf("%d ", arr[i]);
+        }
+        printf("\n");
+    } else {
+        printf("No two non-overlapping subarrays with equal sums found.\n");
+    }
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

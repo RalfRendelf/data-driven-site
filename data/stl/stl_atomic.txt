@@ -1,0 +1,138 @@
+<h2>std::atomic</h2>
+
+<p><strong>Категория:</strong> Многопоточность</p>
+
+<h3>Описание</h3>
+<p>std::atomic - это шаблон, который представляет атомарные типы данных. Он обеспечивает потокобезопасные операции над переменными без использования мьютексов, что позволяет повысить производительность в многопоточных приложениях.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>C++11</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные методы std::atomic:</p>
+
+<pre>
+<code>
+// Пример использования std::atomic на C++
+
+#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;atomic&gt;
+#include &lt;vector&gt;
+
+std::atomic&lt;int&gt; atomic_counter(0);
+std::atomic&lt;bool&gt; ready(false);
+
+void worker_function(int id, int iterations) {
+    // Ожидание готовности
+    while (!ready.load()) {
+        std::this_thread::yield();
+    }
+    
+    for (int i = 0; i < iterations; ++i) {
+        // Атомарное увеличение счетчика
+        atomic_counter.fetch_add(1);
+        std::cout << "Thread " << id << " incremented counter to: " 
+                  << atomic_counter.load() << std::endl;
+        
+        // Небольшая задержка
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+int main() {
+    std::vector&lt;std::thread&gt; threads;
+    
+    // Создание 5 потоков
+    for (int i = 0; i < 5; ++i) {
+        threads.emplace_back(worker_function, i, 3);
+    }
+    
+    // Сигнал о готовности
+    ready.store(true);
+    
+    // Ожидание завершения всех потоков
+    for (auto&amp; t : threads) {
+        t.join();
+    }
+    
+    std::cout << "Final counter value: " << atomic_counter.load() << std::endl;
+    
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Реализация на C:</h3>
+<p>Для сравнения, вот как можно реализовать аналогичную функциональность на C с использованием атомарных операций GCC:</p>
+
+<pre>
+<code>
+/***
+ * Для компиляции необходима поддержка GCC атомарных операций
+ * Компиляция: gcc -o atomic_example atomic_example.c -lpthread
+ ***/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+
+// Атомарная переменная
+int atomic_counter = 0;
+int ready = 0;
+
+// Структура для передачи аргументов в поток
+typedef struct {
+    int id;
+    int iterations;
+} ThreadArgs;
+
+// Функция, которая будет выполняться в потоке
+void* worker_function(void* args) {
+    ThreadArgs* thread_args = (ThreadArgs*)args;
+    
+    // Ожидание готовности
+    while (!__sync_fetch_and_add(&ready, 0)) { // атомарное чтение
+        usleep(1000); // 1 мс задержка
+    }
+    
+    for (int i = 0; i < thread_args->iterations; i++) {
+        // Атомарное увеличение счетчика
+        int new_value = __sync_add_and_fetch(&atomic_counter, 1);
+        printf("Thread %d incremented counter to: %d\n", thread_args->id, new_value);
+        
+        // Небольшая задержка
+        usleep(10000); // 10 мс
+    }
+    
+    return NULL;
+}
+
+// Пример использования
+int main() {
+    pthread_t threads[5];
+    ThreadArgs args[5];
+    
+    // Создание 5 потоков
+    for (int i = 0; i < 5; i++) {
+        args[i].id = i;
+        args[i].iterations = 3;
+        pthread_create(&threads[i], NULL, worker_function, &args[i]);
+    }
+    
+    // Сигнал о готовности (атомарная операция)
+    __sync_fetch_and_add(&ready, 1);
+    
+    // Ожидание завершения всех потоков
+    for (int i = 0; i < 5; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    
+    printf("Final counter value: %d\n", atomic_counter);
+    
+    return 0;
+}
+</code>
+</pre>
+</file_content>

@@ -1,0 +1,176 @@
+<h2>Таймеры и счетчики</h2>
+
+<p><strong>Категория:</strong> Периферия</p>
+
+<h3>Описание</h3>
+<p>Таймеры и счетчики являются важными периферийными модулями микроконтроллера, которые используются для генерации временных задержек, измерения интервалов времени, формирования ШИМ-сигналов, генерации прерываний и синхронизации работы различных компонентов системы. Микроконтроллеры обычно оснащены несколькими типами таймеров: простые таймеры задержек, таймеры общего назначения, высокоточные таймеры и т.д.</p>
+
+<h3>Основные характеристики:</h3>
+<ul>
+<li>Разрядность счета (8, 16, 32 бита)</li>
+<li>Поддержка различных режимов работы (таймер, счетчик, ШИМ)</li>
+<li>Возможность генерации прерываний по событиям</li>
+<li>Поддержка каналов захвата/сравнения</li>
+<li>Возможность синхронизации с другими таймерами и внешними сигналами</li>
+</ul>
+
+<h3>Типы таймеров:</h3>
+<ul>
+<li>Таймеры общего назначения (TIMx)</li>
+<li>Базовые таймеры (TIM6, TIM7)</li>
+<li>Продвинутые таймеры (TIM1, TIM8)</li>
+<li>Системный таймер (SysTick)</li>
+<li>Оконные сторожевые таймеры (WWDG)</li>
+<li>Независимые сторожевые таймеры (IWDG)</li>
+</ul>
+
+<h3>Пример использования таймера общего назначения на STM32:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+TIM_HandleTypeDef htim2;
+
+void Timer2_Init() {
+    // Настройка таймера 2 как таймера общего назначения
+    __HAL_RCC_TIM2_CLK_ENABLE();
+
+    htim2.Instance = TIM2;
+    htim2.Init.Prescaler = 8400 - 1;  // Предделитель: 84MHz / 8400 = 10kHz
+    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim2.Init.Period = 10000 - 1;    // Период: 10kHz / 10000 = 1Hz (переполнение каждую секунду)
+    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    if (HAL_TIM_Base_Init(&htim2) != HAL_OK) {
+        // Обработка ошибки
+        Error_Handler();
+    }
+
+    // Настройка параметров таймера
+    HAL_TIM_Base_MspInit(&htim2);
+}
+
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle) {
+    if(tim_baseHandle->Instance == TIM2) {
+        // Разрешение прерываний таймера
+        HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(TIM2_IRQn);
+    }
+}
+
+void TIM2_IRQHandler(void) {
+    // Обработчик прерываний таймера 2
+    HAL_TIM_IRQHandler(&htim2);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if(htim->Instance == TIM2) {
+        // Код, выполняемый при переполнении таймера
+        // Например, переключение светодиода
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    }
+}
+
+int main(void) {
+    // Инициализация HAL
+    HAL_Init();
+
+    // Настройка системного тактирования
+    SystemClock_Config();
+
+    // Инициализация таймера
+    Timer2_Init();
+
+    // Запуск таймера с прерываниями
+    HAL_TIM_Base_Start_IT(&htim2);
+
+    while(1) {
+        // Основной цикл программы
+    }
+}
+</code>
+</pre>
+
+<h3>Пример генерации ШИМ-сигнала:</h3>
+
+<pre>
+<code>
+#include "stm32f4xx_hal.h"
+
+TIM_HandleTypeDef htim3;
+
+void PWM_Init() {
+    // Включить тактирование таймера 3
+    __HAL_RCC_TIM3_CLK_ENABLE();
+
+    // Конфигурация таймера 3 для ШИМ
+    htim3.Instance = TIM3;
+    htim3.Init.Prescaler = 84 - 1;           // Предделитель: 84MHz / 84 = 1MHz
+    htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim3.Init.Period = 1000 - 1;            // Период: 1MHz / 1000 = 1kHz (частота ШИМ)
+    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    if (HAL_TIM_PWM_Init(&htim3) != HAL_OK) {
+        Error_Handler();
+    }
+
+    // Настройка канала 1 для ШИМ
+    TIM_OC_InitTypeDef sConfigOC = {0};
+    sConfigOC.OCMode = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse = 500;                   // Ширина импульса: 50% (500 из 1000)
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+
+    if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+        Error_Handler();
+    }
+
+    // Инициализация периферии
+    HAL_TIM_MspPostInit(&htim3);
+}
+
+void Start_PWM() {
+    // Запуск ШИМ на канале 1
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+}
+
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    PWM_Init();
+    Start_PWM();
+
+    while(1) {
+        // Можно изменять значение ШИМ в реальном времени
+        htim3.Instance->CCR1 = 250; // 25% заполнение
+        HAL_Delay(1000);
+        
+        htim3.Instance->CCR1 = 750; // 75% заполнение
+        HAL_Delay(1000);
+    }
+}
+</code>
+</pre>
+
+<h3>Регистры таймеров:</h3>
+<ul>
+<li>PSC - регистр предделителя</li>
+<li>ARR - регистр автоперезагрузки (период)</li>
+<li>CNT - регистр счетчика</li>
+<li>CCR1-4 - регистры сравнения каналов 1-4</li>
+<li>CR1-CR2 - регистры управления</li>
+<li>DIER - регистр разрешения прерываний</li>
+<li>SR - регистр состояния</li>
+<li>EGR - регистр генерации событий</li>
+</ul>
+
+<h3>Преимущества использования таймеров:</h3>
+<ul>
+<li>Освобождение CPU от мониторинга временных интервалов</li>
+<li>Высокая точность временных интервалов</li>
+<li>Возможность работы в фоновом режиме</li>
+<li>Поддержка множества приложений одновременно</li>
+</ul>

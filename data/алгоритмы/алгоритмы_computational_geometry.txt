@@ -1,0 +1,142 @@
+<h2>Computational Geometry (Вычислительная геометрия)</h2>
+
+<p><strong>Категория:</strong> Геометрия</p>
+
+<h3>Описание</h3>
+<p>Вычислительная геометрия - это раздел информатики и математики, изучающий алгоритмы, описывающие свойства и преобразования геометрических объектов. Эти объекты могут включать точки, линии, отрезки, многоугольники и другие геометрические фигуры.</p>
+
+<h3>Основные задачи вычислительной геометрии</h3>
+<ol>
+<li>Определение принадлежности точки многоугольнику</li>
+<li>Поиск выпуклой оболочки</li>
+<li>Поиск ближайших точек</li>
+<li>Пересечение отрезков</li>
+<li>Триангуляция Делоне</li>
+<li>Диаграммы Вороного</li>
+</ol>
+
+<h3>Сложность алгоритма</h3>
+<ul>
+<li>Временная сложность зависит от конкретной задачи (например, для выпуклой оболочки: O(n log n))</li>
+<li>Пространственная сложность: O(n) для большинства задач</li>
+</ul>
+
+<h3>Преимущества и недостатки</h3>
+<p>Преимущества:</p>
+<ul>
+<li>Широкое применение в компьютерной графике, робототехнике, геоинформационных системах</li>
+<li>Точные решения геометрических задач</li>
+<li>Мощный инструментарий для решения сложных задач</li>
+</ul>
+
+<p>Недостатки:</p>
+<ul>
+<li>Сложность реализации из-за необходимости обрабатывать особые случаи</li>
+<li>Чувствительность к ошибкам округления</li>
+<li>Высокая вычислительная сложность для некоторых задач</li>
+</ul>
+
+<h3>Пример на C++: Проверка принадлежности точки многоугольнику</h3>
+<pre>
+<code>
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+struct Point {
+    double x, y;
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
+};
+
+// Проверяет, пересекаются ли отрезки p1q1 и p2q2
+bool doIntersect(Point p1, Point q1, Point p2, Point q2) {
+    // Вспомогательная функция для вычисления ориентации трех точек
+    auto orientation = [](Point p, Point q, Point r) {
+        double val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+        if (val == 0) return 0; // Коллинеарные
+        return (val > 0) ? 1 : 2; // По часовой или против часовой стрелки
+    };
+
+    int o1 = orientation(p1, q1, p2);
+    int o2 = orientation(p1, q1, q2);
+    int o3 = orientation(p2, q2, p1);
+    int o4 = orientation(p2, q2, q1);
+
+    // Особый случай: когда отрезки лежат на одной прямой
+    if (o1 != o2 && o3 != o4) return true;
+
+    return false;
+}
+
+// Проверяет, находится ли точка внутри многоугольника
+bool isInsidePolygon(std::vector&lt;Point&gt; polygon, Point p) {
+    int n = polygon.size();
+    if (n < 3) return false;
+
+    Point extreme(1e9, p.y); // Точка с очень большим x-координатом
+    int count = 0, i = 0;
+
+    do {
+        int next = (i + 1) % n;
+
+        if (doIntersect(polygon[i], polygon[next], p, extreme)) {
+            // Особый случай: точка лежит на отрезке
+            if (orientation(polygon[i], p, polygon[next]) == 0)
+                return false; // Считаем, что точка на границе не внутри
+
+            count++;
+        }
+        i = next;
+    } while (i != 0);
+
+    return count & 1; // Нечетное количество пересечений = внутри
+}
+
+int main() {
+    std::vector&lt;Point&gt; polygon = {{0, 0}, {10, 0}, {10, 10}, {0, 10}};
+    Point p(5, 5);
+
+    if (isInsidePolygon(polygon, p))
+        std::cout << "Точка внутри многоугольника" << std::endl;
+    else
+        std::cout << "Точка снаружи многоугольника" << std::endl;
+
+    return 0;
+}
+</code>
+</pre>
+
+<h3>Пример на C: Вычисление площади многоугольника</h3>
+<pre>
+<code>
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+
+typedef struct {
+    double x, y;
+} Point;
+
+// Вычисляет площадь многоугольника по формуле шнурования
+double calculatePolygonArea(Point* vertices, int n) {
+    double area = 0.0;
+    int j = n - 1; // индекс последней вершины
+
+    for (int i = 0; i < n; i++) {
+        area += (vertices[j].x + vertices[i].x) * (vertices[j].y - vertices[i].y);
+        j = i; // j - это предыдущая вершина для i
+    }
+
+    return fabs(area / 2.0);
+}
+
+int main() {
+    Point vertices[] = {{0, 0}, {4, 0}, {4, 3}, {0, 3}};
+    int n = sizeof(vertices) / sizeof(vertices[0]);
+
+    double area = calculatePolygonArea(vertices, n);
+    printf("Площадь многоугольника: %.2f\n", area);
+
+    return 0;
+}
+</code>
+</pre>
+</file_content>

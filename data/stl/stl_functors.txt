@@ -1,0 +1,257 @@
+<h2>Функторы</h2>
+
+<p><strong>Категория:</strong> Функторы</p>
+
+<h3>Описание</h3>
+<p>Функторы - это объекты, которые могут быть вызваны как функции. В C++ это обычно классы, у которых перегружен оператор (), позволяющий использовать экземпляры этих классов как функции. Функторы позволяют инкапсулировать состояние и поведение в одном объекте.</p>
+
+<h3>Добавлен в стандарт:</h3>
+<p>С самого начала C++, но стали особенно важны с появлением STL</p>
+
+<h3>Основные методы:</h3>
+<p>В этом разделе представлены основные концепции функторов и их реализация на C (для демонстрации аналогов):</p>
+
+<h4>C++</h4>
+<pre>
+<code>
+// =======================
+// C++ пример функторов
+// =======================
+
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+// Функтор для сложения
+struct Add {
+int offset;
+
+/**
+* Назначение: выполнить операцию сложения.
+* Параметры:
+*   value — число, к которому прибавляем offset
+*/
+// operator() — вызываем объект как функцию
+int operator()(int value) const {
+return value + offset;
+}
+};
+
+// Функтор для умножения
+struct Multiply {
+int factor;
+
+/**
+* Назначение: выполнить умножение.
+* Параметры:
+*   value — число, которое умножаем
+*/
+// operator() — вызываем объект как функцию
+int operator()(int value) const {
+return value * factor;
+}
+};
+
+// Функтор-фильтр
+struct GreaterThan {
+int threshold;
+
+/**
+* Назначение: проверить, больше ли число порога.
+* Параметры:
+*   value — проверяемое число
+*/
+// operator() — возвращает true/false
+bool operator()(int value) const {
+return value &gt; threshold;
+}
+};
+
+int main() {
+std::vector&lt;int&gt; values = {1, 5, 10, 3, 7};
+
+Add add10{10};
+Multiply mul3{3};
+GreaterThan gt5{5};
+
+/**
+* Назначение: применить функтор к каждому элементу.
+* Параметры:
+*   begin, end — диапазон
+*   functor — вызываемый объект
+*/
+// transform — применяем add10 ко всем элементам
+std::transform(values.begin(), values.end(), values.begin(), add10);
+
+std::cout &lt;&lt; "После add10: ";
+for (int v : values) std::cout &lt;&lt; v &lt;&lt; " ";
+std::cout &lt;&lt; "\n";
+
+// transform — применяем mul3
+std::transform(values.begin(), values.end(), values.begin(), mul3);
+
+std::cout &lt;&lt; "После mul3: ";
+for (int v : values) std::cout &lt;&lt; v &lt;&lt; " ";
+std::cout &lt;&lt; "\n";
+
+/**
+* Назначение: отфильтровать элементы.
+* Параметры:
+*   begin, end — диапазон
+*   predicate — функтор, возвращающий bool
+*/
+// copy_if — выбираем элементы &gt; 5
+std::vector&lt;int&gt; filtered;
+std::copy_if(values.begin(), values.end(), std::back_inserter(filtered), gt5);
+
+std::cout &lt;&lt; "Фильтр &gt; 5: ";
+for (int v : filtered) std::cout &lt;&lt; v &lt;&lt; " ";
+std::cout &lt;&lt; "\n";
+
+return 0;
+}
+</code>
+</pre>
+
+<h4>C реализация</h4>
+<pre>
+<code>
+// Пример реализации аналога функторов на C
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+// Структура для хранения функции и состояния (аналог функтора)
+typedef struct {
+void* state;
+void* (call)(void functor_state, void* args);
+} Functor;
+
+// Функтор для сложения
+typedef struct {
+int offset;
+} AddFunctorState;
+
+void* add_functor_call(void* functor_state, void* args) {
+AddFunctorState* state = (AddFunctorState)functor_state;
+int input_args = (int*)args;
+
+int* result = malloc(sizeof(int));
+*result = state-&gt;offset + input_args[0];
+
+return result;
+}
+
+Functor* create_add_functor(int offset) {
+Functor* functor = malloc(sizeof(Functor));
+functor-&gt;state = malloc(sizeof(AddFunctorState));
+((AddFunctorState*)functor-&gt;state)-&gt;offset = offset;
+functor-&gt;call = &add_functor_call;
+
+return functor;
+}
+
+// Функтор для умножения
+typedef struct {
+int multiplier;
+} MultiplyFunctorState;
+
+void* multiply_functor_call(void* functor_state, void* args) {
+MultiplyFunctorState* state = (MultiplyFunctorState)functor_state;
+int input_args = (int*)args;
+
+int* result = malloc(sizeof(int));
+*result = state-&gt;multiplier * input_args[0];
+
+return result;
+}
+
+Functor* create_multiply_functor(int multiplier) {
+Functor* functor = malloc(sizeof(Functor));
+functor-&gt;state = malloc(sizeof(MultiplyFunctorState));
+((MultiplyFunctorState*)functor-&gt;state)-&gt;multiplier = multiplier;
+functor-&gt;call = &multiply_functor_call;
+
+return functor;
+}
+
+// Функтор для фильтрации
+typedef struct {
+int threshold;
+} FilterFunctorState;
+
+void* filter_functor_call(void* functor_state, void* args) {
+FilterFunctorState* state = (FilterFunctorState)functor_state;
+int input_args = (int*)args;
+
+int* result = malloc(sizeof(int));
+result = (input_args &gt; state-&gt;threshold) ? 1 : 0;
+
+return result;
+}
+
+Functor* create_filter_functor(int threshold) {
+Functor* functor = malloc(sizeof(Functor));
+functor-&gt;state = malloc(sizeof(FilterFunctorState));
+((FilterFunctorState*)functor-&gt;state)-&gt;threshold = threshold;
+functor-&gt;call = &filter_functor_call;
+
+return functor;
+}
+
+void* functor_call(Functor* functor, void* args) {
+if (functor != NULL && functor-&gt;call != NULL) {
+return functor-&gt;call(functor-&gt;state, args);
+}
+return NULL;
+}
+
+void functor_destroy(Functor* functor) {
+if (functor != NULL) {
+if (functor-&gt;state != NULL) {
+free(functor-&gt;state);
+}
+free(functor);
+}
+}
+
+int main() {
+Functor* add_functor = create_add_functor(10);
+
+int args[] = {5};
+int* result = (int*)functor_call(add_functor, args);
+printf("Результат сложения: %d\n", *result);
+free(result);
+
+Functor* mul_functor = create_multiply_functor(3);
+
+result = (int*)functor_call(mul_functor, args);
+printf("Результат умножения: %d\n", *result);
+free(result);
+
+Functor* filter_functor = create_filter_functor(5);
+
+int test_values[] = {3, 7, 2, 9, 5, 6};
+printf("Фильтрация значений больше 5: ");
+for (int i = 0; i &lt; 6; i++) {
+int current_value = test_values[i];
+result = (int)functor_call(filter_functor, &current_value);
+if (result) {
+printf("%d ", test_values[i]);
+}
+free(result);
+}
+printf("\n");
+
+functor_destroy(add_functor);
+functor_destroy(mul_functor);
+functor_destroy(filter_functor);
+
+printf("Все функторы уничтожены\n");
+
+return 0;
+}
+</code>
+</pre>
+</file_content>
