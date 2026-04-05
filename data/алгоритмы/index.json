@@ -149,7 +149,7 @@
   {
     "type": "алгоритмы",
     "name": "Z-function / Prefix-function / Manacher",
-    "fileName": "алгоритмы/z_function_prefix_function_manacher.txt",
+    "fileName": "алгоритмы_z_function_prefix_function_manacher.txt",
     "category": "Строки",
     "usage": "Алгоритмы для работы с подстроками и палиндромами"
   },
@@ -187,5 +187,12 @@
     "fileName": "алгоритмы_greedy_patterns.txt",
     "category": "Жадные алгоритмы",
     "usage": "Шаблоны жадных алгоритмов для оптимизационных задач"
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Bitwise Operations",
+    "fileName": "алгоритмы_bitwise_operations.txt",
+    "category": "Битовые алгоритмы",
+    "usage": "Алгоритмы для работы с побитовыми операциями"
   }
 ]
