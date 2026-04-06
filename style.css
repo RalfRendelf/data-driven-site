@@ -140,7 +140,7 @@ body {
   border: none;
   width: 100px;
   height: 24px;
-  border-radius: 100%;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -150,7 +150,7 @@ body {
 }
 
 .toggle-btn.rotated {
-  transform: rotate(180deg;
+  transform: rotate(180deg);
 }
 
 .content-area {
@@ -247,6 +247,26 @@ tr.detail td {
   padding: 1rem;
   font-size: 0.95rem;
   color: #444;
+}
+
+/* Вложенные таблицы */
+table.nested {
+  margin: 0.5rem 0 1rem 1.5rem;
+  box-shadow: none;
+  border: 1px solid #eee;
+  font-size: 0.95em;
+}
+
+table.nested th {
+  background: #5fa8db;
+}
+
+table.nested tr.entry {
+  background: #f9fdff;
+}
+
+table.nested tr.entry:hover {
+  background: #e9f5ff;
 }
 
 /* 5. Блоки кода */

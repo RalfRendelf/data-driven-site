@@ -216,6 +216,31 @@ tr.detail {
   background: #fcfeff;
 }
 
+/* Вложенные таблицы */
+table.nested {
+  margin: 0.5rem 0 1rem 1rem;
+  border: 1px solid #eee;
+  font-size: 0.9em;
+}
+
+table.nested th {
+  background: #5fa8db;
+  font-size: 0.9em;
+}
+
+table.nested td {
+  padding: 0.4rem;
+  font-size: 0.9em;
+}
+
+table.nested tr.entry {
+  background: #f9fdff;
+}
+
+table.nested tr.entry:hover {
+  background: #e9f5ff;
+}
+
 /* Блоки кода */
 pre {
   background: #2e2e2e;
