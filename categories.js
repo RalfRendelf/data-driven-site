@@ -26,7 +26,11 @@ export const CATEGORIES = [
       columns: ["Название", "Категория", "Описание"]
     },
     {
+<<<<<<< HEAD
       title: "🔍 STL (Standard Template Library)",
+=======
+      title: "🔍C++ и STL (Standard Template Library)",
+>>>>>>> a0f816f83ec18c9f49795b86064d3dcbb2a8b80b
       type:  "stl",
       columns: ["Название", "Категория", "Описание"]
     },
@@ -34,6 +38,24 @@ export const CATEGORIES = [
       title: "🔍 Микроконтроллеры ",
       type:  "микроконтроллеры",
       columns: ["Название", "Категория", "Описание"]
+<<<<<<< HEAD
+=======
+    },
+    {
+      title: "📱 Qt (C++)",
+      type: "qt",
+      columns: ["Название", "Категория", "Описание"]
+    },
+    {
+      title: "📱 Android (Java)",
+      type: "android",
+      columns: ["Название", "Категория", "Описание"]
+    },
+    {
+      title: "🚀 Boost C++",
+      type: "boost",
+      columns: ["Название", "Категория", "Описание"]
+>>>>>>> a0f816f83ec18c9f49795b86064d3dcbb2a8b80b
     }
     
   ];

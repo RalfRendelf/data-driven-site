@@ -427,6 +427,7 @@
     "usage": "Многомерное представление данных (C++23)"
   },
   {
+<<<<<<< HEAD
   "type": "stl",
   "name": "std::counting_semaphore",
   "fileName": "stl_counting_semaphore.txt",
@@ -440,4 +441,19 @@
   "category": "Многопоточность",
   "usage": "Сигнализация между потоками или эксклюзивный доступ без понятия владения (C++20)"
 }
+=======
+    "type": "stl",
+    "name": "Rule of One/Three/Five",
+    "fileName": "stl_rule_of_one_three_five.txt",
+    "category": "Язык",
+    "usage": "Правила реализации конструкторов копирования, перемещения и деструктора"
+  },
+  {
+    "type": "stl",
+    "name": "explicit",
+    "fileName": "stl_explicit.txt",
+    "category": "Язык",
+    "usage": "Ключевое слово для предотвращения неявных преобразований"
+  }
+>>>>>>> a0f816f83ec18c9f49795b86064d3dcbb2a8b80b
 ]

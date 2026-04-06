@@ -1,0 +1,137 @@
+<h3>Правило 1, 3 и 5 в C++</h3>
+<p>В C++ существуют важные концепции, связанные с управлением ресурсами, которые помогают писать безопасный и эффективный код.</p>
+
+<h4>Правило одного (Rule of One)</h4>
+<p>Если класс требует пользовательской реализации одного из следующих элементов:</p>
+<ul>
+<li>Деструктора</li>
+<li>Конструктора копирования</li>
+<li>Оператора присваивания копированием</li>
+<li>Конструктора перемещения</li>
+<li>Оператора присваивания перемещением</li>
+</ul>
+<p>то, возможно, потребуется реализовать все пять из них.</p>
+
+<h4>Правило трёх (Rule of Three)</h4>
+<p>Если класс определяет пользовательский деструктор, то, скорее всего, потребуются:</p>
+<ol>
+<li>Конструктор копирования</li>
+<li>Оператор присваивания копированием</li>
+<li>Деструктор</li>
+</ol>
+
+<pre><code>class Example {
+private:
+    int* data;
+public:
+    // Конструктор
+    explicit Example(int value) : data(new int(value)) {}
+    
+    // Конструктор копирования
+    Example(const Example& other) : data(new int(*other.data)) {}
+    
+    // Оператор присваивания копированием
+    Example& operator=(const Example& other) {
+        if (this != &other) {
+            delete data;
+            data = new int(*other.data);
+        }
+        return *this;
+    }
+    
+    // Деструктор
+    ~Example() {
+        delete data;
+    }
+};</code></pre>
+<p><strong>Сложность по времени:</strong> O(1) для каждого метода<br>
+<strong>Сложность по памяти:</strong> O(1) дополнительной памяти (кроме выделенной под данные)</p>
+
+<h4>Правило пяти (Rule of Five)</h4>
+<p>С появлением C++11, когда добавили семантику перемещения, правило трёх расширилось до правила пяти:</p>
+<ol>
+<li>Конструктор копирования</li>
+<li>Оператор присваивания копированием</li>
+<li>Деструктор</li>
+<li>Конструктор перемещения</li>
+<li>Оператор присваивания перемещением</li>
+</ol>
+
+<pre><code>class Example {
+private:
+    int* data;
+    size_t size;
+public:
+    // Конструктор
+    explicit Example(size_t s) : data(new int[s]), size(s) {}
+    
+    // Конструктор копирования
+    Example(const Example& other) : data(new int[other.size]), size(other.size) {
+        std::copy(other.data, other.data + size, data);
+    }
+    
+    // Оператор присваивания копированием
+    Example& operator=(const Example& other) {
+        if (this != &other) {
+            delete[] data;
+            size = other.size;
+            data = new int[size];
+            std::copy(other.data, other.data + size, data);
+        }
+        return *this;
+    }
+    
+    // Конструктор перемещения
+    Example(Example&& other) noexcept : data(other.data), size(other.size) {
+        other.data = nullptr;
+        other.size = 0;
+    }
+    
+    // Оператор присваивания перемещением
+    Example& operator=(Example&& other) noexcept {
+        if (this != &other) {
+            delete[] data;
+            data = other.data;
+            size = other.size;
+            other.data = nullptr;
+            other.size = 0;
+        }
+        return *this;
+    }
+    
+    // Деструктор
+    ~Example() {
+        delete[] data;
+    }
+};</code></pre>
+<p><strong>Сложность по времени:</strong> O(n) для копирования, O(1) для перемещения<br>
+<strong>Сложность по памяти:</strong> O(1) дополнительной памяти при перемещении, O(n) при копировании</p>
+
+<h4>Рекомендации по реализации</h4>
+<p>При реализации конструкторов перемещения и операторов присваивания:</p>
+<ul>
+<li>Используйте квалификатор <code>noexcept</code>, чтобы гарантировать отсутствие исключений</li>
+<li>После перемещения оставьте исходный объект в состоянии, при котором безопасно вызывать его деструктор</li>
+<li>Проверяйте самоприсваивание в операторах присваивания</li>
+</ul>
+
+<h4>Современный подход</h4>
+<p>Часто правильнее использовать RAII и умные указатели, которые позволяют избежать необходимости реализации собственных деструкторов:</p>
+
+<pre><code>#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+class ModernExample {
+private:
+    std::unique_ptr&lt;int[]&gt; data;
+    size_t size;
+    
+public:
+    explicit ModernExample(size_t s) : data(std::make_unique&lt;int[]&gt;(s)), size(s) {}
+    
+    // Больше не нужно реализовывать Rule of Five - компилятор сам сгенерирует
+    // правильные конструкторы копирования/перемещения, деструктор и т.д.
+};
+</code></pre>
+<p><strong>Сложность по времени:</strong> O(1) для перемещения, O(n) для копирования<br>
+<strong>Сложность по памяти:</strong> O(1) дополнительной памяти при перемещнии</p>
