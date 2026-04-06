@@ -1,4 +1,5 @@
 import { CATEGORIES } from "./categories.js";
+import { generateTreeStructure, logTreeStructure } from "./generator.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Заполняем боковую панель категориями
@@ -37,4 +38,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
   }
+  
+  // Генерируем древовидную структуру
+  await generateTreeStructure();
+  
+  // Логируем сформированную структуру для проверки
+  logTreeStructure();
 });
