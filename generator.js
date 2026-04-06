@@ -1,17 +1,15 @@
 // generator.js
 import { CATEGORIES } from "./categories.js";
 
-
 export async function fetchCategoryData(type) {
   try {
-    const res = await fetch(`${type}/index.json`);
+    const res = await fetch(`data/${type}/index.json`);
     return await res.json();
   } catch {
     console.error(`Не удалось загрузить data/${type}/index.json`);
     return [];
   }
 }
-
 
 export function renderSections(root) {
   // Create a container for search results at the top
@@ -46,7 +44,7 @@ export function renderSections(root) {
   });
 }
 
-export async function renderEntries(items, basePath = '') {
+export async function renderEntries(items) {
   // Обрабатываем каждый элемент
   for (const item of items) {
     // Находим нужную таблицу по типу
@@ -56,7 +54,6 @@ export async function renderEntries(items, basePath = '') {
     // Создаём строку
     const tr = document.createElement("tr");
     tr.className = "entry";
-    // Сохраняем только имя файла/папки, а не полный путь
     tr.dataset.file = item.fileName;
     tr.dataset.isLeaf = String(item.isLeaf || false);
     
@@ -80,47 +77,6 @@ export async function renderEntries(items, basePath = '') {
       </td>
     `;
     tbody.appendChild(detailRow);
-    
-    // Если это не листовой элемент, загружаем вложенную структуру
-    if (!item.isLeaf) {
-      // Формируем новый basePath для вложенной папки
-      const newBasePath = basePath ? `${basePath}${item.fileName}/` : `data/${item.type}/${item.fileName}/`;
-      try {
-        const nestedItems = await fetchCategoryDataAtPath(newBasePath);
-        if (nestedItems && nestedItems.length > 0) {
-          // Рекурсивно вызываем renderEntries для вложенных элементов
-          const nestedTable = document.createElement("table");
-          nestedTable.className = "category-table nested";
-          nestedTable.innerHTML = `
-            <thead>
-              <tr><th>Название</th><th>Категория</th><th>Описание</th></tr>
-            </thead>
-            <tbody id="${item.fileName}-nested-body"></tbody>
-          `;
-          
-          // Добавляем вложенные элементы в detail row
-          detailRow.querySelector('.content').appendChild(nestedTable);
-          
-          // Рекурсивно отрисовываем вложенные элементы
-          await renderEntries(nestedItems, newBasePath);
-        }
-      } catch (error) {
-        console.error(`Ошибка загрузки вложенных элементов для ${item.fileName}:`, error);
-      }
-    }
-  }
-}
-
-// Вспомогательная функция для загрузки данных по указанному пути
-async function fetchCategoryDataAtPath(path) {
-  try {
-    // Убираем "data/" из начала пути и добавляем "index.json" в конце
-    const normalizedPath = path.endsWith('/') ? path : path + '/';
-    const res = await fetch(`${normalizedPath}index.json`);
-    return await res.json();
-  } catch {
-    console.error(`Не удалось загрузить ${path}index.json`);
-    return [];
   }
 }
 
@@ -206,9 +162,6 @@ export function loadBlocks(basePath) {
     });
   });
 }
-
-
-
 
 // Функция для загрузки блоков кода из отдельных файлов и вставки в HTML
 export async function loadCodeBlocks(contentHtml, basePath) {

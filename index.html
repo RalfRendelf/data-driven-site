@@ -6,31 +6,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Десктопная версия (от 601px и выше) -->
-  <!-- <link
+  <link
     rel="stylesheet"
     href="style.css"
     media="screen and (min-width: 601px)"
-  /> -->
+  />
 
   <!-- Мобильная версия (до 600px) -->
-  <!-- <link
+  <link
     rel="stylesheet"
     href="mobile.css"
     media="screen and (max-width: 600px)"
-  /> -->
+  />
 
   <script type="module" defer src="./main.js"></script>
 </head>
 <body>
-  <header>
-    <h1>🔍 Поиск</h1>
-    <input
-      id="search-box"
-      type="text"
-      placeholder="Введите ключевые слова..."
-    />
+  <header class="main-header">
+    <div class="logo-section">
+      <h1>🔍 Поиск</h1>
+    </div>
+    <div class="search-section">
+      <input
+        id="search-box"
+        type="text"
+        placeholder="Введите ключевые слова..."
+      />
+    </div>
   </header>
 
-  <main id="content"></main>
+  <div class="main-container">
+    <aside class="sidebar">
+      <nav id="categories-nav">
+        <ul>
+          <!-- Категории будут добавлены динамически -->
+        </ul>
+      </nav>
+    </aside>
+
+    <main id="content" class="content-area">
+      <!-- Таблицы будут добавлены динамически -->
+    </main>
+  </div>
 </body>
 </html>
