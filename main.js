@@ -47,6 +47,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Генерируем древовидную структуру
   await generateTreeStructure();
+  
+  // Добавляем функциональность для кнопок сворачивания
+  setupToggleButtons();
+  
+  // Добавляем функциональность поиска
+  setupGlobalSearch();
 });
 
 // Функция для отображения дерева для выбранной категории
@@ -139,5 +145,86 @@ async function loadAndDisplayCategoryData(category) {
     errorMessage.textContent = `Ошибка загрузки данных для ${category.title}`;
     errorMessage.style.color = 'red';
     document.querySelector('.content-area').appendChild(errorMessage);
+  }
+}
+
+// Функция для настройки кнопок сворачивания/разворачивания
+  function setupToggleButtons() {
+    // Кнопка для сворачивания/разворачивания боковой панели
+    // const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+    // if (toggleSidebarBtn) {
+    //   toggleSidebarBtn.addEventListener('click', () => {
+    //     const sidebar = document.querySelector('.sidebar');
+    //     const container = document.querySelector('.main-container');
+        
+    //     sidebar.classList.toggle('hidden');
+    //     container.classList.toggle('sidebar-hidden');
+        
+    //     // Поворачиваем кнопку для визуального эффекта
+    //     toggleSidebarBtn.classList.toggle('rotated');
+        
+    //     // Изменяем символ на кнопке
+    //     toggleSidebarBtn.textContent = sidebar.classList.contains('hidden') ? 'Скрыть' : 'Показать';
+    //   });
+    // }
+  
+  // Кнопка для скрытия/отображения тем
+  const toggleThemesBtn = document.getElementById('toggle-themes');
+  if (toggleThemesBtn) {
+    toggleThemesBtn.addEventListener('click', () => {
+      const sidebar = document.querySelector('.sidebar');
+      const container = document.querySelector('.main-container');
+      
+      sidebar.classList.toggle('hidden');
+      container.classList.toggle('themes-hidden');
+      
+      // Поворачиваем кнопку для визуального эффекта
+      toggleThemesBtn.classList.toggle('rotated');
+      
+      // Изменяем символ на кнопке
+      toggleThemesBtn.textContent = sidebar.classList.contains('hidden') ? 'Открыть' : 'Скрыть';
+    });
+  }
+}
+
+// Функция для настройки глобального поиска по всему дереву
+function setupGlobalSearch() {
+  const searchBox = document.getElementById('search-box');
+  if (searchBox) {
+    searchBox.addEventListener('input', async (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      
+      if (!searchTerm) {
+        // Если поле поиска пустое, восстанавливаем обычное состояние
+        document.querySelectorAll('.entry').forEach(row => {
+          row.style.display = '';
+          if (row.nextElementSibling && row.nextElementSibling.classList.contains('detail')) {
+            row.nextElementSibling.style.display = 'none';
+          }
+        });
+        return;
+      }
+      
+      // Скрываем все строки таблиц
+      document.querySelectorAll('.entry').forEach(row => {
+        row.style.display = 'none';
+        if (row.nextElementSibling && row.nextElementSibling.classList.contains('detail')) {
+          row.nextElementSibling.style.display = 'none';
+        }
+      });
+      
+      // Показываем только подходящие результаты
+      document.querySelectorAll('.entry').forEach(row => {
+        const nameText = row.cells[0].textContent.toLowerCase(); // name
+        const categoryText = row.cells[1].textContent.toLowerCase(); // category
+        const usageText = row.cells[2].textContent.toLowerCase(); // usage
+        
+        if (nameText.includes(searchTerm) || 
+            categoryText.includes(searchTerm) || 
+            usageText.includes(searchTerm)) {
+          row.style.display = '';
+        }
+      });
+    });
   }
 }

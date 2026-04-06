@@ -23,25 +23,31 @@
 </head>
 <body>
   <header class="main-header">
-    <div class="logo-section">
-      <h1>🔍 Поиск</h1>
-    </div>
-    <div class="search-section">
-      <input
-        id="search-box"
-        type="text"
-        placeholder="Введите ключевые слова..."
-      />
+    <div class="header-content">
+      <div class="logo-section">
+        <h1>🔍 Поиск:</h1>
+      </div>
+      <div class="search-section">
+        <input
+          id="search-box"
+          type="text"
+          placeholder="Введите ключевые слова..."
+        />
+        <button id="toggle-themes" class="toggle-btn">Скрыть</button>
+      </div>
     </div>
   </header>
 
   <div class="main-container">
     <aside class="sidebar">
-      <nav id="categories-nav">
-        <ul>
-          <!-- Категории будут добавлены динамически -->
-        </ul>
-      </nav>
+      <div class="sidebar-content">
+        <nav id="categories-nav">
+          <ul>
+            <!-- Категории будут добавлены динамически -->
+          </ul>
+        </nav>
+      </div>
+      
     </aside>
 
     <main id="content" class="content-area">
