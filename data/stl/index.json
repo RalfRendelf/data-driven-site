@@ -439,19 +439,5 @@
   "fileName": "stl_binary_semaphore.txt",
   "category": "Многопоточность",
   "usage": "Сигнализация между потоками или эксклюзивный доступ без понятия владения (C++20)"
-},
-
-  { "type": "stl",
-    "name": "Rule of One/Three/Five",
-    "fileName": "stl_rule_of_one_three_five.txt",
-    "category": "Язык",
-    "usage": "Правила реализации конструкторов копирования, перемещения и деструктора"
-  },
-  {
-    "type": "stl",
-    "name": "explicit",
-    "fileName": "stl_explicit.txt",
-    "category": "Язык",
-    "usage": "Ключевое слово для предотвращения неявных преобразований"
-  }
+}
 ]

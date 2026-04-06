@@ -26,7 +26,6 @@ export const CATEGORIES = [
       columns: ["Название", "Категория", "Описание"]
     },
     {
-      title: "⚙️C++ и STL",
       type:  "stl",
       columns: ["Название", "Категория", "Описание"]
     },
@@ -34,22 +33,6 @@ export const CATEGORIES = [
       title: "🔍 Микроконтроллеры ",
       type:  "микроконтроллеры",
       columns: ["Название", "Категория", "Описание"]
-    },
-    {
-      title: "📱 Qt (C++)",
-      type: "qt",
-      columns: ["Название", "Категория", "Описание"]
-    },
-    {
-      title: "📱 Android (Java)",
-      type: "android",
-      columns: ["Название", "Категория", "Описание"]
-    },
-    {
-      title: "🚀 Boost C++",
-      type: "boost",
-      columns: ["Название", "Категория", "Описание"]
-
     }
     
   ];
