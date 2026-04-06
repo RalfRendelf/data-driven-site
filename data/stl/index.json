@@ -425,5 +425,19 @@
     "fileName": "stl_mdspan.txt",
     "category": "Контейнеры",
     "usage": "Многомерное представление данных (C++23)"
-  }
+  },
+  {
+  "type": "stl",
+  "name": "std::counting_semaphore",
+  "fileName": "stl_counting_semaphore.txt",
+  "category": "Многопоточность",
+  "usage": "Синхронизация потоков через счетчик для ограничения доступа к пулу ресурсов (C++20)"
+},
+{
+  "type": "stl",
+  "name": "std::binary_semaphore",
+  "fileName": "stl_binary_semaphore.txt",
+  "category": "Многопоточность",
+  "usage": "Сигнализация между потоками или эксклюзивный доступ без понятия владения (C++20)"
+}
 ]
