@@ -9,7 +9,7 @@ export async function generateTreeStructure() {
   // Проходим по каждой категории из CATEGORIES
   for (const category of CATEGORIES) {
     const type = category.type;
-    
+    const columns = category.columns;
     try {
       // Загружаем основной index.json для категории
       const response = await fetch(`data/${type}/index.json`);
@@ -24,6 +24,7 @@ export async function generateTreeStructure() {
       treeStructure[type] = {
         type: type,
         name: category.title, // используем заголовок из CATEGORIES
+        columns: columns,
         children: []
       };
       
@@ -36,9 +37,6 @@ export async function generateTreeStructure() {
       console.error(`Ошибка при обработке категории ${type}:`, error);
     }
   }
-  
-  // Записываем структуру в глобальный контейнер
-  window.treeNodesContainer = treeStructure;
   
   return treeStructure;
 }
