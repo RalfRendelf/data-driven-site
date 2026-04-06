@@ -26,6 +26,7 @@ export const CATEGORIES = [
       columns: ["Название", "Категория", "Описание"]
     },
     {
+      title: "🔍 STL (Standard Template Library)",
       type:  "stl",
       columns: ["Название", "Категория", "Описание"]
     },
