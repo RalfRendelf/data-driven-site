@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupToggleButtons();
   
   // Добавляем функциональность поиска
-  setupGlobalSearch();
+  // setupGlobalSearch();
 });
 
 // Функция для отображения дерева для выбранной категории
