@@ -1,6 +1,7 @@
 // generator.js
 import { CATEGORIES } from "./categories.js";
 
+
 // Функция для получения древовидной структуры из index.json файлов
 export async function generateTreeStructure() {
   // Контейнер для хранения всей древовидной структуры
