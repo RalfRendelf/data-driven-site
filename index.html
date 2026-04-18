@@ -5,28 +5,33 @@
   <title>Паттерны и Архитектуры</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Десктопная версия (от 601px и выше) -->
+  <!-- Десктопная версия -->
   <link
     rel="stylesheet"
     href="style.css"
     media="screen and (min-width: 601px)"
   />
 
-  <!-- Мобильная версия (до 600px) -->
+  <!-- Мобильная версия -->
   <link
     rel="stylesheet"
     href="mobile.css"
     media="screen and (max-width: 600px)"
   />
-
-  
 </head>
+
 <body>
+
+  <!-- ========================= -->
+  <!-- HEADER -->
+  <!-- ========================= -->
   <header class="main-header">
     <div class="header-content">
+
       <div class="logo-section">
         <h1>🔍 Поиск:</h1>
       </div>
+
       <div class="search-section">
         <input
           id="search-box"
@@ -35,10 +40,28 @@
         />
         <button id="toggle-themes" class="toggle-btn">Скрыть</button>
       </div>
+
     </div>
   </header>
 
+
+  <!-- ========================= -->
+  <!-- МОДАЛЬНОЕ ОКНО ДЛЯ СТАТЕЙ -->
+  <!-- ========================= -->
+  <div id="article-modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close">×</button>
+      <div class="modal-body">Загрузка...</div>
+    </div>
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+  <!-- ========================= -->
   <div class="main-container">
+
+    <!-- Сайдбар -->
     <aside class="sidebar">
       <div class="sidebar-content">
         <nav id="categories-nav">
@@ -47,13 +70,19 @@
           </ul>
         </nav>
       </div>
-      
     </aside>
 
+    <!-- Контент -->
     <main id="content" class="content-area">
       <!-- Таблицы будут добавлены динамически -->
     </main>
+
   </div>
+
+  <!-- ========================= -->
+  <!-- MAIN.JS -->
+  <!-- ========================= -->
+  <script type="module" defer src="./main.js"></script>
+
 </body>
-<script type="module" defer src="./main.js"></script>
 </html>
