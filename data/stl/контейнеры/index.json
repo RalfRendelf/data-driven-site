@@ -6,5 +6,21 @@
     "category": "Контейнеры", 
     "usage": "Динамический массив ахахах с автоматическим управлением памятью", 
     "isLeaf": true 
+  },
+  {
+    "type": "stl",
+    "name": "stl::vector", 
+    "fileName": "stl_vector", 
+    "category": "Контейнеры", 
+    "usage": "Динамический массив ахахах с автоматическим управлением памятью", 
+    "isLeaf": true 
+  },
+  {
+    "type": "stl",
+    "name": "stl::vector", 
+    "fileName": "stl_vector", 
+    "category": "Контейнеры", 
+    "usage": "Динамический массив ахахах с автоматическим управлением памятью", 
+    "isLeaf": true 
   }
 ] 

@@ -1,11 +1,11 @@
-/* 1. БЭШ-боксинг и базовые сбросы */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* 2. Глобальные стили */
+/* Base */
 body {
   font-family: "Segoe UI", sans-serif;
   background: #f0f2f5;
@@ -17,12 +17,13 @@ body {
   line-height: 1.5;
 }
 
+/* Header */
 .main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   border-bottom: 1px solid #ccc;
   flex: 0 0 14vh;
   min-height: 100px;
@@ -42,7 +43,6 @@ body {
 }
 
 .logo-section h1 {
-  margin: 0;
   color: #2c3e50;
   font-size: 1.8rem;
 }
@@ -62,6 +62,7 @@ body {
   margin-right: 0.5rem;
 }
 
+/* Layout */
 .main-container {
   display: flex;
   flex: 1;
@@ -80,66 +81,38 @@ body {
   overflow: hidden;
 }
 
-.sidebar {
-  width: 25%;
-  background: #ffffff;
-  border-right: 1px solid #ddd;
-  overflow: hidden;
-  padding: 0;
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar.hidden {
-  display: none;
-}
-
-.sidebar-content {
+.content-area {
   flex: 1;
-  overflow-y: auto;
   padding: 1rem;
-  max-height: calc(100vh - 14vh - 2rem);
+  overflow-y: auto;
+  background: #fafafa;
 }
 
-#categories-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#categories-nav li {
-  margin-bottom: 0.5rem;
-}
-
+/* Sidebar */
 #categories-nav a {
   display: block;
   padding: 0.75rem;
   text-decoration: none;
   color: #333;
   background: #f8f9fa;
+  border: 1px solid #eee;
   border-radius: 4px;
   transition: background-color 0.2s;
-  border: 1px solid #eee;
 }
 
-#categories-nav a:hover {
-  background: #e9ecef;
-}
-
-/* Стили для активной кнопки */
 #categories-nav a.active {
-  background-color: #007bff;
-  color: white;
+  background: #007bff;
+  color: #fff;
   border-color: #007bff;
 }
 
+/* Toggle button */
 .toggle-btn {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
   width: 100px;
   height: 24px;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -153,60 +126,7 @@ body {
   transform: rotate(180deg);
 }
 
-.content-area {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  background: #fafafa;
-}
-
-.tree-view {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 1rem;
-}
-
-.tree-node {
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.tree-node:hover {
-  background-color: #f5f7fa;
-}
-
-.tree-node.folder {
-  font-weight: bold;
-  background-color: #f0f7ff;
-}
-
-.tree-node.leaf {
-  padding-left: 2rem;
-}
-
-.tree-node.open {
-  background-color: #e6f0ff;
-}
-
-.tree-content {
-  padding: 1rem;
-  display: none;
-}
-
-.tree-content.open {
-  display: block;
-}
-
-.tree-nested {
-  margin-left: 1rem;
-  border-left: 1px dashed #ddd;
-  padding-left: 1rem;
-}
-
-/* Стили для таблиц */
+/* Tables */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -228,48 +148,7 @@ th {
   white-space: nowrap;
 }
 
-tr.entry {
-  cursor: pointer;
-  background: #f5faff;
-  transition: background-color .2s;
-}
-
-tr.entry:hover {
-  background: #e0f0ff;
-}
-
-tr.detail {
-  display: none;
-  background: #fcfeff;
-}
-
-tr.detail td {
-  padding: 1rem;
-  font-size: 0.95rem;
-  color: #444;
-}
-
-/* Вложенные таблицы */
-table.nested {
-  margin: 0.5rem 0 1rem 1.5rem;
-  box-shadow: none;
-  border: 1px solid #eee;
-  font-size: 0.95em;
-}
-
-table.nested th {
-  background: #5fa8db;
-}
-
-table.nested tr.entry {
-  background: #f9fdff;
-}
-
-table.nested tr.entry:hover {
-  background: #e9f5ff;
-}
-
-/* 5. Блоки кода */
+/* Code blocks */
 pre {
   background: #2e2e2e;
   color: #f8f8f2;
@@ -278,14 +157,12 @@ pre {
   overflow-x: auto;
   white-space: pre-wrap;
   margin: 1rem 0;
-  position: relative;
 }
 
-/* Кнопка для переключения видимости кода */
 .code-toggle {
   display: inline-block;
   background: #555;
-  color: white;
+  color: #fff;
   padding: 0.25rem 0.5rem;
   font-size: 0.8rem;
   cursor: pointer;
@@ -294,37 +171,11 @@ pre {
   user-select: none;
 }
 
-.code-container {
-  position: relative;
-  margin-top: 0.5rem;
-}
-
-.code-hidden pre {
+.code-block.hidden {
   display: none;
 }
 
-.code-hidden .show-code-btn::after {
-  content: "Показать код";
-}
-
-.code-visible .show-code-btn::after {
-  content: "Скрыть код";
-}
-
-.show-code-btn {
-  display: inline-block;
-  background: #4a90e2;
-  color: white;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  border-radius: 4px;
-  margin: 0.5rem 0;
-  user-select: none;
-  border: none;
-  outline: none;
-}
-
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
@@ -359,19 +210,5 @@ pre {
   font-size: 24px;
   background: none;
   border: none;
-  cursor: pointer;
-}
-
-.modal-body {
-  margin-top: 20px;
-  white-space: pre-wrap;
-  font-family: monospace;
-}
-.code-block.hidden {
-  display: none;
-}
-
-.code-toggle {
-  margin-bottom: 8px;
   cursor: pointer;
 }
