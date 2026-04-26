@@ -89,7 +89,7 @@ export function displayTreeForCategory(categoryType) {
 
   loadJsonTree(category);
   lastSearchText = "";
-  searchFrame();
+  // 2searchFrame();
 }
 
 async function loadJsonTree(category, basePath = null, container = jsonRoot) {
@@ -186,7 +186,7 @@ function transformCodePlaceholders(content) {
 
 function startRenderLoop() {
   function loop() {
-    searchFrame();
+    // searchFrame();
     renderFrame();
     requestAnimationFrame(loop); // ~60 FPS
   }

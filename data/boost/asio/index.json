@@ -1,0 +1,34 @@
+[
+  {
+    "type": "boost",
+    "name": "TCP/UDP Sockets",
+    "fileName": "tcp_udp_sockets.txt",
+    "category": "Networking",
+    "usage": "Работа с TCP и UDP сокетами",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Timers",
+    "fileName": "timers.txt",
+    "category": "Utilities",
+    "usage": "Синхронные и асинхронные таймеры",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "SSL Support",
+    "fileName": "ssl_support.txt",
+    "category": "Security",
+    "usage": "Поддержка SSL/TLS соединений",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Coroutine",
+    "fileName": "coroutine.txt",
+    "category": "Utilities",
+    "usage": "Поддержка сопрограмм для асинхронных операций",
+    "isLeaf": true
+  }
+]

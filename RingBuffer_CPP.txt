@@ -1,0 +1,52 @@
+#include <atomic>
+template <typename T>
+class RingBuffer{
+
+    std::atomic<size_t> head;  
+    std::atomic<size_t> tail;
+
+    std::vector<std::unique_ptr<T>> buffer;
+    const size_t m_size;
+
+public:
+  
+    explicit RingBuffer(size_t size):head(0),tail(0),m_size(size){
+        buffer.resize(size);
+    }
+    ~RingBuffer() = default;
+    RingBuffer(const RingBuffer& buff) = delete;
+    RingBuffer& operator=(const RingBuffer&)= delete;
+    RingBuffer(RingBuffer&&) noexcept = default;
+    RingBuffer& operator=(RingBuffer&&) noexcept = default;
+
+    unique_ptr<T> get()
+    {
+        
+        size_t current_tail = tail.load(std::memory_order_relaxed);
+        size_t current_head = head.load(std::memory_order_acquire);
+        if(current_tail == current_head){
+            return nullptr; 
+        }
+
+        size_t next_head = (current_head+1)%m_size;
+        unique_ptr<T> value = std::move(buffer[current_tail]);
+        tail.store(next_head, std::memory_order_release);
+        return value;
+
+    }
+    template<typename U> 
+    void push(U&& value)
+    {
+        size_t current_head = head.load(std::memory_order_relaxed);
+        size_t current_tail = tail.load(std::memory_order_acquire);
+        size_t next_head = (current_head + 1) % m_size;
+        if(next_head == tail.load(std::memory_order_acquire)){
+                current_tail = (current_tail + 1) % m_size;
+                tail.store(current_tail, std::memory_order_release);
+        }
+        buffer[current_head] = std::make_unique<T>(std::forward<U>(value));
+        head.store(next_head, std::memory_order_release);
+    }
+
+
+};

@@ -1,0 +1,34 @@
+[
+  {
+    "type": "boost",
+    "name": "HTTP Client",
+    "fileName": "http_client.txt",
+    "category": "Networking",
+    "usage": "Клиентская реализация HTTP/1.1",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Server",
+    "fileName": "http_server.txt",
+    "category": "Networking",
+    "usage": "Серверная реализация HTTP/1.1",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Client",
+    "fileName": "websocket_client.txt",
+    "category": "Networking",
+    "usage": "Клиентская реализация WebSocket",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Server",
+    "fileName": "websocket_server.txt",
+    "category": "Networking",
+    "usage": "Серверная реализация WebSocket",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "type": "boost",
+    "name": "Boost.Asio",
+    "fileName": "asio",
+    "category": "Boost",
+    "usage": "Асинхронный ввод-вывод, сокеты, таймеры, основа сетевых серверов",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Beast",
+    "fileName": "beast",
+    "category": "Boost",
+    "usage": "HTTP и WebSocket поверх Boost.Asio",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.JSON",
+    "fileName": "json",
+    "category": "Boost",
+    "usage": "Высокопроизводительная JSON-библиотека",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.ProgramOptions",
+    "fileName": "program_options",
+    "category": "Boost",
+    "usage": "Парсинг аргументов командной строки",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Filesystem",
+    "fileName": "filesystem",
+    "category": "Boost",
+    "usage": "Работа с файлами и путями",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.System",
+    "fileName": "system",
+    "category": "Boost",
+    "usage": "Коды ошибок и интеграция с Asio",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.SmartPtr",
+    "fileName": "smart_ptr",
+    "category": "Boost",
+    "usage": "Умные указатели: shared_ptr, weak_ptr, intrusive_ptr",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,62 @@
+#include &lt;boost/json.hpp&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using namespace boost::json;
+
+int main() {
+    // Создаем JSON объект
+    object obj;
+    obj["name"] = "John Doe";
+    obj["age"] = 30;
+    obj["city"] = "New York";
+    obj["married"] = true;
+    
+    // Добавляем массив
+    array hobbies;
+    hobbies.push_back("reading");
+    hobbies.push_back("swimming");
+    hobbies.push_back("coding");
+    obj["hobbies"] = hobbies;
+    
+    // Вложенный объект
+    object address;
+    address["street"] = "123 Main St";
+    address["zipcode"] = "10001";
+    obj["address"] = address;
+    
+    // Преобразуем в строку JSON
+    std::string json_str = serialize(obj);
+    std::cout &lt;&lt; "Сгенерированный JSON:\n" &lt;&lt; json_str &lt;&lt; std::endl;
+    
+    // Парсим JSON строку
+    string_view sv(json_str);
+    value parsed_val = parse(sv);
+    object&amp; parsed_obj = parsed_val.as_object();
+    
+    // Доступ к значениям
+    std::cout &lt;&lt; "\nПолученные значения:" &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Имя: " &lt;&lt; parsed_obj.at("name").as_string() &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Возраст: " &lt;&lt; parsed_obj.at("age").as_int64() &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Город: " &lt;&lt; parsed_obj.at("city").as_string() &lt;&lt; std::endl;
+    
+    // Проверка типа
+    if(parsed_obj.at("married").is_bool()) {
+        std::cout &lt;&lt; "Семейное положение: женат/замужем" &lt;&lt; std::endl;
+    }
+    
+    // Работа с массивом
+    array&amp; hobbies_arr = parsed_obj.at("hobbies").as_array();
+    std::cout &lt;&lt; "Хобби: ";
+    for(auto&amp; hobby : hobbies_arr) {
+        std::cout &lt;&lt; hobby.as_string() &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+    
+    // Работа с вложенным объектом
+    object&amp; addr_obj = parsed_obj.at("address").as_object();
+    std::cout &lt;&lt; "Адрес: " &lt;&lt; addr_obj.at("street").as_string() 
+              &lt;&lt; ", ZIP: " &lt;&lt; addr_obj.at("zipcode").as_string() &lt;&lt; std::endl;
+    
+    return 0;
+}

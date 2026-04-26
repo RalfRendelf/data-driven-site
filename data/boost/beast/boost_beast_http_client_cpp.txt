@@ -1,0 +1,72 @@
+#include &lt;boost/beast/core.hpp&gt;
+#include &lt;boost/beast/http.hpp&gt;
+#include &lt;boost/beast/version.hpp&gt;
+#include &lt;boost/asio/connect.hpp&gt;
+#include &lt;boost/asio/ip/tcp.hpp&gt;
+#include &lt;boost/asio/ssl/error.hpp&gt;
+#include &lt;boost/asio/ssl/stream.hpp&gt;
+#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+namespace beast = boost::beast;         // избавляемся от необходимости писать boost::beast::
+namespace http = beast::http;           // избавляемся от необходимости писать beast::http::
+namespace net = boost::asio;            // избавляемся от необходимости писать boost::asio::
+using tcp = boost::asio::ip::tcp;       // избавляемся от необходимости писать boost::asio::ip::tcp
+
+int main(int argc, char** argv) {
+    try {
+        if(argc != 4 &amp;&amp; argc != 5) {
+            std::cerr &lt;&lt; "Usage: http-client-sync &lt;host&gt; &lt;port&gt; &lt;target&gt; [&lt;HTTP version&gt;]\n";
+            std::cerr &lt;&lt; "Example: http-client-sync www.example.com 80 \"/\"\n";
+            return EXIT_FAILURE;
+        }
+
+        auto const host = argv[1];
+        auto const port = argv[2];
+        auto const target = argv[3];
+        int version = argc == 5 ? std::atoi(argv[4]) : 11;
+
+        // Создаем I/O контекст (предviously io_service)
+        net::io_context ioc;
+
+        // Получаем endpoint
+        tcp::resolver resolver(ioc);
+        auto const results = resolver.resolve(host, port);
+
+        // Создаем TCP соединение
+        tcp::socket socket(ioc);
+        net::connect(socket, results);
+
+        // Создаем HTTP GET запрос
+        http::request&lt;http::string_body&gt; req{http::verb::get, target, version};
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+        // Отправляем запрос
+        http::write(socket, req);
+
+        // Буфер для чтения ответа
+        beast::flat_buffer buffer;
+        http::response&lt;http::dynamic_body&gt; res;
+
+        // Читаем ответ
+        http::read(socket, buffer, res);
+
+        // Закрываем соединение
+        beast::error_code ec;
+        socket.shutdown(tcp::socket::shutdown_both, ec);
+
+        // Проверяем ошибки
+        if(ec &amp;&amp; ec != beast::errc::not_connected)
+            throw beast::system_error{ec};
+
+        // Выводим результат
+        std::cout &lt;&lt; res &lt;&lt; std::endl;
+
+        return EXIT_SUCCESS;
+    } catch(std::exception const&amp; e) {
+        std::cerr &lt;&lt; "Error: " &lt;&lt; e.what() &lt;&lt; std::endl;
+        return EXIT_FAILURE;
+    }
+}
