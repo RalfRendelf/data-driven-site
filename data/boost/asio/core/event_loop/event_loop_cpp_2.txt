@@ -1,0 +1,36 @@
+// Пример 2: Event loop в нескольких потоках
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    // work_guard предотвращает завершение io.run()
+    auto guard = boost::asio::make_work_guard(io);
+
+    // Запускаем event loop в 4 потоках
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i)
+    {
+        threads.emplace_back([&io, i] {
+            std::cout << "Thread " << i << " started\n";
+            io.run();
+            std::cout << "Thread " << i << " finished\n";
+        });
+    }
+
+    // Таймер для демонстрации
+    boost::asio::steady_timer timer(io, std::chrono::seconds(2));
+    timer.async_wait([&](auto){
+        std::cout << "Timer fired, stopping io_context\n";
+        guard.reset(); // разрешаем io.run() завершиться
+    });
+
+    for (auto& t : threads)
+        t.join();
+
+    return 0;
+}

@@ -1,0 +1,21 @@
+// Пример 1: Базовый event loop
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    boost::asio::steady_timer timer(io, std::chrono::seconds(1));
+
+    timer.async_wait([](const boost::system::error_code&){
+        std::cout << "Timer fired!\n";
+    });
+
+    std::cout << "Starting event loop...\n";
+    io.run();
+    std::cout << "Event loop finished.\n";
+
+    return 0;
+}

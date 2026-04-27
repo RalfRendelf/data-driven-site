@@ -1,0 +1,41 @@
+// Пример 2: Несколько потоков + post()
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    // work_guard предотвращает завершение run()
+    auto guard = boost::asio::make_work_guard(io);
+
+    // Запускаем event loop в 4 потоках
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i)
+    {
+        threads.emplace_back([&io, i]{
+            std::cout << "Thread " << i << " started\n";
+            io.run();
+            std::cout << "Thread " << i << " finished\n";
+        });
+    }
+
+    // Отправляем несколько задач
+    for (int i = 0; i < 10; ++i)
+    {
+        boost::asio::post(io, [i]{
+            std::cout << "Task " << i << " executed\n";
+        });
+    }
+
+    // Через секунду разрешаем io_context завершиться
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    guard.reset();
+
+    for (auto& t : threads)
+        t.join();
+
+    return 0;
+}

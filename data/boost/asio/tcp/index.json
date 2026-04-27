@@ -1,0 +1,34 @@
+[
+  {
+    "type": "boost",
+    "name": "TCP Server",
+    "fileName": "tcp_server",
+    "category": "Boost.Asio TCP",
+    "usage": "Асинхронный TCP сервер",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "TCP Client",
+    "fileName": "tcp_client",
+    "category": "Boost.Asio TCP",
+    "usage": "Асинхронный TCP клиент",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Session",
+    "fileName": "session",
+    "category": "Boost.Asio TCP",
+    "usage": "Обработка соединения, чтение/запись",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Connection Manager",
+    "fileName": "connection_manager",
+    "category": "Boost.Asio TCP",
+    "usage": "Управление активными соединениями",
+    "isLeaf": true
+  }
+]

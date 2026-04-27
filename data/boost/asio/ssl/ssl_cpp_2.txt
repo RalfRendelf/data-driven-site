@@ -1,0 +1,40 @@
+// Пример 2: SSL-сервер
+
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+    boost::asio::ssl::context ctx(boost::asio::ssl::context::tls_server);
+
+    // Загрузка сертификата и ключа сервера
+    ctx.use_certificate_chain_file("server.crt");
+    ctx.use_private_key_file("server.key", boost::asio::ssl::context::pem);
+
+    tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 8443));
+
+    for (;;)
+    {
+        tcp::socket socket(io);
+        acceptor.accept(socket);
+
+        boost::asio::ssl::stream<tcp::socket> stream(std::move(socket), ctx);
+
+        boost::system::error_code ec;
+        stream.handshake(boost::asio::ssl::stream_base::server, ec);
+        if (ec)
+        {
+            std::cout << "Handshake failed: " << ec.message() << "\n";
+            continue;
+        }
+
+        std::string msg = "Hello over TLS!\n";
+        boost::asio::write(stream, boost::asio::buffer(msg), ec);
+    }
+
+    return 0;
+}

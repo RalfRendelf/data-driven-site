@@ -1,0 +1,32 @@
+// Пример 2: Completion Token и обработчик
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+void on_read(boost::system::error_code ec, std::size_t bytes)
+{
+    if (!ec)
+        std::cout << "Read " << bytes << " bytes\n";
+    else
+        std::cout << "Read failed: " << ec.message() << "\n";
+}
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 9000));
+    tcp::socket socket(io);
+
+    acceptor.async_accept(socket, [&](boost::system::error_code ec) {
+        if (!ec)
+        {
+            std::array<char, 128> buf{};
+            socket.async_read_some(boost::asio::buffer(buf), on_read);
+        }
+    });
+
+    io.run();
+}

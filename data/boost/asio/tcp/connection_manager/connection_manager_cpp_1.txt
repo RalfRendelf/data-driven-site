@@ -1,0 +1,58 @@
+// Пример 1: Минимальный Connection Manager
+
+#include <boost/asio.hpp>
+#include <set>
+#include <memory>
+
+class session : public std::enable_shared_from_this<session>
+{
+public:
+    explicit session(boost::asio::ip::tcp::socket socket)
+        : socket_(std::move(socket)) {}
+
+    void start() { do_read(); }
+    void stop()  { socket_.close(); }
+
+private:
+    void do_read()
+    {
+        auto self = shared_from_this();
+        socket_.async_read_some(
+            boost::asio::buffer(data_),
+            [this, self](auto ec, std::size_t)
+            {
+                if (!ec)
+                    do_read();
+            }
+        );
+    }
+
+    boost::asio::ip::tcp::socket socket_;
+    std::array<char, 1024> data_;
+};
+
+class connection_manager
+{
+public:
+    void start(std::shared_ptr<session> s)
+    {
+        sessions_.insert(s);
+        s->start();
+    }
+
+    void stop(std::shared_ptr<session> s)
+    {
+        sessions_.erase(s);
+        s->stop();
+    }
+
+    void stop_all()
+    {
+        for (auto& s : sessions_)
+            s->stop();
+        sessions_.clear();
+    }
+
+private:
+    std::set<std::shared_ptr<session>> sessions_;
+};

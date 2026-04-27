@@ -1,0 +1,41 @@
+// Пример 1: Таймаут для async-операции
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::socket socket(io);
+    tcp::endpoint ep(boost::asio::ip::make_address("127.0.0.1"), 9000);
+
+    boost::asio::steady_timer timer(io);
+
+    bool timed_out = false;
+
+    // Устанавливаем таймаут 2 секунды
+    timer.expires_after(std::chrono::seconds(2));
+    timer.async_wait([&](auto ec){
+        if (!ec)
+        {
+            timed_out = true;
+            socket.cancel(); // отменяем операцию
+        }
+    });
+
+    socket.async_connect(ep, [&](auto ec){
+        timer.cancel(); // отменяем таймер
+
+        if (timed_out)
+            std::cout << "Timeout!\n";
+        else if (!ec)
+            std::cout << "Connected!\n";
+        else
+            std::cout << "Error: " << ec.message() << "\n";
+    });
+
+    io.run();
+}

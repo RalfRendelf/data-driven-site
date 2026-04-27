@@ -1,6 +1,15 @@
 [
   {
     "type": "boost",
+    "name": "Boost",
+    "fileName": "boost",
+    "category": "Boost",
+    "usage": "Набор высококачественных C++ библиотек: сети, многопоточность, контейнеры, алгоритмы, метапрограммирование",
+    "isLeaf": true
+  }
+  ,
+  {
+    "type": "boost",
     "name": "Boost.Asio",
     "fileName": "asio",
     "category": "Boost",

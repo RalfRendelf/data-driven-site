@@ -1,0 +1,36 @@
+// Пример 1: Приём multicast-пакетов
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <array>
+
+using boost::asio::ip::udp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    udp::endpoint listen_ep(udp::v4(), 30001);
+    udp::socket socket(io);
+
+    socket.open(listen_ep.protocol());
+    socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+    socket.bind(listen_ep);
+
+    // Присоединяемся к multicast-группе
+    socket.set_option(
+        boost::asio::ip::multicast::join_group(
+            boost::asio::ip::make_address("239.255.0.1")
+        )
+    );
+
+    std::array<char, 1024> buf;
+    udp::endpoint sender;
+
+    for (;;)
+    {
+        std::size_t n = socket.receive_from(boost::asio::buffer(buf), sender);
+        std::cout << "Received: " << std::string(buf.data(), n)
+                  << " from " << sender.address().to_string() << "\n";
+    }
+}

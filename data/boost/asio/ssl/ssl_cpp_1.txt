@@ -1,0 +1,43 @@
+// Пример 1: SSL-клиент
+
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+    boost::asio::ssl::context ctx(boost::asio::ssl::context::tls_client);
+
+    // Загрузка корневых сертификатов (упрощённо, для примера можно отключить проверку)
+    ctx.set_default_verify_paths();
+    ctx.set_verify_mode(boost::asio::ssl::verify_peer);
+
+    boost::asio::ssl::stream<tcp::socket> stream(io, ctx);
+
+    tcp::resolver resolver(io);
+    auto endpoints = resolver.resolve("example.com", "443");
+
+    boost::asio::connect(stream.next_layer(), endpoints);
+
+    stream.handshake(boost::asio::ssl::stream_base::client);
+
+    const std::string req =
+        "GET / HTTP/1.1\r\nHost: example.com\r\nConnection: close\r\n\r\n";
+
+    boost::asio::write(stream, boost::asio::buffer(req));
+
+    std::array<char, 4096> buf;
+    boost::system::error_code ec;
+    for (;;)
+    {
+        std::size_t n = stream.read_some(boost::asio::buffer(buf), ec);
+        if (ec)
+            break;
+        std::cout.write(buf.data(), n);
+    }
+
+    return 0;
+}

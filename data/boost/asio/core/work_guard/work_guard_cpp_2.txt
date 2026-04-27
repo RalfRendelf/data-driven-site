@@ -1,0 +1,23 @@
+// Пример 2: Автоматическое завершение io_context после таймера
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    auto guard = boost::asio::make_work_guard(io);
+
+    boost::asio::steady_timer timer(io, std::chrono::seconds(1));
+
+    timer.async_wait([&](auto){
+        std::cout << "Timer fired, stopping io_context\n";
+        guard.reset(); // разрешаем завершение event loop
+    });
+
+    io.run();
+    std::cout << "io_context stopped\n";
+
+    return 0;
+}

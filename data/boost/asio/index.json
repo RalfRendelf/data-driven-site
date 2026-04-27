@@ -1,34 +1,139 @@
 [
   {
+  "type": "boost",
+  "name": "Asio Container",
+  "fileName": "asio",
+  "category": "Boost.Asio",
+  "usage": "Общий обзор Asio, архитектура, event loop, executors, модель async-операций",
+  "isLeaf": true
+}
+,
+  {
     "type": "boost",
-    "name": "TCP/UDP Sockets",
-    "fileName": "tcp_udp_sockets.txt",
-    "category": "Networking",
-    "usage": "Работа с TCP и UDP сокетами",
+    "name": "Core",
+    "fileName": "core",
+    "category": "Boost.Asio",
+    "usage": "io_context, executors, work_guard, event loop",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "TCP",
+    "fileName": "tcp",
+    "category": "Boost.Asio",
+    "usage": "TCP сокеты, серверы, клиенты, сессии",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "UDP",
+    "fileName": "udp",
+    "category": "Boost.Asio",
+    "usage": "UDP сокеты и datagram протокол",
     "isLeaf": true
   },
   {
     "type": "boost",
     "name": "Timers",
-    "fileName": "timers.txt",
-    "category": "Utilities",
-    "usage": "Синхронные и асинхронные таймеры",
+    "fileName": "timers",
+    "category": "Boost.Asio",
+    "usage": "steady_timer, system_timer, deadline_timer",
     "isLeaf": true
   },
   {
     "type": "boost",
-    "name": "SSL Support",
-    "fileName": "ssl_support.txt",
-    "category": "Security",
-    "usage": "Поддержка SSL/TLS соединений",
+    "name": "Strand",
+    "fileName": "strand",
+    "category": "Boost.Asio",
+    "usage": "Синхронизация и последовательное выполнение обработчиков",
     "isLeaf": true
   },
   {
     "type": "boost",
-    "name": "Coroutine",
-    "fileName": "coroutine.txt",
-    "category": "Utilities",
-    "usage": "Поддержка сопрограмм для асинхронных операций",
+    "name": "SSL/TLS",
+    "fileName": "ssl",
+    "category": "Boost.Asio",
+    "usage": "Шифрованные соединения через OpenSSL",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Coroutines",
+    "fileName": "coroutines",
+    "category": "Boost.Asio",
+    "usage": "co_await, awaitable, async операции в стиле C++20",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Buffers & Streams",
+    "fileName": "buffers_streams",
+    "category": "Boost.Asio",
+    "usage": "buffer, streambuf, async_read/write",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Concepts",
+    "fileName": "concepts",
+    "category": "Boost.Asio",
+    "usage": "error_code, handlers, completion tokens, executors",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Signals",
+    "fileName": "signals",
+    "category": "Boost.Asio",
+    "usage": "SIGINT, SIGTERM, graceful shutdown",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Timeouts",
+    "fileName": "timeouts",
+    "category": "Boost.Asio",
+    "usage": "таймауты чтения/записи, idle timeout",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Allocators",
+    "fileName": "allocators",
+    "category": "Boost.Asio",
+    "usage": "оптимизация памяти для async операций",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Thread Pool",
+    "fileName": "thread_pool",
+    "category": "Boost.Asio",
+    "usage": "многопоточность, CPU-bound задачи",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Multicast",
+    "fileName": "multicast",
+    "category": "Boost.Asio",
+    "usage": "UDP multicast/broadcast",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "POSIX Descriptors",
+    "fileName": "posix_descriptors",
+    "category": "Boost.Asio",
+    "usage": "pipe, eventfd, файловые дескрипторы",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Serial Port",
+    "fileName": "serial_port",
+    "category": "Boost.Asio",
+    "usage": "UART/COM порты",
     "isLeaf": true
   }
 ]

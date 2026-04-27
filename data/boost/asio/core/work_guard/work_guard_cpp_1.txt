@@ -1,0 +1,28 @@
+// Пример 1: Базовое использование work_guard
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    // Создаём work_guard
+    auto guard = boost::asio::make_work_guard(io);
+
+    // Запускаем event loop в отдельном потоке
+    std::thread t([&io]{
+        std::cout << "Event loop started\n";
+        io.run();
+        std::cout << "Event loop finished\n";
+    });
+
+    // Через 2 секунды завершаем работу
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    std::cout << "Resetting work guard\n";
+    guard.reset(); // разрешаем io_context завершиться
+
+    t.join();
+    return 0;
+}

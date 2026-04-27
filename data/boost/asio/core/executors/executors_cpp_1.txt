@@ -1,0 +1,18 @@
+// Пример 1: Использование executor из io_context
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    auto exec = io.get_executor();
+
+    boost::asio::post(exec, []{
+        std::cout << "Task executed on io_context executor\n";
+    });
+
+    io.run();
+    return 0;
+}

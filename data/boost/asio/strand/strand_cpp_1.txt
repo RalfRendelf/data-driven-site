@@ -1,0 +1,29 @@
+// Пример 1: Последовательное выполнение обработчиков
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    boost::asio::strand strand(io.get_executor());
+
+    for (int i = 0; i < 5; ++i)
+    {
+        boost::asio::post(strand, [i]{
+            std::cout << "Handler " << i << " executed in thread "
+                      << std::this_thread::get_id() << "\n";
+        });
+    }
+
+    std::vector<std::thread> threads;
+    for (int t = 0; t < 3; ++t)
+        threads.emplace_back([&io]{ io.run(); });
+
+    for (auto& t : threads)
+        t.join();
+
+    return 0;
+}

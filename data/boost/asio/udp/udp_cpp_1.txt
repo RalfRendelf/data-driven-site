@@ -1,0 +1,46 @@
+// Пример 1: Минимальный UDP echo-сервер и клиент
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <array>
+
+using boost::asio::ip::udp;
+
+// ---------------- SERVER ----------------
+
+void run_server()
+{
+    boost::asio::io_context io;
+
+    udp::socket socket(io, udp::endpoint(udp::v4(), 9000));
+
+    std::array<char, 1024> buf;
+    udp::endpoint sender;
+
+    for (;;)
+    {
+        std::size_t n = socket.receive_from(boost::asio::buffer(buf), sender);
+        socket.send_to(boost::asio::buffer(buf, n), sender);
+    }
+}
+
+// ---------------- CLIENT ----------------
+
+void run_client()
+{
+    boost::asio::io_context io;
+
+    udp::socket socket(io);
+    socket.open(udp::v4());
+
+    udp::endpoint server(boost::asio::ip::make_address("127.0.0.1"), 9000);
+
+    std::string msg = "Hello UDP!";
+    socket.send_to(boost::asio::buffer(msg), server);
+
+    std::array<char, 1024> buf;
+    udp::endpoint sender;
+    std::size_t n = socket.receive_from(boost::asio::buffer(buf), sender);
+
+    std::cout << "Server replied: " << std::string(buf.data(), n) << "\n";
+}

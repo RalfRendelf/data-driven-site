@@ -1,0 +1,77 @@
+// Пример 2: Multicast-сервер (отправка + приём)
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <array>
+
+using boost::asio::ip::udp;
+
+class multicast_server
+{
+public:
+    multicast_server(boost::asio::io_context& io,
+                     const std::string& group,
+                     unsigned short port)
+        : socket_(io),
+          endpoint_(boost::asio::ip::make_address(group), port)
+    {
+        udp::endpoint listen_ep(udp::v4(), port);
+
+        socket_.open(listen_ep.protocol());
+        socket_.set_option(udp::socket::reuse_address(true));
+        socket_.bind(listen_ep);
+
+        socket_.set_option(boost::asio::ip::multicast::join_group(
+            boost::asio::ip::make_address(group)));
+
+        do_receive();
+        do_send();
+    }
+
+private:
+    void do_receive()
+    {
+        socket_.async_receive_from(
+            boost::asio::buffer(buf_), sender_,
+            [this](auto ec, std::size_t n)
+            {
+                if (!ec)
+                {
+                    std::cout << "Received: "
+                              << std::string(buf_.data(), n) << "\n";
+                }
+                do_receive();
+            }
+        );
+    }
+
+    void do_send()
+    {
+        std::string msg = "multicast ping";
+
+        socket_.async_send_to(
+            boost::asio::buffer(msg), endpoint_,
+            [this](auto, std::size_t)
+            {
+                // отправляем каждые 2 секунды
+                timer_.expires_after(std::chrono::seconds(2));
+                timer_.async_wait([this](auto){ do_send(); });
+            }
+        );
+    }
+
+    udp::socket socket_;
+    udp::endpoint endpoint_;
+    udp::endpoint sender_;
+    std::array<char, 1024> buf_;
+    boost::asio::steady_timer timer_{socket_.get_executor()};
+};
+
+int main()
+{
+    boost::asio::io_context io;
+
+    multicast_server server(io, "239.255.0.1", 30001);
+
+    io.run();
+}

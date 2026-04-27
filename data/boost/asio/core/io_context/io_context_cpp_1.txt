@@ -1,0 +1,19 @@
+// Пример 1: Базовое использование io_context
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    boost::asio::post(io, []{
+        std::cout << "Hello from io_context!" << std::endl;
+    });
+
+    std::cout << "Starting event loop..." << std::endl;
+    io.run();
+    std::cout << "Event loop finished." << std::endl;
+
+    return 0;
+}

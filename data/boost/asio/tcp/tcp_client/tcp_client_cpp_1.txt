@@ -1,0 +1,30 @@
+// Пример 1: Минимальный TCP-клиент
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::resolver resolver(io);
+    auto endpoints = resolver.resolve("127.0.0.1", "9000");
+
+    tcp::socket socket(io);
+    boost::asio::connect(socket, endpoints);
+
+    std::string msg = "Hello server!";
+    boost::asio::write(socket, boost::asio::buffer(msg));
+
+    std::array<char, 1024> buf{};
+    boost::system::error_code ec;
+
+    std::size_t n = socket.read_some(boost::asio::buffer(buf), ec);
+
+    if (!ec)
+        std::cout << "Server replied: " << std::string(buf.data(), n) << "\n";
+
+    return 0;
+}
