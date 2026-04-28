@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::future",
+    "fileName": "future",
+    "category": "cpp/concurrency/futures",
+    "usage": "Результат асинхронной операции",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::promise",
+    "fileName": "promise",
+    "category": "cpp/concurrency/futures",
+    "usage": "Передача значения в future",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::async",
+    "fileName": "async",
+    "category": "cpp/concurrency/futures",
+    "usage": "Асинхронный запуск функции",
+    "isLeaf": true
+  }
+]

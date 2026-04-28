@@ -1,0 +1,130 @@
+[
+  {
+    "type": "cpp",
+    "name": "Non-modifying algorithms",
+    "fileName": "non_modifying",
+    "category": "algorithms/non_modifying",
+    "usage": "Алгоритмы, не изменяющие диапазон: find, count, equal, mismatch, search",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Modifying algorithms",
+    "fileName": "modifying",
+    "category": "algorithms/modifying",
+    "usage": "Алгоритмы, изменяющие диапазон: copy, move, fill, transform",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Partitioning",
+    "fileName": "partitioning",
+    "category": "algorithms/partitioning",
+    "usage": "Алгоритмы разбиения диапазона: partition, stable_partition",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Sorting",
+    "fileName": "sorting",
+    "category": "algorithms/sorting",
+    "usage": "Алгоритмы сортировки: sort, stable_sort, partial_sort",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Binary search",
+    "fileName": "binary_search",
+    "category": "algorithms/binary_search",
+    "usage": "Алгоритмы бинарного поиска: binary_search, lower_bound, upper_bound",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Min/Max",
+    "fileName": "min_max",
+    "category": "algorithms/min_max",
+    "usage": "Алгоритмы поиска минимума и максимума: min, max, minmax, clamp",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Numeric algorithms",
+    "fileName": "numeric",
+    "category": "algorithms/numeric",
+    "usage": "Числовые алгоритмы: accumulate, inner_product, partial_sum",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Heap algorithms",
+    "fileName": "heap",
+    "category": "algorithms/heap",
+    "usage": "Алгоритмы работы с кучей: make_heap, push_heap, pop_heap, sort_heap",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Permutations",
+    "fileName": "permutations",
+    "category": "algorithms/permutations",
+    "usage": "Алгоритмы перестановок: next_permutation, prev_permutation",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Ranges (C++20)",
+    "fileName": "ranges",
+    "category": "algorithms/ranges",
+    "usage": "Алгоритмы и адаптеры ranges: views, actions, range-based overloads",
+    "isLeaf": false
+  },
+{
+    "type": "cpp",
+    "name": "std::sort",
+    "fileName": "sort",
+    "category": "algorithms",
+    "usage": "Быстрая сортировка с гарантией O(N log N)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::find",
+    "fileName": "find",
+    "category": "algorithms",
+    "usage": "Поиск элемента в диапазоне",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::accumulate",
+    "fileName": "accumulate",
+    "category": "algorithms",
+    "usage": "Суммирование или свёртка диапазона",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::transform",
+    "fileName": "transform",
+    "category": "algorithms",
+    "usage": "Применение функции к диапазону (map-операция)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::for_each",
+    "fileName": "for_each",
+    "category": "algorithms",
+    "usage": "Применение функции к каждому элементу диапазона",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::reduce / std::transform_reduce",
+    "fileName": "reduce",
+    "category": "algorithms",
+    "usage": "Параллельные и последовательные свёртки диапазонов",
+    "isLeaf": true
+  }
+]

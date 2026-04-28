@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "RAII",
+    "fileName": "raii",
+    "category": "cpp/language",
+    "usage": "Resource Acquisition Is Initialization",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "new/delete",
+    "fileName": "new_delete",
+    "category": "cpp/language",
+    "usage": "Ручное управление памятью",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Умные указатели",
+    "fileName": "smart_pointers",
+    "category": "cpp/language",
+    "usage": "unique_ptr, shared_ptr, weak_ptr",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Custom allocators",
+    "fileName": "custom_allocators",
+    "category": "cpp/language",
+    "usage": "Пользовательские аллокаторы памяти",
+    "isLeaf": true
+  }
+]

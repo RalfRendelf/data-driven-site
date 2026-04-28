@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::map",
+    "fileName": "map",
+    "category": "containers/associative",
+    "usage": "Отсортированный ассоциативный контейнер ключ–значение",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::multimap",
+    "fileName": "multimap",
+    "category": "containers/associative",
+    "usage": "Ассоциативный контейнер с повторяющимися ключами",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::set",
+    "fileName": "set",
+    "category": "containers/associative",
+    "usage": "Отсортированное множество уникальных значений",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::multiset",
+    "fileName": "multiset",
+    "category": "containers/associative",
+    "usage": "Множество с повторяющимися значениями",
+    "isLeaf": true
+  }
+]

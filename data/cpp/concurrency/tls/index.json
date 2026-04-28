@@ -1,0 +1,10 @@
+[
+  {
+    "type": "cpp",
+    "name": "thread_local",
+    "fileName": "thread_local",
+    "category": "cpp/concurrency/tls",
+    "usage": "Переменные, уникальные для каждого потока",
+    "isLeaf": true
+  }
+]

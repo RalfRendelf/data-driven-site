@@ -1,0 +1,18 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::stop_token",
+    "fileName": "stop_token",
+    "category": "cpp/concurrency/stop_tokens",
+    "usage": "Механизм отмены операций",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::stop_source",
+    "fileName": "stop_source",
+    "category": "cpp/concurrency/stop_tokens",
+    "usage": "Источник сигнала остановки",
+    "isLeaf": true
+  }
+]

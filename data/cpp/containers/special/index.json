@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::stack",
+    "fileName": "stack",
+    "category": "containers/special",
+    "usage": "Адаптер контейнера в структуру данных стек (LIFO)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::queue",
+    "fileName": "queue",
+    "category": "containers/special",
+    "usage": "Адаптер контейнера в очередь (FIFO)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::priority_queue",
+    "fileName": "priority_queue",
+    "category": "containers/special",
+    "usage": "Очередь с приоритетом на основе кучи",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::span",
+    "fileName": "span",
+    "category": "containers/special",
+    "usage": "Невладеющее представление диапазона элементов",
+    "isLeaf": true
+  }
+]

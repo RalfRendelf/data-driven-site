@@ -1,0 +1,82 @@
+[
+  {
+    "type": "cpp",
+    "name": "C++ Standards",
+    "fileName": "standards",
+    "category": "cpp",
+    "usage": "Стандарты языка C++ от C++98 до C++26",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "STL Containers",
+    "fileName": "containers",
+    "category": "cpp",
+    "usage": "Стандартные контейнеры STL",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Standard Algorithms",
+    "fileName": "algorithms",
+    "category": "cpp",
+    "usage": "Алгоритмы стандартной библиотеки C++",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Concurrency & Asynchrony",
+    "fileName": "concurrency",
+    "category": "cpp",
+    "usage": "Многопоточность, атомики, асинхронность, coroutines",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Language Features",
+    "fileName": "language",
+    "category": "cpp",
+    "usage": "Языковые особенности C++",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "C++ Idioms & Patterns",
+    "fileName": "idioms",
+    "category": "cpp",
+    "usage": "Идиомы, паттерны и приёмы C++",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Standard Library",
+    "fileName": "stdlib",
+    "category": "cpp",
+    "usage": "Компоненты стандартной библиотеки вне STL",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Ranges (C++20+)",
+    "fileName": "ranges",
+    "category": "cpp",
+    "usage": "Ranges, views, adaptors, pipelines",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Metaprogramming",
+    "fileName": "metaprogramming",
+    "category": "cpp",
+    "usage": "Метапрограммирование, type traits, constexpr",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Development Tools",
+    "fileName": "tools",
+    "category": "cpp",
+    "usage": "Инструменты разработки: CMake, компиляторы, анализаторы",
+    "isLeaf": false
+  }
+]

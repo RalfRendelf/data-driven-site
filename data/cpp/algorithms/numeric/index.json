@@ -1,0 +1,66 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::accumulate",
+    "fileName": "accumulate",
+    "category": "algorithms/numeric",
+    "usage": "Суммирование диапазона (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::inner_product",
+    "fileName": "inner_product",
+    "category": "algorithms/numeric",
+    "usage": "Скалярное произведение двух диапазонов (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::partial_sum",
+    "fileName": "partial_sum",
+    "category": "algorithms/numeric",
+    "usage": "Префиксные суммы (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::adjacent_difference",
+    "fileName": "adjacent_difference",
+    "category": "algorithms/numeric",
+    "usage": "Разности соседних элементов (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::reduce",
+    "fileName": "reduce",
+    "category": "algorithms/numeric",
+    "usage": "Параллельная или последовательная свёртка (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::transform_reduce",
+    "fileName": "transform_reduce",
+    "category": "algorithms/numeric",
+    "usage": "Комбинация transform + reduce (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::exclusive_scan",
+    "fileName": "exclusive_scan",
+    "category": "algorithms/numeric",
+    "usage": "Эксклюзивный префиксный скан (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::inclusive_scan",
+    "fileName": "inclusive_scan",
+    "category": "algorithms/numeric",
+    "usage": "Инклюзивный префиксный скан (O(N) время, O(1) память)",
+    "isLeaf": true
+  }
+]

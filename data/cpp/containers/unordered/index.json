@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::unordered_map",
+    "fileName": "unordered_map",
+    "category": "containers/unordered",
+    "usage": "Хеш‑таблица ключ–значение без упорядочивания",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::unordered_multimap",
+    "fileName": "unordered_multimap",
+    "category": "containers/unordered",
+    "usage": "Хеш‑таблица с повторяющимися ключами",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::unordered_set",
+    "fileName": "unordered_set",
+    "category": "containers/unordered",
+    "usage": "Хеш‑множество уникальных значений",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::unordered_multiset",
+    "fileName": "unordered_multiset",
+    "category": "containers/unordered",
+    "usage": "Хеш‑множество с повторяющимися значениями",
+    "isLeaf": true
+  }
+]

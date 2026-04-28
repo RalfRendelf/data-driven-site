@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "co_await",
+    "fileName": "co_await",
+    "category": "cpp/concurrency/coroutines",
+    "usage": "Ожидание результата внутри корутины",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "co_yield",
+    "fileName": "co_yield",
+    "category": "cpp/concurrency/coroutines",
+    "usage": "Возврат значения из корутины",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "co_return",
+    "fileName": "co_return",
+    "category": "cpp/concurrency/coroutines",
+    "usage": "Завершение корутины",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::min",
+    "fileName": "min",
+    "category": "algorithms/min_max",
+    "usage": "Возвращает минимальный из двух элементов (O(1) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::max",
+    "fileName": "max",
+    "category": "algorithms/min_max",
+    "usage": "Возвращает максимальный из двух элементов (O(1) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::minmax",
+    "fileName": "minmax",
+    "category": "algorithms/min_max",
+    "usage": "Возвращает пару (min, max) из двух элементов (O(1) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::min_element",
+    "fileName": "min_element",
+    "category": "algorithms/min_max",
+    "usage": "Поиск минимального элемента в диапазоне (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::max_element",
+    "fileName": "max_element",
+    "category": "algorithms/min_max",
+    "usage": "Поиск максимального элемента в диапазоне (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::minmax_element",
+    "fileName": "minmax_element",
+    "category": "algorithms/min_max",
+    "usage": "Поиск минимального и максимального элементов за один проход (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::clamp",
+    "fileName": "clamp",
+    "category": "algorithms/min_max",
+    "usage": "Ограничение значения диапазоном [low, high] (O(1) время, O(1) память)",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "type": "cpp",
+    "name": "RAII",
+    "fileName": "raii",
+    "category": "cpp/idioms",
+    "usage": "Resource Acquisition Is Initialization — управление ресурсами через объекты",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Pimpl",
+    "fileName": "pimpl",
+    "category": "cpp/idioms",
+    "usage": "Pointer to Implementation — скрытие деталей реализации",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "CRTP",
+    "fileName": "crtp",
+    "category": "cpp/idioms",
+    "usage": "Curiously Recurring Template Pattern — статический полиморфизм",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "SFINAE",
+    "fileName": "sfinae",
+    "category": "cpp/idioms",
+    "usage": "Substitution Failure Is Not An Error — отключение шаблонов при несоответствии типов",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Type erasure",
+    "fileName": "type_erasure",
+    "category": "cpp/idioms",
+    "usage": "Сокрытие конкретного типа за абстракцией (например std::function)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Small Buffer Optimization",
+    "fileName": "sbo",
+    "category": "cpp/idioms",
+    "usage": "Оптимизация хранения малых объектов внутри самого контейнера",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Copy-on-write",
+    "fileName": "copy_on_write",
+    "category": "cpp/idioms",
+    "usage": "Отложенное копирование до модификации данных",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "EBO",
+    "fileName": "ebo",
+    "category": "cpp/idioms",
+    "usage": "Empty Base Optimization — оптимизация пустых базовых классов",
+    "isLeaf": true
+  }
+]

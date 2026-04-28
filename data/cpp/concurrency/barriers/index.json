@@ -1,0 +1,18 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::barrier",
+    "fileName": "barrier",
+    "category": "cpp/concurrency/barriers",
+    "usage": "Синхронизация нескольких потоков (C++20)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::latch",
+    "fileName": "latch",
+    "category": "cpp/concurrency/barriers",
+    "usage": "Одноразовая синхронизация потоков (C++20)",
+    "isLeaf": true
+  }
+]

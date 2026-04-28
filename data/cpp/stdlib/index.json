@@ -1,0 +1,90 @@
+[
+  {
+    "type": "cpp",
+    "name": "chrono",
+    "fileName": "chrono",
+    "category": "cpp/stdlib",
+    "usage": "Работа со временем: duration, time_point, clocks",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "filesystem",
+    "fileName": "filesystem",
+    "category": "cpp/stdlib",
+    "usage": "Работа с файлами и директориями (C++17)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "regex",
+    "fileName": "regex",
+    "category": "cpp/stdlib",
+    "usage": "Регулярные выражения: regex, smatch, regex_search",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "random",
+    "fileName": "random",
+    "category": "cpp/stdlib",
+    "usage": "Генераторы случайных чисел, распределения, движки",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "iostream",
+    "fileName": "iostream",
+    "category": "cpp/stdlib",
+    "usage": "Стандартный ввод/вывод: cin, cout, cerr",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "locale",
+    "fileName": "locale",
+    "category": "cpp/stdlib",
+    "usage": "Локализация, форматирование чисел, дат, строк",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "numeric",
+    "fileName": "numeric",
+    "category": "cpp/stdlib",
+    "usage": "Числовые утилиты: gcd, lcm, midpoint",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "optional",
+    "fileName": "optional",
+    "category": "cpp/stdlib",
+    "usage": "Контейнер для значения или его отсутствия (C++17)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "variant",
+    "fileName": "variant",
+    "category": "cpp/stdlib",
+    "usage": "Тип‑дискретор: хранение одного из нескольких типов (C++17)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "any",
+    "fileName": "any",
+    "category": "cpp/stdlib",
+    "usage": "Хранение значения любого типа (type erasure) (C++17)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "expected",
+    "fileName": "expected",
+    "category": "cpp/stdlib",
+    "usage": "Результат или ошибка без исключений (C++23)",
+    "isLeaf": true
+  }
+]

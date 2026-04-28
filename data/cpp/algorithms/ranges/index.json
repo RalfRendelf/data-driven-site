@@ -1,0 +1,66 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::ranges::find",
+    "fileName": "ranges_find",
+    "category": "algorithms/ranges",
+    "usage": "Поиск элемента в диапазоне (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::copy",
+    "fileName": "ranges_copy",
+    "category": "algorithms/ranges",
+    "usage": "Копирование диапазона (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::for_each",
+    "fileName": "ranges_for_each",
+    "category": "algorithms/ranges",
+    "usage": "Применение функции к каждому элементу (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::sort",
+    "fileName": "ranges_sort",
+    "category": "algorithms/ranges",
+    "usage": "Сортировка диапазона (O(N log N) время, O(log N) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::lower_bound",
+    "fileName": "ranges_lower_bound",
+    "category": "algorithms/ranges",
+    "usage": "Поиск первого элемента, не меньшего заданного (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::upper_bound",
+    "fileName": "ranges_upper_bound",
+    "category": "algorithms/ranges",
+    "usage": "Поиск первого элемента, большего заданного (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::equal",
+    "fileName": "ranges_equal",
+    "category": "algorithms/ranges",
+    "usage": "Проверка равенства двух диапазонов (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::ranges::mismatch",
+    "fileName": "ranges_mismatch",
+    "category": "algorithms/ranges",
+    "usage": "Поиск первой позиции различия двух диапазонов (O(N) время, O(1) память)",
+    "isLeaf": true
+  }
+]

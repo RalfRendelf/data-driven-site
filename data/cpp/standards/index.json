@@ -1,0 +1,66 @@
+[
+  {
+    "type": "cpp",
+    "name": "C++98",
+    "fileName": "cpp98",
+    "category": "standards",
+    "usage": "Базовый STL, RAII, исключения",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++03",
+    "fileName": "cpp03",
+    "category": "standards",
+    "usage": "Исправления и уточнения стандарта",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++11",
+    "fileName": "cpp11",
+    "category": "standards",
+    "usage": "Move semantics, threads, atomics, lambdas",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++14",
+    "fileName": "cpp14",
+    "category": "standards",
+    "usage": "Улучшения и доработки C++11",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++17",
+    "fileName": "cpp17",
+    "category": "standards",
+    "usage": "filesystem, optional, variant, string_view",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++20",
+    "fileName": "cpp20",
+    "category": "standards",
+    "usage": "Concepts, ranges, coroutines, modules",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++23",
+    "fileName": "cpp23",
+    "category": "standards",
+    "usage": "Networking TS, std::expected, улучшения ranges",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "C++26",
+    "fileName": "cpp26",
+    "category": "standards",
+    "usage": "Ожидаемые нововведения: reflection, executors",
+    "isLeaf": true
+  }
+]

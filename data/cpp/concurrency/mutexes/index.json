@@ -1,0 +1,50 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::mutex",
+    "fileName": "mutex",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "Базовый мьютекс",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::timed_mutex",
+    "fileName": "timed_mutex",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "Мьютекс с таймаутом",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::recursive_mutex",
+    "fileName": "recursive_mutex",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "Рекурсивный мьютекс",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::shared_mutex",
+    "fileName": "shared_mutex",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "Разделяемый мьютекс (reader/writer)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::lock_guard",
+    "fileName": "lock_guard",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "RAII‑блокировка мьютекса",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::unique_lock",
+    "fileName": "unique_lock",
+    "category": "cpp/concurrency/mutexes",
+    "usage": "Гибкая RAII‑блокировка мьютекса",
+    "isLeaf": true
+  }
+]

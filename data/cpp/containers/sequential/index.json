@@ -1,0 +1,42 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::vector",
+    "fileName": "vector",
+    "category": "containers/sequential",
+    "usage": "Динамический массив с непрерывным хранением элементов",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::list",
+    "fileName": "list",
+    "category": "containers/sequential",
+    "usage": "Двусвязный список",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::forward_list",
+    "fileName": "forward_list",
+    "category": "containers/sequential",
+    "usage": "Односвязный список",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::deque",
+    "fileName": "deque",
+    "category": "containers/sequential",
+    "usage": "Двусторонняя очередь с произвольным доступом",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::array",
+    "fileName": "array",
+    "category": "containers/sequential",
+    "usage": "Фиксированный массив с интерфейсом STL",
+    "isLeaf": true
+  }
+]

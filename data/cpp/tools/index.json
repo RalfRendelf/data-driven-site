@@ -1,0 +1,58 @@
+[
+  {
+    "type": "cpp",
+    "name": "CMake",
+    "fileName": "cmake",
+    "category": "cpp/tools",
+    "usage": "Система сборки C++ проектов, генерация проектов для разных IDE",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "GCC / Clang / MSVC",
+    "fileName": "compilers",
+    "category": "cpp/tools",
+    "usage": "Основные компиляторы C++: GNU, LLVM Clang, Microsoft Visual C++",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Sanitizers",
+    "fileName": "sanitizers",
+    "category": "cpp/tools",
+    "usage": "ASan, UBSan, TSan — инструменты поиска ошибок времени выполнения",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Valgrind",
+    "fileName": "valgrind",
+    "category": "cpp/tools",
+    "usage": "Профилирование, поиск утечек памяти и ошибок доступа",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "GDB",
+    "fileName": "gdb",
+    "category": "cpp/tools",
+    "usage": "Отладчик GNU для C/C++",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Static analysis",
+    "fileName": "static_analysis",
+    "category": "cpp/tools",
+    "usage": "Статический анализ кода: clang-tidy, cppcheck, MSVC analyzer",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Code style",
+    "fileName": "code_style",
+    "category": "cpp/tools",
+    "usage": "Стандарты оформления кода: Google Style, LLVM Style",
+    "isLeaf": true
+  }
+]

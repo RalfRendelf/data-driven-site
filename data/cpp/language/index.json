@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "Основы",
+    "fileName": "basics",
+    "category": "cpp/language",
+    "usage": "Базовые элементы языка C++",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Современный C++",
+    "fileName": "modern_cpp",
+    "category": "cpp/language",
+    "usage": "Ключевые возможности C++11/14/17/20",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Память",
+    "fileName": "memory",
+    "category": "cpp/language",
+    "usage": "Управление памятью в C++",
+    "isLeaf": false
+  }
+]

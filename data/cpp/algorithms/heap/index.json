@@ -1,0 +1,50 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::make_heap",
+    "fileName": "make_heap",
+    "category": "algorithms/heap",
+    "usage": "Построение кучи из диапазона (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::push_heap",
+    "fileName": "push_heap",
+    "category": "algorithms/heap",
+    "usage": "Добавление элемента в кучу (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::pop_heap",
+    "fileName": "pop_heap",
+    "category": "algorithms/heap",
+    "usage": "Удаление максимального элемента из кучи (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::sort_heap",
+    "fileName": "sort_heap",
+    "category": "algorithms/heap",
+    "usage": "Сортировка диапазона с использованием кучи (O(N log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_heap",
+    "fileName": "is_heap",
+    "category": "algorithms/heap",
+    "usage": "Проверка, является ли диапазон кучей (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_heap_until",
+    "fileName": "is_heap_until",
+    "category": "algorithms/heap",
+    "usage": "Поиск первой позиции нарушения свойств кучи (O(N) время, O(1) память)",
+    "isLeaf": true
+  }
+]

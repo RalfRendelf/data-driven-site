@@ -1,0 +1,50 @@
+[
+  {
+    "type": "cpp",
+    "name": "Типы",
+    "fileName": "types",
+    "category": "cpp/language",
+    "usage": "Встроенные и пользовательские типы данных",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Указатели",
+    "fileName": "pointers",
+    "category": "cpp/language",
+    "usage": "Сырые указатели, арифметика указателей",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Ссылки",
+    "fileName": "references",
+    "category": "cpp/language",
+    "usage": "Lvalue и rvalue ссылки",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Массивы",
+    "fileName": "arrays",
+    "category": "cpp/language",
+    "usage": "Статические и динамические массивы",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Структуры",
+    "fileName": "structs",
+    "category": "cpp/language",
+    "usage": "Пользовательские типы данных: struct, class",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Пространства имён",
+    "fileName": "namespaces",
+    "category": "cpp/language",
+    "usage": "namespace, using, вложенные пространства имён",
+    "isLeaf": true
+  }
+]

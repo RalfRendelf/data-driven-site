@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::atomic",
+    "fileName": "atomic",
+    "category": "cpp/concurrency/atomics",
+    "usage": "Атомарные типы и операции",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::atomic_flag",
+    "fileName": "atomic_flag",
+    "category": "cpp/concurrency/atomics",
+    "usage": "Простейший атомарный флаг",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::memory_order",
+    "fileName": "memory_order",
+    "category": "cpp/concurrency/atomics",
+    "usage": "Модели упорядочивания памяти",
+    "isLeaf": true
+  }
+]

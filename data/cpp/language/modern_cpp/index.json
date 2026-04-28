@@ -1,0 +1,66 @@
+[
+  {
+    "type": "cpp",
+    "name": "Move semantics",
+    "fileName": "move_semantics",
+    "category": "cpp/language",
+    "usage": "Перемещающие конструкторы и операторы",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Perfect forwarding",
+    "fileName": "perfect_forwarding",
+    "category": "cpp/language",
+    "usage": "Идеальная передача аргументов через шаблоны",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Rvalue references",
+    "fileName": "rvalue_references",
+    "category": "cpp/language",
+    "usage": "Семантика && и временные объекты",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "constexpr",
+    "fileName": "constexpr",
+    "category": "cpp/language",
+    "usage": "Вычисления времени компиляции",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Templates",
+    "fileName": "templates",
+    "category": "cpp/language",
+    "usage": "Шаблоны функций и классов",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Variadic templates",
+    "fileName": "variadic_templates",
+    "category": "cpp/language",
+    "usage": "Шаблоны с переменным числом аргументов",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Concepts",
+    "fileName": "concepts",
+    "category": "cpp/language",
+    "usage": "Ограничения шаблонов (C++20)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Modules",
+    "fileName": "modules",
+    "category": "cpp/language",
+    "usage": "Модули C++20: import/export",
+    "isLeaf": true
+  }
+]

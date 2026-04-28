@@ -1,0 +1,50 @@
+[
+  {
+    "type": "cpp",
+    "name": "Type traits",
+    "fileName": "type_traits",
+    "category": "cpp/metaprogramming",
+    "usage": "Стандартные инструменты анализа типов: std::is_same, std::enable_if и др.",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Constexpr метапрограммирование",
+    "fileName": "constexpr_metaprogramming",
+    "category": "cpp/metaprogramming",
+    "usage": "Вычисления времени компиляции с использованием constexpr функций и объектов",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Шаблонные вычисления",
+    "fileName": "template_metaprogramming",
+    "category": "cpp/metaprogramming",
+    "usage": "Рекурсивные шаблоны, вычисления на уровне типов (TMP)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Concepts",
+    "fileName": "concepts",
+    "category": "cpp/metaprogramming",
+    "usage": "Ограничения шаблонов, проверка требований к типам (C++20)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Detection idiom",
+    "fileName": "detection_idiom",
+    "category": "cpp/metaprogramming",
+    "usage": "Проверка наличия типов/методов через std::void_t и requires",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Compile-time containers",
+    "fileName": "compile_time_containers",
+    "category": "cpp/metaprogramming",
+    "usage": "Контейнеры времени компиляции: std::integer_sequence, std::index_sequence",
+    "isLeaf": true
+  }
+]

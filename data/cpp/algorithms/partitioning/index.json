@@ -1,0 +1,42 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::partition",
+    "fileName": "partition",
+    "category": "algorithms/partitioning",
+    "usage": "Разделение диапазона по предикату (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::stable_partition",
+    "fileName": "stable_partition",
+    "category": "algorithms/partitioning",
+    "usage": "Стабильное разделение диапазона по предикату (O(N log N) время, O(N) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::partition_point",
+    "fileName": "partition_point",
+    "category": "algorithms/partitioning",
+    "usage": "Поиск точки разделения в уже разделённом диапазоне (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_partitioned",
+    "fileName": "is_partitioned",
+    "category": "algorithms/partitioning",
+    "usage": "Проверка, разделён ли диапазон по предикату (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::partition_copy",
+    "fileName": "partition_copy",
+    "category": "algorithms/partitioning",
+    "usage": "Копирование элементов в два диапазона по предикату (O(N) время, O(N) память — два выходных диапазона)",
+    "isLeaf": true
+  }
+]

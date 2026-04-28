@@ -27,7 +27,7 @@ export const CATEGORIES = [
     // },
     {
       title: "🔍C++ и STL (Standard Template Library)",
-      type:  "stl",
+      type:  "cpp",
       columns: ["Название", "Категория", "Описание"]
     }
     ,

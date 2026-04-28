@@ -1,0 +1,42 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::find",
+    "fileName": "find",
+    "category": "algorithms/non_modifying",
+    "usage": "Поиск первого вхождения элемента в диапазоне (O(N))",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::count",
+    "fileName": "count",
+    "category": "algorithms/non_modifying",
+    "usage": "Подсчёт количества элементов, равных заданному (O(N))",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::equal",
+    "fileName": "equal",
+    "category": "algorithms/non_modifying",
+    "usage": "Проверка равенства двух диапазонов (O(N))",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::mismatch",
+    "fileName": "mismatch",
+    "category": "algorithms/non_modifying",
+    "usage": "Поиск первой позиции, где диапазоны различаются (O(N))",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::search",
+    "fileName": "search",
+    "category": "algorithms/non_modifying",
+    "usage": "Поиск подпоследовательности в диапазоне (O(N·M) наивно, O(N+M) с поиском КМП)",
+    "isLeaf": true
+  }
+]

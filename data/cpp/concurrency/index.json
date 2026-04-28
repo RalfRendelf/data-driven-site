@@ -1,0 +1,74 @@
+[
+  {
+    "type": "cpp",
+    "name": "Threads",
+    "fileName": "threads",
+    "category": "cpp/concurrency",
+    "usage": "std::thread, управление потоками",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Mutexes & Locks",
+    "fileName": "mutexes",
+    "category": "cpp/concurrency",
+    "usage": "std::mutex, std::lock_guard, std::unique_lock",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Condition Variables",
+    "fileName": "condition_variables",
+    "category": "cpp/concurrency",
+    "usage": "std::condition_variable, синхронизация потоков",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Atomics",
+    "fileName": "atomics",
+    "category": "cpp/concurrency",
+    "usage": "std::atomic, memory_order, атомарные операции",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Futures & Async",
+    "fileName": "futures",
+    "category": "cpp/concurrency",
+    "usage": "std::future, std::promise, std::async",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Coroutines (C++20)",
+    "fileName": "coroutines",
+    "category": "cpp/concurrency",
+    "usage": "co_await, co_yield, co_return, coroutine_handle",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Barriers & Latches",
+    "fileName": "barriers",
+    "category": "cpp/concurrency",
+    "usage": "std::barrier, std::latch (C++20)",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Stop Tokens",
+    "fileName": "stop_tokens",
+    "category": "cpp/concurrency",
+    "usage": "std::stop_token, std::jthread (C++20)",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Thread-local Storage",
+    "fileName": "tls",
+    "category": "cpp/concurrency",
+    "usage": "thread_local, локальные данные потока",
+    "isLeaf": false
+  }
+]

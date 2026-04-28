@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::thread",
+    "fileName": "thread",
+    "category": "cpp/concurrency/threads",
+    "usage": "Создание и управление потоками",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::jthread",
+    "fileName": "jthread",
+    "category": "cpp/concurrency/threads",
+    "usage": "Поток с автоматическим join и поддержкой stop_token",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::this_thread",
+    "fileName": "this_thread",
+    "category": "cpp/concurrency/threads",
+    "usage": "Операции над текущим потоком: sleep, yield",
+    "isLeaf": true
+  }
+]

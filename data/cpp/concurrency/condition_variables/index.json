@@ -1,0 +1,18 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::condition_variable",
+    "fileName": "condition_variable",
+    "category": "cpp/concurrency/condition_variables",
+    "usage": "Синхронизация потоков через ожидание событий",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::condition_variable_any",
+    "fileName": "condition_variable_any",
+    "category": "cpp/concurrency/condition_variables",
+    "usage": "Condition variable, работающая с любыми мьютексами",
+    "isLeaf": true
+  }
+]

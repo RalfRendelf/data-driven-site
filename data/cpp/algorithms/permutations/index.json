@@ -1,0 +1,26 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::next_permutation",
+    "fileName": "next_permutation",
+    "category": "algorithms/permutations",
+    "usage": "Генерация следующей лексикографической перестановки (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::prev_permutation",
+    "fileName": "prev_permutation",
+    "category": "algorithms/permutations",
+    "usage": "Генерация предыдущей лексикографической перестановки (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_permutation",
+    "fileName": "is_permutation",
+    "category": "algorithms/permutations",
+    "usage": "Проверка, является ли диапазон перестановкой другого (O(N) время, O(1) память при равных размерах)",
+    "isLeaf": true
+  }
+]

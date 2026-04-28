@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "Последовательные контейнеры",
+    "fileName": "sequential",
+    "category": "containers",
+    "usage": "Последовательные контейнеры STL: vector, list, deque, array, forward_list",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Ассоциативные контейнеры",
+    "fileName": "associative",
+    "category": "containers",
+    "usage": "Ассоциативные контейнеры STL: map, multimap, set, multiset",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Неупорядоченные контейнеры",
+    "fileName": "unordered",
+    "category": "containers",
+    "usage": "Хеш‑контейнеры STL: unordered_map, unordered_set и их варианты",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Специальные контейнеры",
+    "fileName": "special",
+    "category": "containers",
+    "usage": "Специальные контейнеры STL: stack, queue, priority_queue, span",
+    "isLeaf": false
+  }
+]

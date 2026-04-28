@@ -88,6 +88,7 @@ export function displayTreeForCategory(categoryType) {
   jsonRoot.reDraw = true;
 
   loadJsonTree(category);
+  // if(lastSearchText == "") return;
   lastSearchText = "";
   searchFrame();
 }
@@ -102,8 +103,9 @@ async function loadJsonTree(category, basePath = null, container = jsonRoot) {
 
   const jsonData = await fetch(`data/${rootPath}/index.json`).then(r => r.json());
 
-  container.isLoaded = true;
+  
   container.needsDraw = true;
+  container.reDraw = true;
   container.children = [];
 
   for (const item of jsonData) {
@@ -113,7 +115,7 @@ async function loadJsonTree(category, basePath = null, container = jsonRoot) {
       data: item,
       isLoaded: true,
       needsDraw: true,
-      reDraw: false,
+      reDraw: true,
       path: itemPath,
       children: []
     };
@@ -124,7 +126,7 @@ async function loadJsonTree(category, basePath = null, container = jsonRoot) {
       await loadJsonTree(category, itemPath, node);
     }
   }
-
+  container.isLoaded = true;
   return container;
 }
 

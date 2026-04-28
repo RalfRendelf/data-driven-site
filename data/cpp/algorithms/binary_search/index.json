@@ -1,0 +1,34 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::binary_search",
+    "fileName": "binary_search",
+    "category": "algorithms/binary_search",
+    "usage": "Проверка наличия элемента в отсортированном диапазоне (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::lower_bound",
+    "fileName": "lower_bound",
+    "category": "algorithms/binary_search",
+    "usage": "Поиск первого элемента, не меньшего заданного (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::upper_bound",
+    "fileName": "upper_bound",
+    "category": "algorithms/binary_search",
+    "usage": "Поиск первого элемента, большего заданного (O(log N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::equal_range",
+    "fileName": "equal_range",
+    "category": "algorithms/binary_search",
+    "usage": "Поиск диапазона элементов, равных значению (O(log N) время, O(1) память)",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "cpp",
+    "name": "views",
+    "fileName": "views",
+    "category": "cpp/ranges",
+    "usage": "Views — ленивые представления диапазонов (filter, transform, take, drop и др.)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "actions",
+    "fileName": "actions",
+    "category": "cpp/ranges",
+    "usage": "Actions — преобразования диапазонов (C++23, расширение ranges)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "adaptors",
+    "fileName": "adaptors",
+    "category": "cpp/ranges",
+    "usage": "Адаптеры диапазонов: piping, chaining, комбинирование views",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "pipelines",
+    "fileName": "pipelines",
+    "category": "cpp/ranges",
+    "usage": "Пайплайны: range | view::filter | view::transform",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "lazy evaluation",
+    "fileName": "lazy_evaluation",
+    "category": "cpp/ranges",
+    "usage": "Ленивая модель вычислений в ranges — выполнение по требованию",
+    "isLeaf": true
+  }
+]

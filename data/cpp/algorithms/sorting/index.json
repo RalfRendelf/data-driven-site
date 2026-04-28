@@ -1,0 +1,58 @@
+[
+  {
+    "type": "cpp",
+    "name": "std::sort",
+    "fileName": "sort",
+    "category": "algorithms/sorting",
+    "usage": "Быстрая сортировка (обычно introsort): O(N log N) время, O(log N) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::stable_sort",
+    "fileName": "stable_sort",
+    "category": "algorithms/sorting",
+    "usage": "Стабильная сортировка: O(N log N) время, O(N) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::partial_sort",
+    "fileName": "partial_sort",
+    "category": "algorithms/sorting",
+    "usage": "Частичная сортировка: O(N log K) время, O(1) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::partial_sort_copy",
+    "fileName": "partial_sort_copy",
+    "category": "algorithms/sorting",
+    "usage": "Копирование и частичная сортировка: O(N log K) время, O(K) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::nth_element",
+    "fileName": "nth_element",
+    "category": "algorithms/sorting",
+    "usage": "Нахождение n‑го элемента (quickselect): O(N) среднее, O(N^2) худшее, O(1) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_sorted",
+    "fileName": "is_sorted",
+    "category": "algorithms/sorting",
+    "usage": "Проверка, отсортирован ли диапазон: O(N) время, O(1) память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::is_sorted_until",
+    "fileName": "is_sorted_until",
+    "category": "algorithms/sorting",
+    "usage": "Поиск первой позиции нарушения сортировки: O(N) время, O(1) память",
+    "isLeaf": true
+  }
+]
