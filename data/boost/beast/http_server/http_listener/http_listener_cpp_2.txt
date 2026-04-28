@@ -1,0 +1,102 @@
+// Пример 2: Listener с расширенной обработкой ошибок и graceful shutdown
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+using tcp       = asio::ip::tcp;
+
+class http_session : public std::enable_shared_from_this<http_session>
+{
+public:
+    explicit http_session(tcp::socket socket)
+        : socket_(std::move(socket)) {}
+
+    void run() { /* обработка HTTP */ }
+
+private:
+    tcp::socket socket_;
+};
+
+class http_listener : public std::enable_shared_from_this<http_listener>
+{
+public:
+    http_listener(asio::io_context& ioc, tcp::endpoint ep)
+        : ioc_(ioc)
+        , acceptor_(ioc)
+    {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        acceptor_.bind(ep, ec);
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+    }
+
+    void run()
+    {
+        do_accept();
+    }
+
+    void stop()
+    {
+        beast::error_code ec;
+        acceptor_.close(ec);
+    }
+
+private:
+    void do_accept()
+    {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(
+                &http_listener::on_accept,
+                shared_from_this(),
+                std::placeholders::_1,
+                std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket)
+    {
+        if (!acceptor_.is_open())
+            return;
+
+        if (!ec)
+        {
+            std::cout << "New connection\n";
+            std::make_shared<http_session>(std::move(socket))->run();
+        }
+        else
+        {
+            std::cerr << "accept error: " << ec.message() << "\n";
+        }
+
+        do_accept();
+    }
+
+    asio::io_context& ioc_;
+    tcp::acceptor     acceptor_;
+};
+
+int main()
+{
+    asio::io_context ioc;
+
+    auto ep = tcp::endpoint(tcp::v4(), 8081);
+    auto listener = std::make_shared<http_listener>(ioc, ep);
+    listener->run();
+
+    asio::signal_set signals(ioc, SIGINT, SIGTERM);
+    signals.async_wait(
+        [&](auto, int)
+        {
+            std::cout << "Stopping listener...\n";
+            listener->stop();
+            ioc.stop();
+        });
+
+    ioc.run();
+}

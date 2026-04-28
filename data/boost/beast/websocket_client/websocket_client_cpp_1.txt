@@ -1,0 +1,46 @@
+// Пример 1: Базовый WebSocket-клиент (echo)
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+
+        std::string host   = "echo.websocket.events";
+        std::string port   = "80";
+        std::string target = "/";
+
+        tcp::resolver resolver{ioc};
+        auto results = resolver.resolve(host, port);
+
+        beast::tcp_stream stream{ioc};
+        stream.connect(results);
+
+        ws::stream<beast::tcp_stream> websocket{std::move(stream)};
+
+        websocket.handshake(host, target);
+
+        websocket.write(asio::buffer(std::string("Hello WebSocket!")));
+
+        beast::flat_buffer buffer;
+        websocket.read(buffer);
+
+        std::cout << "Received: "
+                  << beast::make_printable(buffer.data()) << "\n";
+
+        websocket.close(ws::close_code::normal);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

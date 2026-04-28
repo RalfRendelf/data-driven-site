@@ -1,0 +1,88 @@
+<h2>HTTP Session</h2>
+
+<p><strong>HTTP Session</strong> — это компонент HTTP‑сервера на Boost.Beast, который отвечает за обработку одного TCP‑соединения: чтение HTTP‑запросов, вызов прикладной логики (Router/Handlers) и отправку HTTP‑ответов. Session живёт столько, сколько живёт соединение (или пока не будет закрыто по keep‑alive/timeout/ошибке).</p>
+
+<p>Именно в Session сосредоточена логика протокола HTTP: чтение заголовков и тела, поддержка keep‑alive, обработка ошибок протокола, корректное закрытие соединения. Session не должна выполнять тяжёлые операции — только сетевую часть и делегирование логики.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>Классическая HTTP Session в Beast включает:</p>
+
+<ul>
+  <li><strong>tcp::socket</strong> или <strong>beast::tcp_stream</strong> — транспорт;</li>
+  <li><strong>flat_buffer</strong> — буфер для чтения HTTP‑сообщений;</li>
+  <li><strong>http::request&lt;Body&gt;</strong> — объект запроса;</li>
+  <li><strong>http::response&lt;Body&gt;</strong> — объект ответа;</li>
+  <li><strong>strand</strong> — последовательность операций в многопоточной среде;</li>
+  <li><strong>async_read / async_write</strong> — асинхронные операции;</li>
+  <li><strong>keep_alive</strong> — решение: закрывать или оставлять соединение.</li>
+</ul>
+
+<p>Типичный цикл Session:</p>
+
+<ol>
+  <li>async_read() — читаем запрос;</li>
+  <li>Router/Handlers — формируют ответ;</li>
+  <li>async_write() — отправляем ответ;</li>
+  <li>если keep‑alive: снова async_read();</li>
+  <li>если нет — shutdown/close.</li>
+</ol>
+
+<p>Session должна быть <strong>self‑owned</strong> (через <code>std::enable_shared_from_this</code>) и управлять своим временем жизни.</p>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два практических примера.</p>
+
+<h4>Пример 1: Базовая HTTP Session</h4>
+<pre><code>
+http_session_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: HTTP Session с таймаутами и ограничением тела</h4>
+<pre><code>
+http_session_cpp_2.txt
+</code></pre>
+
+<h3>Практические применения</h3>
+
+<ul>
+  <li>REST API серверы;</li>
+  <li>reverse‑proxy и шлюзы;</li>
+  <li>WebSocket upgrade (начинается в HTTP Session);</li>
+  <li>streaming‑ответы;</li>
+  <li>серверы с keep‑alive и большим количеством соединений.</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>Нельзя выполнять тяжёлые операции внутри Session — только делегировать.</li>
+  <li>Session должна использовать <strong>strand</strong> для потокобезопасности.</li>
+  <li>Нужно ограничивать размер тела (<code>body_limit</code>), чтобы избежать DoS.</li>
+  <li>Важно корректно обрабатывать ошибки чтения/записи и закрывать соединение.</li>
+  <li>Нельзя переиспользовать один и тот же <code>flat_buffer</code> между разными Session.</li>
+  <li>При keep‑alive важно не забывать возвращаться к чтению следующего запроса.</li>
+</ul>
+
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li>Держите Session максимально «тонкой» — только протокол и делегирование.</li>
+  <li>Используйте <strong>beast::tcp_stream</strong> и <code>expires_after()</code> для таймаутов.</li>
+  <li>Ограничивайте размер тела через <code>parser.body_limit()</code>, если используете parser.</li>
+  <li>Логируйте ошибки чтения/записи с кодами ошибок.</li>
+  <li>Разделяйте Session, Router и Handlers по файлам/модулям.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>HTTP Session — центральный элемент HTTP‑сервера на Boost.Beast. Она инкапсулирует работу с соединением, чтение/запись HTTP‑сообщений, управление keep‑alive и корректное закрытие. Грамотно спроектированная Session делает сервер предсказуемым, безопасным и удобным для расширения.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — HTTP Server Examples</li>
+  <li>Boost.Asio — Strand</li>
+  <li>Boost.Beast — Timeouts</li>
+</ul>

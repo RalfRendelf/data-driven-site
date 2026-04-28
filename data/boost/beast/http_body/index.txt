@@ -1,0 +1,82 @@
+<h2>HTTP Body Types</h2>
+
+<p><strong>HTTP Body Types</strong> в Boost.Beast — это набор типов тел сообщений, определяющих, как хранятся и передаются данные HTTP-запросов и ответов. От выбора типа тела зависит потребление памяти, возможность стриминга, работа с файлами и общая производительность сервера или клиента.</p>
+
+<p>Beast реализует тела сообщений через шаблон <code>http::basic_message&lt;isRequest, Body, Fields&gt;</code>, где <code>Body</code> — это политика хранения и передачи данных.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>Основные типы тел в Boost.Beast:</p>
+
+<ul>
+  <li><strong>http::string_body</strong> — хранит всё тело в <code>std::string</code>;</li>
+  <li><strong>http::vector_body&lt;std::uint8_t&gt;</strong> — хранит бинарные данные в <code>std::vector</code>;</li>
+  <li><strong>http::buffer_body</strong> — использует внешний буфер (zero-copy, но требует аккуратности);</li>
+  <li><strong>http::file_body</strong> — потоковая передача данных из файла;</li>
+  <li><strong>http::empty_body</strong> — тело отсутствует;</li>
+  <li><strong>http::dynamic_body</strong> — использует <code>beast::multi_buffer</code> для стриминга и инкрементального чтения.</li>
+</ul>
+
+<p>Выбор типа тела зависит от сценария:</p>
+
+<ul>
+  <li><strong>string_body</strong> — небольшие JSON/HTML/текстовые ответы;</li>
+  <li><strong>file_body</strong> — отдача файлов (статический контент, загрузки);</li>
+  <li><strong>dynamic_body</strong> — приём/передача больших или неизвестных заранее данных;</li>
+  <li><strong>buffer_body</strong> — интеграция с внешними буферами/памятью.</li>
+</ul>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два практических примера.</p>
+
+<h4>Пример 1: string_body и dynamic_body</h4>
+<pre><code>
+http_body_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: file_body для отдачи файлов</h4>
+<pre><code>
+http_body_cpp_2.txt
+</code></pre>
+
+<h3>Практические применения</h3>
+
+<ul>
+  <li><strong>API-сервера</strong> обычно используют <code>string_body</code> для JSON-ответов.</li>
+  <li><strong>Файловые серверы</strong> используют <code>file_body</code> для отдачи статического контента.</li>
+  <li><strong>Reverse-proxy</strong> и <strong>streaming-сервисы</strong> используют <code>dynamic_body</code> и <code>buffer_body</code>.</li>
+  <li><strong>Клиенты</strong> могут читать ответы в <code>dynamic_body</code>, а затем решать, как обрабатывать данные.</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li><strong>string_body</strong> хранит всё тело в памяти — опасно для больших ответов.</li>
+  <li><strong>file_body</strong> требует корректного открытия файла и обработки ошибок.</li>
+  <li><strong>dynamic_body</strong> может расти без ограничений — важно задавать лимиты.</li>
+  <li><strong>buffer_body</strong> не владеет памятью — нужно следить за временем жизни буфера.</li>
+  <li>Неверный выбор типа тела может привести к лишнему копированию или OOM.</li>
+</ul>
+
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li>Для JSON/текста до нескольких сотен килобайт используйте <strong>string_body</strong>.</li>
+  <li>Для файлов — <strong>file_body</strong> с корректной установкой <code>Content-Type</code> и <code>Content-Length</code>.</li>
+  <li>Для неизвестного заранее размера тела — <strong>dynamic_body</strong> с лимитами.</li>
+  <li>Не используйте <strong>string_body</strong> для больших бинарных данных.</li>
+  <li>Всегда обрабатывайте ошибки открытия файлов и чтения/записи.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>HTTP Body Types в Boost.Beast — это фундаментальный механизм управления телами HTTP-сообщений. Правильный выбор типа тела позволяет балансировать между простотой, производительностью и потреблением памяти. В продакшн-системах важно осознанно выбирать <code>string_body</code>, <code>file_body</code>, <code>dynamic_body</code> и другие типы в зависимости от сценария.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — HTTP Body Types</li>
+  <li>Boost.Beast — file_body</li>
+  <li>Boost.Beast — dynamic_body</li>
+</ul>

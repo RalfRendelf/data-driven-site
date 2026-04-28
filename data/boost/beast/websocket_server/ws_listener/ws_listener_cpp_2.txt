@@ -1,0 +1,118 @@
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/beast.hpp&gt;
+#include &lt;memory&gt;
+#include &lt;iostream&gt;
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+class ws_session : public std::enable_shared_from_this&lt;ws_session&gt; {
+public:
+    explicit ws_session(tcp::socket socket)
+        : ws_(std::move(socket)) {}
+
+    void run() {
+        ws_.async_accept(
+            std::bind(&ws_session::on_accept, shared_from_this(),
+                      std::placeholders::_1));
+    }
+
+private:
+    void on_accept(beast::error_code ec) {
+        if (!ec)
+            do_read();
+        else
+            std::cerr &lt;&lt; "accept error: " &lt;&lt; ec.message() &lt;&lt; "\n";
+    }
+
+    void do_read() {
+        ws_.async_read(
+            buffer_,
+            std::bind(&ws_session::on_read, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_read(beast::error_code ec, std::size_t) {
+        if (ec)
+            return;
+
+        ws_.text(ws_.got_text());
+        ws_.async_write(
+            buffer_.data(),
+            std::bind(&ws_session::on_write, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_write(beast::error_code ec, std::size_t) {
+        if (ec)
+            return;
+
+        buffer_.consume(buffer_.size());
+        do_read();
+    }
+
+    ws::stream&lt;tcp::socket&gt; ws_;
+    beast::flat_buffer buffer_;
+};
+
+class ws_listener : public std::enable_shared_from_this&lt;ws_listener&gt; {
+public:
+    ws_listener(asio::io_context&amp; ioc, tcp::endpoint ep)
+        : ioc_(ioc), acceptor_(ioc) {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        acceptor_.bind(ep, ec);
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+    }
+
+    void run() { do_accept(); }
+
+    void stop() {
+        beast::error_code ec;
+        acceptor_.close(ec);
+    }
+
+private:
+    void do_accept() {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(&ws_listener::on_accept, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket) {
+        if (!acceptor_.is_open())
+            return;
+
+        if (!ec)
+            std::make_shared&lt;ws_session&gt;(std::move(socket))->run();
+        else
+            std::cerr &lt;&lt; "accept error: " &lt;&lt; ec.message() &lt;&lt; "\n";
+
+        do_accept();
+    }
+
+    asio::io_context&amp; ioc_;
+    tcp::acceptor acceptor_;
+};
+
+int main() {
+    asio::io_context ioc;
+
+    auto ep = tcp::endpoint(tcp::v4(), 9002);
+    auto listener = std::make_shared&lt;ws_listener&gt;(ioc, ep);
+    listener->run();
+
+    asio::signal_set signals(ioc, SIGINT, SIGTERM);
+    signals.async_wait([&](auto, int) {
+        std::cout &lt;&lt; "Stopping listener...\n";
+        listener->stop();
+        ioc.stop();
+    });
+
+    ioc.run();
+}

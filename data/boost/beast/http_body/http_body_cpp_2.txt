@@ -1,0 +1,197 @@
+// http_body_cpp_2.txt
+// Пример 2: file_body — простой HTTP-сервер, отдающий файл
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+class file_session : public std::enable_shared_from_this<file_session>
+{
+public:
+    explicit file_session(tcp::socket socket)
+        : socket_(std::move(socket))
+        , strand_(socket_.get_executor())
+    {}
+
+    void run()
+    {
+        do_read();
+    }
+
+private:
+    void do_read()
+    {
+        req_ = {};
+
+        http::async_read(
+            socket_,
+            buffer_,
+            req_,
+            asio::bind_executor(
+                strand_,
+                std::bind(
+                    &file_session::on_read,
+                    shared_from_this(),
+                    std::placeholders::_1,
+                    std::placeholders::_2)));
+    }
+
+    void on_read(beast::error_code ec, std::size_t)
+    {
+        if (ec == http::error::end_of_stream)
+            return do_close();
+
+        if (ec)
+        {
+            std::cerr << "read: " << ec.message() << "\n";
+            return;
+        }
+
+        // Простейший роутинг: всегда отдаём один файл
+        http::response<http::file_body> res;
+        res.version(req_.version());
+        res.keep_alive(req_.keep_alive());
+
+        beast::error_code file_ec;
+        http::file_body::value_type body;
+        body.open("test_file.txt", beast::file_mode::scan, file_ec);
+
+        if (file_ec)
+        {
+            // Ошибка открытия файла — 404
+            http::response<http::string_body> not_found{
+                http::status::not_found, req_.version()};
+            not_found.set(http::field::server, "file-server");
+            not_found.set(http::field::content_type, "text/plain");
+            not_found.keep_alive(req_.keep_alive());
+            not_found.body() = "File not found";
+            not_found.prepare_payload();
+
+            auto self = shared_from_this();
+            http::async_write(
+                socket_,
+                not_found,
+                asio::bind_executor(
+                    strand_,
+                    [self](beast::error_code ec, std::size_t)
+                    {
+                        if (ec)
+                            std::cerr << "write: " << ec.message() << "\n";
+                        self->do_close();
+                    }));
+            return;
+        }
+
+        res.result(http::status::ok);
+        res.set(http::field::server, "file-server");
+        res.set(http::field::content_type, "text/plain");
+        res.body() = std::move(body);
+        res.prepare_payload(); // установит Content-Length
+
+        auto self = shared_from_this();
+        http::async_write(
+            socket_,
+            res,
+            asio::bind_executor(
+                strand_,
+                [self](beast::error_code ec, std::size_t)
+                {
+                    if (ec)
+                    {
+                        std::cerr << "write: " << ec.message() << "\n";
+                        return;
+                    }
+
+                    if (!self->req_.keep_alive())
+                        self->do_close();
+                    else
+                        self->do_read();
+                }));
+    }
+
+    void do_close()
+    {
+        beast::error_code ec;
+        socket_.shutdown(tcp::socket::shutdown_send, ec);
+    }
+
+    tcp::socket                         socket_;
+    asio::strand<asio::any_io_executor> strand_;
+    beast::flat_buffer                  buffer_;
+    http::request<http::string_body>    req_;
+};
+
+class file_listener : public std::enable_shared_from_this<file_listener>
+{
+public:
+    file_listener(asio::io_context& ioc, tcp::endpoint ep)
+        : ioc_(ioc)
+        , acceptor_(ioc)
+    {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.bind(ep, ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+        if (ec) throw beast::system_error(ec);
+    }
+
+    void run()
+    {
+        do_accept();
+    }
+
+private:
+    void do_accept()
+    {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(
+                &file_listener::on_accept,
+                shared_from_this(),
+                std::placeholders::_1,
+                std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket)
+    {
+        if (!ec)
+            std::make_shared<file_session>(std::move(socket))->run();
+        else
+            std::cerr << "accept: " << ec.message() << "\n";
+
+        do_accept();
+    }
+
+    asio::io_context& ioc_;
+    tcp::acceptor     acceptor_;
+};
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+        auto ep = tcp::endpoint(tcp::v4(), 8082);
+
+        std::make_shared<file_listener>(ioc, ep)->run();
+        ioc.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

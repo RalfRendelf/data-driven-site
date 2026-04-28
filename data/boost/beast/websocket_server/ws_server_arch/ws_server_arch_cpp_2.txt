@@ -1,0 +1,79 @@
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/beast.hpp&gt;
+#include &lt;nlohmann/json.hpp&gt;
+#include &lt;deque&gt;
+#include &lt;set&gt;
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+using json      = nlohmann::json;
+
+class ws_session;
+class ws_router;
+class broadcast_manager;
+
+// Менеджер широковещательной рассылки
+class broadcast_manager {
+public:
+    explicit broadcast_manager(asio::io_context&amp; ioc)
+        : strand_(asio::make_strand(ioc)) {}
+
+    void join(std::shared_ptr&lt;ws_session&gt; s) {
+        asio::dispatch(strand_, [this, s] { sessions_.insert(s); });
+    }
+
+    void leave(std::shared_ptr&lt;ws_session&gt; s) {
+        asio::dispatch(strand_, [this, s] { sessions_.erase(s); });
+    }
+
+    void broadcast(const std::string&amp; msg);
+
+private:
+    asio::strand&lt;asio::any_io_executor&gt; strand_;
+    std::set&lt;std::shared_ptr&lt;ws_session&gt;&gt; sessions_;
+};
+
+// WebSocket-сессия с очередью сообщений
+class ws_session : public std::enable_shared_from_this&lt;ws_session&gt; {
+public:
+    ws_session(tcp::socket socket, broadcast_manager&amp; bm, ws_router&amp; router)
+        : ws_(std::move(socket)), bm_(bm), router_(router),
+          strand_(ws_.get_executor()) {}
+
+    void run();
+
+    void send(const std::string&amp; msg);
+
+private:
+    void on_accept(beast::error_code ec);
+    void do_read();
+    void on_read(beast::error_code ec, std::size_t);
+    void do_write();
+    void on_write(beast::error_code ec, std::size_t);
+
+    ws::stream&lt;tcp::socket&gt; ws_;
+    beast::flat_buffer buffer_;
+    broadcast_manager&amp; bm_;
+    ws_router&amp; router_;
+    asio::strand&lt;asio::any_io_executor&gt; strand_;
+    std::deque&lt;std::string&gt; queue_;
+};
+
+// Router
+class ws_router {
+public:
+    using handler_t = std::function&lt;void(const json&amp;, ws_session&amp;)&gt;;
+
+    void add_handler(const std::string&amp; type, handler_t h) {
+        handlers_[type] = std::move(h);
+    }
+
+    void route(const std::string&amp; msg, ws_session&amp; session) const;
+
+private:
+    std::unordered_map&lt;std::string, handler_t&gt; handlers_;
+};
+
+// Реализация методов вынесена для краткости

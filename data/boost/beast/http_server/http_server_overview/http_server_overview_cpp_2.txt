@@ -1,0 +1,173 @@
+// Пример 2: Структурированный HTTP-сервер (Listener + Session + Router)
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+using request_t  = http::request<http::string_body>;
+using response_t = http::response<http::string_body>;
+using handler_t  = std::function<void(const request_t&, response_t&)>;
+
+class router
+{
+public:
+    void add(http::verb m, std::string p, handler_t h)
+    {
+        routes_[key(m, p)] = std::move(h);
+    }
+
+    bool route(const request_t& req, response_t& res) const
+    {
+        auto it = routes_.find(key(req.method(), std::string(req.target())));
+        if (it == routes_.end())
+            return false;
+
+        it->second(req, res);
+        return true;
+    }
+
+private:
+    static std::string key(http::verb m, const std::string& p)
+    {
+        return std::to_string((int)m) + ":" + p;
+    }
+
+    std::unordered_map<std::string, handler_t> routes_;
+};
+
+class http_session : public std::enable_shared_from_this<http_session>
+{
+public:
+    http_session(tcp::socket socket, const router& r)
+        : socket_(std::move(socket))
+        , strand_(socket_.get_executor())
+        , router_(r)
+    {}
+
+    void run() { do_read(); }
+
+private:
+    void do_read()
+    {
+        req_ = {};
+
+        http::async_read(
+            socket_, buffer_, req_,
+            asio::bind_executor(
+                strand_,
+                std::bind(&http_session::on_read,
+                          shared_from_this(),
+                          std::placeholders::_1,
+                          std::placeholders::_2)));
+    }
+
+    void on_read(beast::error_code ec, std::size_t)
+    {
+        if (ec == http::error::end_of_stream)
+            return do_close();
+
+        if (ec)
+        {
+            std::cerr << "read: " << ec.message() << "\n";
+            return;
+        }
+
+        response_t res{http::status::ok, req_.version()};
+        res.set(http::field::server, "beast-structured");
+
+        if (!router_.route(req_, res))
+        {
+            res.result(http::status::not_found);
+            res.body() = "Not found";
+            res.prepare_payload();
+        }
+
+        auto self = shared_from_this();
+        http::async_write(
+            socket_, res,
+            asio::bind_executor(
+                strand_,
+                [self](beast::error_code ec, std::size_t)
+                {
+                    if (ec)
+                        std::cerr << "write: " << ec.message() << "\n";
+                    self->do_read();
+                }));
+    }
+
+    void do_close()
+    {
+        beast::error_code ec;
+        socket_.shutdown(tcp::socket::shutdown_send, ec);
+    }
+
+    tcp::socket                         socket_;
+    asio::strand<asio::any_io_executor> strand_;
+    beast::flat_buffer                  buffer_;
+    request_t                           req_;
+    const router&                       router_;
+};
+
+class listener : public std::enable_shared_from_this<listener>
+{
+public:
+    listener(asio::io_context& ioc, tcp::endpoint ep, const router& r)
+        : ioc_(ioc), acceptor_(ioc), router_(r)
+    {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        acceptor_.bind(ep, ec);
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+    }
+
+    void run() { do_accept(); }
+
+private:
+    void do_accept()
+    {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(&listener::on_accept,
+                      shared_from_this(),
+                      std::placeholders::_1,
+                      std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket)
+    {
+        if (!ec)
+            std::make_shared<http_session>(std::move(socket), router_)->run();
+
+        do_accept();
+    }
+
+    asio::io_context& ioc_;
+    tcp::acceptor     acceptor_;
+    const router&     router_;
+};
+
+int main()
+{
+    asio::io_context ioc;
+
+    router r;
+    r.add(http::verb::get, "/", [](const request_t&, response_t& res)
+    {
+        res.body() = "Structured Beast HTTP Server";
+        res.prepare_payload();
+    });
+
+    auto ep = tcp::endpoint(tcp::v4(), 8081);
+    std::make_shared<listener>(ioc, ep, r)->run();
+
+    ioc.run();
+}

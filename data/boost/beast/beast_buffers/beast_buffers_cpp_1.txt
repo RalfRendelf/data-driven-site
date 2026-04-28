@@ -1,0 +1,30 @@
+// Пример 1: flat_buffer для HTTP
+
+#include <boost/beast.hpp>
+#include <boost/asio.hpp>
+#include <iostream>
+
+using tcp = boost::asio::ip::tcp;
+namespace http = boost::beast::http;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::socket socket(io);
+    socket.connect({boost::asio::ip::make_address("93.184.216.34"), 80}); // example.org
+
+    // HTTP GET
+    http::request<http::empty_body> req{http::verb::get, "/", 11};
+    req.set(http::field::host, "example.org");
+
+    http::write(socket, req);
+
+    // flat_buffer для чтения ответа
+    boost::beast::flat_buffer buffer;
+    http::response<http::string_body> res;
+
+    http::read(socket, buffer, res);
+
+    std::cout << res << "\n";
+}

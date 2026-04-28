@@ -1,0 +1,65 @@
+// Пример 2: Продвинутые обработчики (JSON, параметры, ошибки)
+
+#include <boost/beast.hpp>
+#include <boost/asio.hpp>
+#include <nlohmann/json.hpp>
+#include <iostream>
+
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using json      = nlohmann::json;
+
+// Обработчик GET /sum?x=10&y=20
+void handle_sum(const http::request<http::string_body>& req,
+                http::response<http::string_body>& res)
+{
+    auto target = std::string(req.target());
+    auto pos_x = target.find("x=");
+    auto pos_y = target.find("y=");
+
+    if (pos_x == std::string::npos || pos_y == std::string::npos)
+    {
+        res.result(http::status::bad_request);
+        res.body() = "Missing parameters x or y";
+        res.prepare_payload();
+        return;
+    }
+
+    int x = std::stoi(target.substr(pos_x + 2));
+    int y = std::stoi(target.substr(pos_y + 2));
+
+    json j;
+    j["x"] = x;
+    j["y"] = y;
+    j["sum"] = x + y;
+
+    res.result(http::status::ok);
+    res.set(http::field::content_type, "application/json");
+    res.body() = j.dump();
+    res.prepare_payload();
+}
+
+// Обработчик POST /json
+void handle_json(const http::request<http::string_body>& req,
+                 http::response<http::string_body>& res)
+{
+    try
+    {
+        json input = json::parse(req.body());
+        json output;
+
+        output["received"] = input;
+        output["status"] = "ok";
+
+        res.result(http::status::ok);
+        res.set(http::field::content_type, "application/json");
+        res.body() = output.dump();
+        res.prepare_payload();
+    }
+    catch (...)
+    {
+        res.result(http::status::bad_request);
+        res.body() = "Invalid JSON";
+        res.prepare_payload();
+    }
+}

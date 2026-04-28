@@ -1,0 +1,126 @@
+// Пример 2: Продвинутый WebSocket-клиент (reconnect + ping/pong + таймауты)
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <chrono>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+class websocket_client
+{
+public:
+    websocket_client(asio::io_context& ioc,
+                     std::string host,
+                     std::string port,
+                     std::string target)
+        : ioc_(ioc)
+        , host_(std::move(host))
+        , port_(std::move(port))
+        , target_(std::move(target))
+        , resolver_(ioc)
+        , stream_(ioc)
+        , ws_(stream_)
+    {}
+
+    void run()
+    {
+        connect();
+        read_loop();
+    }
+
+private:
+    void connect()
+    {
+        for (;;)
+        {
+            try
+            {
+                auto results = resolver_.resolve(host_, port_);
+                stream_.connect(results);
+
+                // Таймауты
+                stream_.expires_after(std::chrono::seconds(5));
+
+                ws_.set_option(ws::stream_base::timeout::suggested(
+                    beast::role_type::client));
+
+                ws_.handshake(host_, target_);
+
+                std::cout << "Connected to WebSocket\n";
+                return;
+            }
+            catch (std::exception& e)
+            {
+                std::cerr << "connect failed: " << e.what()
+                          << " — retrying...\n";
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+            }
+        }
+    }
+
+    void read_loop()
+    {
+        for (;;)
+        {
+            try
+            {
+                beast::flat_buffer buffer;
+                ws_.read(buffer);
+
+                std::cout << "Message: "
+                          << beast::make_printable(buffer.data()) << "\n";
+
+                // Отправляем ping каждые N сообщений
+                ws_.ping({});
+            }
+            catch (std::exception& e)
+            {
+                std::cerr << "read error: " << e.what()
+                          << " — reconnecting...\n";
+                reconnect();
+            }
+        }
+    }
+
+    void reconnect()
+    {
+        beast::error_code ec;
+        ws_.next_layer().socket().shutdown(tcp::socket::shutdown_both, ec);
+
+        stream_ = beast::tcp_stream{ioc_};
+        ws_     = ws::stream<beast::tcp_stream>{stream_};
+
+        connect();
+    }
+
+    asio::io_context& ioc_;
+    std::string host_, port_, target_;
+
+    tcp::resolver resolver_;
+    beast::tcp_stream stream_;
+    ws::stream<beast::tcp_stream> ws_;
+};
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+
+        websocket_client client(
+            ioc,
+            "echo.websocket.events",
+            "80",
+            "/");
+
+        client.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

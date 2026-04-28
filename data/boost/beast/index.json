@@ -1,34 +1,82 @@
 [
   {
     "type": "boost",
-    "name": "HTTP Client",
-    "fileName": "http_client.txt",
-    "category": "Networking",
-    "usage": "Клиентская реализация HTTP/1.1",
+    "name": "Beast Overview",
+    "fileName": "beast_overview",
+    "category": "Boost.Beast",
+    "usage": "Общий обзор Beast, архитектура, HTTP/WebSocket модель",
     "isLeaf": true
   },
   {
     "type": "boost",
     "name": "HTTP Server",
-    "fileName": "http_server.txt",
-    "category": "Networking",
-    "usage": "Серверная реализация HTTP/1.1",
-    "isLeaf": true
+    "fileName": "http_server",
+    "category": "Boost.Beast",
+    "usage": "HTTP серверы, обработка запросов, routing, body handling",
+    "isLeaf": false
   },
   {
     "type": "boost",
-    "name": "WebSocket Client",
-    "fileName": "websocket_client.txt",
-    "category": "Networking",
-    "usage": "Клиентская реализация WebSocket",
+    "name": "HTTP Client",
+    "fileName": "http_client",
+    "category": "Boost.Beast",
+    "usage": "HTTP клиенты, запросы, ответы, redirects, streaming",
     "isLeaf": true
   },
   {
     "type": "boost",
     "name": "WebSocket Server",
-    "fileName": "websocket_server.txt",
-    "category": "Networking",
-    "usage": "Серверная реализация WebSocket",
+    "fileName": "websocket_server",
+    "category": "Boost.Beast",
+    "usage": "WebSocket серверы, broadcast, sessions",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Client",
+    "fileName": "websocket_client",
+    "category": "Boost.Beast",
+    "usage": "WebSocket клиенты, async чтение/запись, reconnect",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Body Types",
+    "fileName": "http_body",
+    "category": "Boost.Beast",
+    "usage": "string_body, file_body, buffer_body, dynamic_body",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Parser & Serializer",
+    "fileName": "http_parser_serializer",
+    "category": "Boost.Beast",
+    "usage": "Парсинг HTTP, сериализация, streaming, incremental parsing",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Beast Buffers",
+    "fileName": "beast_buffers",
+    "category": "Boost.Beast",
+    "usage": "flat_buffer, multi_buffer, адаптеры буферов",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Beast + SSL",
+    "fileName": "beast_ssl",
+    "category": "Boost.Beast",
+    "usage": "HTTPS, WSS, SSL контексты, handshake",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Advanced Server Architecture",
+    "fileName": "beast_server_arch",
+    "category": "Boost.Beast",
+    "usage": "session, listener, routing, thread pool, strand",
     "isLeaf": true
   }
 ]

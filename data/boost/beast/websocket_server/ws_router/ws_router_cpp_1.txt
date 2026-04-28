@@ -1,0 +1,39 @@
+#include &lt;boost/beast.hpp&gt;
+#include &lt;nlohmann/json.hpp&gt;
+#include &lt;unordered_map&gt;
+#include &lt;functional&gt;
+
+namespace beast = boost::beast;
+using json = nlohmann::json;
+
+using ws_handler_t = std::function&lt;void(const json&amp; payload)&gt;;
+
+class ws_router {
+public:
+    void add_handler(const std::string&amp; type, ws_handler_t handler) {
+        handlers_[type] = std::move(handler);
+    }
+
+    bool route(const std::string&amp; message) const {
+        json j;
+
+        try {
+            j = json::parse(message);
+        } catch (...) {
+            return false;
+        }
+
+        if (!j.contains("type"))
+            return false;
+
+        auto it = handlers_.find(j["type"].get&lt;std::string&gt;());
+        if (it == handlers_.end())
+            return false;
+
+        it->second(j.value("payload", json::object()));
+        return true;
+    }
+
+private:
+    std::unordered_map&lt;std::string, ws_handler_t&gt; handlers_;
+};

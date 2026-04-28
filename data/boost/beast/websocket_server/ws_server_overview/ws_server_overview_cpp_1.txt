@@ -1,0 +1,27 @@
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/beast.hpp&gt;
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+int main() {
+    asio::io_context ioc;
+
+    tcp::acceptor acceptor{ioc, tcp::endpoint(tcp::v4(), 9000)};
+
+    for (;;) {
+        tcp::socket socket{ioc};
+        acceptor.accept(socket);
+
+        ws::stream&lt;tcp::socket&gt; ws{std::move(socket)};
+        ws.accept();
+
+        beast::flat_buffer buffer;
+        ws.read(buffer);
+
+        ws.text(true);
+        ws.write(buffer.data());
+    }
+}

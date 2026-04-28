@@ -1,0 +1,50 @@
+[
+  {
+    "type": "boost",
+    "name": "WebSocket Server Overview",
+    "fileName": "ws_server_overview",
+    "category": "Boost.Beast",
+    "usage": "Общий обзор WebSocket сервера Beast, архитектура и компоненты",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Listener",
+    "fileName": "ws_listener",
+    "category": "Boost.Beast",
+    "usage": "Приём TCP соединений и создание WebSocket сессий",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Session",
+    "fileName": "ws_session",
+    "category": "Boost.Beast",
+    "usage": "Обработка WebSocket соединения, чтение/запись сообщений",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Router",
+    "fileName": "ws_router",
+    "category": "Boost.Beast",
+    "usage": "Маршрутизация WebSocket сообщений по каналам/типам",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Broadcast Server",
+    "fileName": "ws_broadcast",
+    "category": "Boost.Beast",
+    "usage": "Широковещательная рассылка сообщений всем клиентам",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "WebSocket Server Architecture",
+    "fileName": "ws_server_arch",
+    "category": "Boost.Beast",
+    "usage": "Полная архитектура WebSocket сервера: listener, session, router, broadcast",
+    "isLeaf": true
+  }
+]
