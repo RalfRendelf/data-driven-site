@@ -1,0 +1,27 @@
+# Компиляция с TSan (только Clang)
+clang++ -fsanitize=thread -g -std=c++17 tsan_bug.cpp -o tsan_program
+
+# Пример кода с гонкой данных
+#include <thread>
+#include <iostream>
+
+int counter = 0;
+
+void increment() {
+    for (int i = 0; i < 100000; ++i) {
+        counter++; // Гонка данных: два потока пишут одновременно
+    }
+}
+
+int main() {
+    std::thread t1(increment);
+    std::thread t2(increment);
+    t1.join();
+    t2.join();
+    std::cout << counter << std::endl;
+    return 0;
+}
+
+# TSan выведет:
+# WARNING: ThreadSanitizer: data race
+# Укажет строки, стек вызовов и конфликтующие потоки.

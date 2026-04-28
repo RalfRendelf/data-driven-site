@@ -1,0 +1,8 @@
+# Компиляция с расширенной диагностикой
+clang++ -std=c++17 -O2 -Wall -Wextra -Weverything main.cpp -o my_program
+
+# Address Sanitizer
+clang++ -fsanitize=address -g -std=c++17 main.cpp -o sanitized_program
+
+# Статический анализ
+clang++ --analyze -Xanalyzer -analyzer-output=html -o analysis_report main.cpp

@@ -1,0 +1,42 @@
+//cmake_fetchcontent_cpp_4.txt
+
+# FetchContent — современный способ подтянуть внешнюю библиотеку
+# прямо во время конфигурации CMake.
+# Преимущества:
+#   - не нужно устанавливать библиотеку в систему
+#   - всегда одинаковая версия
+#   - удобно для CI/CD
+#   - работает кроссплатформенно
+
+include(FetchContent)
+
+# Описываем источник библиотеки
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2   # фиксируем конкретную версию
+)
+
+# Загружаем и добавляем библиотеку в проект
+FetchContent_MakeAvailable(json)
+
+# Создаём исполняемый файл
+add_executable(app src/main.cpp)
+
+# Подключаем библиотеку
+# nlohmann_json — header-only библиотека,
+# поэтому она предоставляет только INTERFACE target.
+#
+# Это означает:
+#   - нет бинарников
+#   - только include‑директории и compile‑options
+#
+# CMake сам добавит include‑пути.
+target_link_libraries(app
+    PRIVATE
+        nlohmann_json::nlohmann_json
+)
+
+# Примечание:
+# Если библиотека не header-only, FetchContent создаст полноценный target.
+

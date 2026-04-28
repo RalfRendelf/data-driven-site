@@ -1,0 +1,8 @@
+# Использовать clang++
+cmake -S . -B build -DCMAKE_CXX_COMPILER=clang++
+
+# Использовать Ninja
+cmake -S . -B build -G "Ninja"
+
+# Список доступных генераторов
+cmake --help

@@ -1,0 +1,22 @@
+// Пример программы с ошибкой:
+#include <iostream>
+
+int divide(int a, int b) {
+    return a / b;  // Опасное деление на 0!
+}
+
+int main() {
+    int x = 10;
+    int y = 0;
+    std::cout << "Result: " << divide(x, y) << std::endl;
+    return 0;
+}
+
+// Использование GDB для отладки:
+// g++ -g -o buggy_program buggy_program.cpp
+// gdb ./buggy_program
+// (gdb) break divide
+// (gdb) run
+// (gdb) print b
+// (gdb) step  // пошаговое выполнение
+// (gdb) backtrace  // трассировка стека

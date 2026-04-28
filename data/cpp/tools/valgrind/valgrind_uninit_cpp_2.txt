@@ -1,0 +1,18 @@
+#include <cstdlib>
+
+int main() {
+    int* arr = (int*)malloc(sizeof(int) * 5);
+    int sum = 0;
+    for (int i = 0; i < 5; i++) {
+        sum += arr[i]; // Используем мусор!
+    }
+    free(arr);
+    return sum;
+}
+
+# Запуск:
+valgrind --track-origins=yes ./program
+
+# Вывод:
+# Use of uninitialised value
+# Origin: allocated at main.cpp:5

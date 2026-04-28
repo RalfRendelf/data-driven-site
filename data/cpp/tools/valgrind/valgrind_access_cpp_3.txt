@@ -1,0 +1,16 @@
+#include <cstdlib>
+
+int main() {
+    int* arr = (int*)malloc(sizeof(int) * 10);
+    arr[10] = 5; // Выход за границы
+    free(arr);
+    arr[0] = 10; // Use-after-free
+    return 0;
+}
+
+# Запуск:
+valgrind --tool=memcheck --track-origins=yes ./program
+
+# Вывод:
+# Invalid write of size 4
+# Address 0x... is 0 bytes after a block of size 40

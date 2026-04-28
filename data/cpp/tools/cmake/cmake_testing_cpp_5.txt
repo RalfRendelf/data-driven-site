@@ -1,0 +1,5 @@
+enable_testing()
+
+add_executable(test_app tests/test_main.cpp)
+
+add_test(NAME MyTest COMMAND test_app)

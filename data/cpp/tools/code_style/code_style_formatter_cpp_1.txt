@@ -1,0 +1,23 @@
+// Пример .clang-format файла для Google стиля:
+// BasedOnStyle: Google
+// IndentWidth: 2
+// TabWidth: 2
+// UseTab: false
+// ColumnLimit: 100
+// AccessModifierOffset: -1
+// AlignAfterOpenBracket: Align
+// AlignConsecutiveAssignments: false
+// AlignConsecutiveDeclarations: false
+// AlignOperands: true
+// AlignTrailingComments: true
+// AllowAllParametersOfDeclarationOnNextLine: true
+// AllowShortBlocksOnSameLine: false
+// AllowShortCaseLabelsOnSameLine: false
+// AllowShortFunctionsOnSameLine: Empty
+// AllowShortIfStatementsOnSameLine: false
+// AllowShortLoopsOnSameLine: false
+
+// Пример использования clang-format:
+// clang-format -style=google -i main.cpp
+// или
+// clang-format -style=file -i main.cpp

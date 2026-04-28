@@ -1,0 +1,8 @@
+# Запуск профилирования:
+valgrind --tool=callgrind ./program
+
+# Анализ отчёта:
+callgrind_annotate callgrind.out.<pid>
+
+# Графический просмотр (рекомендуется):
+kcachegrind

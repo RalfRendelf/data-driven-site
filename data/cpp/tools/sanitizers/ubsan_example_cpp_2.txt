@@ -1,0 +1,18 @@
+# Компиляция с UBSan
+clang++ -fsanitize=undefined -g -std=c++17 ubsan_bug.cpp -o ubsan_program
+# или
+g++ -fsanitize=undefined -g -std=c++17 ubsan_bug.cpp -o ubsan_program
+
+# Пример кода с UB: деление на ноль
+#include <iostream>
+
+int main() {
+    int x = 10;
+    int y = 0;
+    int z = x / y; // UB: деление на ноль
+    std::cout << z << std::endl;
+    return 0;
+}
+
+# UBSan выведет:
+# runtime error: division by zero

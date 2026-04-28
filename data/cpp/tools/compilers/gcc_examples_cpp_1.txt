@@ -1,0 +1,11 @@
+# Компиляция с C++17 стандартом
+g++ -std=c++17 -O2 -Wall -Wextra -pthread main.cpp -o my_program
+
+# Компиляция с отладочной информацией
+g++ -g -std=c++17 -Wall -Wextra main.cpp -o debug_program
+
+# Определение макросов
+g++ -DDEBUG -DVERSION=\"1.0\" -std=c++17 main.cpp -o program_with_defines
+
+# Статическая линковка (Linux)
+g++ -static -std=c++17 main.cpp -o static_program

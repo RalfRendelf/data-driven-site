@@ -1,0 +1,26 @@
+#cmake_variables_cpp_7.txt
+
+# message() — выводит информацию во время конфигурации CMake.
+# Это удобно для отладки, логирования и понимания структуры проекта.
+
+# Корневая директория проекта (где лежит главный CMakeLists.txt)
+message("Source dir: ${CMAKE_SOURCE_DIR}")
+
+# Директория, куда CMake генерирует файлы сборки (папка build/)
+message("Binary dir: ${CMAKE_BINARY_DIR}")
+
+# Имя проекта, указанное в команде project()
+message("Project name: ${PROJECT_NAME}")
+
+# Тип сборки:
+#   Debug / Release / RelWithDebInfo / MinSizeRel
+# Работает только для одноконфигурационных генераторов (Make, Ninja)
+message("Build type: ${CMAKE_BUILD_TYPE}")
+
+# Компилятор, который использует CMake
+# Например: /usr/bin/clang++ или C:/msvc/bin/cl.exe
+message("Compiler: ${CMAKE_CXX_COMPILER}")
+
+# Дополнительно можно вывести версию компилятора:
+# message("Compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
+

@@ -1,0 +1,35 @@
+// Пример соответствия Google стилю:
+#include "main.h"
+#include <vector>
+
+namespace my_namespace {
+
+// Именование функций в lower_underscore
+bool isValidNumber(int input_number) {
+    // 2 пробела для отступов вместо табуляции
+    if (input_number < 0) {
+        return false;
+    }
+    
+    // Переменные именуются в lower_underscore
+    int calculated_value = input_number * 2;
+    
+    return calculated_value > 10;
+}
+
+// Классы именуются в UpperCamelCase
+class DataProcessor {
+ public:
+    explicit DataProcessor(const std::vector<int>& data) : data_(data) {}
+    
+    void processData() {
+        for (size_t i = 0; i < data_.size(); ++i) {
+            // Обработка данных
+        }
+    }
+    
+ private:
+    std::vector<int> data_;
+};
+
+}  // namespace my_namespace

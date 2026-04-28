@@ -1,0 +1,25 @@
+// Пример использования clang-tidy:
+// clang-tidy -checks='*' -fix main.cpp -- -std=c++17
+
+// Пример кода с проблемами:
+#include <iostream>
+
+int* dangerous_function() {
+    int local_var = 42;
+    return &local_var;  // Ошибка: возврат адреса локальной переменной
+}
+
+int main() {
+    int* ptr = dangerous_function();
+    std::cout << *ptr << std::endl;  // Неопределенное поведение
+    return 0;
+}
+
+// Конфигурационный файл .clang-tidy:
+// Checks: >
+//   -*,
+//   bugprone-*,
+//   performance-*,
+//   readability-*,
+//   modernize-*,
+//   cppcoreguidelines-*

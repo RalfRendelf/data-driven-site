@@ -1,0 +1,17 @@
+// Пример использования Cppcheck:
+// cppcheck --enable=all --std=c++17 --verbose main.cpp
+
+// Пример кода с проблемами:
+#include <vector>
+
+int main() {
+    std::vector<int> vec(10);
+    for(int i = 0; i <= 10; i++) {  // Ошибка: выход за границы
+        vec[i] = i * i;
+    }
+    
+    int* ptr = nullptr;
+    *ptr = 42;  // Ошибка: разыменование nullptr
+    
+    return 0;
+}

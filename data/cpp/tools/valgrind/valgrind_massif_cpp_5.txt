@@ -1,0 +1,5 @@
+# Запуск:
+valgrind --tool=massif ./program
+
+# Анализ:
+ms_print massif.out.<pid>

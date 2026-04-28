@@ -1,0 +1,5 @@
+# Компиляция MinGW-w64
+x86_64-w64-mingw32-g++ -std=c++17 main.cpp -o app.exe
+
+# Статическая линковка libstdc++
+x86_64-w64-mingw32-g++ -static -static-libgcc -static-libstdc++ main.cpp -o app_static.exe

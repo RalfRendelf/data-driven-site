@@ -1,0 +1,55 @@
+//cmake_find_package_cpp_3.txt
+
+# Ищем OpenSSL и Boost. REQUIRED — сборка прервётся, если не найдены.
+find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+# Создаём исполняемый файл
+add_executable(client src/client.cpp)
+
+# ---------------------------------------------
+# ДИНАМИЧЕСКАЯ ЛИНКОВКА (обычный вариант)
+# ---------------------------------------------
+# При динамической линковке используются .so/.dll/.dylib
+# Преимущества:
+#   - меньший размер бинарника
+#   - обновление библиотек без пересборки
+# Недостатки:
+#   - зависимость от системных библиотек
+target_link_libraries(client
+    PRIVATE
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        Boost::system
+        Boost::filesystem
+)
+
+# ---------------------------------------------
+# СТАТИЧЕСКАЯ ЛИНКОВКА (если доступны .a файлы)
+# ---------------------------------------------
+# Чтобы включить статическую линковку, нужно:
+#   1) Установить статические версии библиотек
+#   2) Указать CMAKE_FIND_LIBRARY_SUFFIXES
+#   3) Включить флаг -static (Linux)
+#
+# Пример:
+#
+# set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+# set(OPENSSL_USE_STATIC_LIBS TRUE)
+# set(Boost_USE_STATIC_LIBS TRUE)
+#
+# target_link_libraries(client
+#     PRIVATE
+#         OpenSSL::SSL
+#         OpenSSL::Crypto
+#         Boost::system
+#         Boost::filesystem
+# )
+#
+# Важно: статическая линковка OpenSSL на Linux требует флага:
+#   -ldl -pthread -static-libgcc -static-libstdc++
+#
+# Пример:
+#
+# target_link_options(client PRIVATE -static)
+

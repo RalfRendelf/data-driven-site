@@ -1,0 +1,106 @@
+[
+  {
+    "type": "linux",
+    "name": "Linux Basics",
+    "fileName": "basics",
+    "category": "linux",
+    "usage": "Основы Linux: структура ОС, FHS, пользователи, права",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Filesystem",
+    "fileName": "filesystem",
+    "category": "linux",
+    "usage": "Файловые системы Linux, inodes, mount, /proc, /sys",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Processes",
+    "fileName": "processes",
+    "category": "linux",
+    "usage": "Процессы, fork/exec, сигналы, планировщик",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Memory Management",
+    "fileName": "memory",
+    "category": "linux",
+    "usage": "Управление памятью: виртуальная память, mmap, shared memory",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Networking",
+    "fileName": "networking",
+    "category": "linux",
+    "usage": "Сетевой стек Linux: сокеты, TCP/IP, epoll, firewall",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "IPC",
+    "fileName": "ipc",
+    "category": "linux",
+    "usage": "Межпроцессное взаимодействие: pipes, queues, semaphores",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Security",
+    "fileName": "security",
+    "category": "linux",
+    "usage": "Безопасность Linux: SELinux, AppArmor, capabilities",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Development Tools",
+    "fileName": "tools",
+    "category": "linux",
+    "usage": "Инструменты разработки: gcc, clang, gdb, strace, perf",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Shell & Scripting",
+    "fileName": "shell",
+    "category": "linux",
+    "usage": "Shell, bash, scripting, pipelines, awk, sed",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "systemd",
+    "fileName": "systemd",
+    "category": "linux",
+    "usage": "systemd: unit-файлы, сервисы, таймеры, journald",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Packaging",
+    "fileName": "packaging",
+    "category": "linux",
+    "usage": "Пакеты и сборка: deb, rpm, apt, dnf, репозитории",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Kernel Architecture",
+    "fileName": "kernel",
+    "category": "linux",
+    "usage": "Архитектура ядра Linux: подсистемы, планировщик, VFS",
+    "isLeaf": false
+  },
+  {
+    "type": "linux",
+    "name": "Drivers",
+    "fileName": "drivers",
+    "category": "linux",
+    "usage": "Драйверы Linux: character, block, kernel modules",
+    "isLeaf": false
+  }
+]

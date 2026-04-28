@@ -1,0 +1,15 @@
+// Пример использования статического анализатора MSVC:
+// cl /analyze /std:c++17 /EHsc main.cpp
+
+// Пример кода с предупреждениями:
+#include <cstring>
+
+void copy_string(char* dest, const char* src) {
+    strcpy(dest, src);  // Предупреждение: потенциально небезопасная функция
+}
+
+int main() {
+    char buffer[10];
+    copy_string(buffer, "This string is longer than buffer");  // Уязвимость!
+    return 0;
+}

@@ -1,0 +1,35 @@
+// Пример соответствия LLVM стилю:
+#include "SomeHeader.h"
+#include <vector>
+
+namespace llvm {
+
+// Именование функций в camelBack
+bool isNumberValid(int InputNumber) {
+    // 2 пробела для отступов
+    if (InputNumber < 0) {
+        return false;
+    }
+    
+    // Переменные именуются в CamelCase
+    int CalculatedValue = InputNumber * 2;
+    
+    return CalculatedValue > 10;
+}
+
+// Классы именуются в UpperCamelCase
+class DataProcessor {
+public:
+    explicit DataProcessor(const std::vector<int>& Data) : Data_(Data) {}
+    
+    void ProcessData() {
+        for (size_t I = 0; I < Data_.size(); ++I) {
+            // Обработка данных
+        }
+    }
+    
+private:
+    std::vector<int> Data_;
+};
+
+}  // namespace llvm

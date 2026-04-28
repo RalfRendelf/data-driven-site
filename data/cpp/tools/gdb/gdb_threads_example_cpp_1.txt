@@ -1,0 +1,30 @@
+// Пример многопоточной программы:
+#include <iostream>
+#include <thread>
+#include <vector>
+
+void worker(int id) {
+    std::cout << "Worker " << id << " is running" << std::endl;
+}
+
+int main() {
+    std::vector<std::thread> threads;
+    for(int i = 0; i < 3; i++) {
+        threads.emplace_back(worker, i);
+    }
+    
+    for(auto& t : threads) {
+        t.join();
+    }
+    
+    return 0;
+}
+
+// Отладка многопоточной программы:
+// g++ -g -pthread -o thread_program thread_program.cpp
+// gdb ./thread_program
+// (gdb) break worker
+// (gdb) run
+// (gdb) info threads  // информация о всех потоках
+// (gdb) thread 2      // переключение на поток 2
+// (gdb) continue

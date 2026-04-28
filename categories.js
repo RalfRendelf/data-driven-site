@@ -50,7 +50,13 @@ export const CATEGORIES = [
       title: "🚀 Boost C++",
       type: "boost",
       columns: ["Название", "Категория", "Описание"]
+    },
+    {
+      "title": "🐧 Linux",
+      "type": "linux",
+      "columns": ["Название", "Назначение", "Особенности"]
     }
+
     
   ];
   console.log("categories.js загружен", CATEGORIES);

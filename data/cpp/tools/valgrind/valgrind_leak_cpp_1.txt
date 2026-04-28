@@ -1,0 +1,16 @@
+# Пример программы с утечкой памяти
+#include <cstdlib>
+
+int main() {
+    char* ptr = (char*)malloc(100);
+    ptr[50] = 'a';
+    // free(ptr);  // Утечка памяти!
+    return 0;
+}
+
+# Запуск Valgrind:
+valgrind --leak-check=full --show-leak-kinds=all ./program
+
+# Вывод:
+# LEAK SUMMARY:
+#    definitely lost: 100 bytes in 1 blocks
