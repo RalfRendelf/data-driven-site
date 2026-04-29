@@ -1,0 +1,7 @@
+#include <unistd.h>
+
+int main() {
+    char* args[] = { (char*)"ls", (char*)"-l", nullptr };
+    execvp("ls", args);
+    return 0; // выполняется только при ошибке exec
+}

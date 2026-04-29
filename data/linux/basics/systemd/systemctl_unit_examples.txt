@@ -1,0 +1,5 @@
+systemctl list-units
+systemctl list-unit-files
+systemctl cat ssh.service
+systemctl edit myservice
+systemctl daemon-reload

@@ -1,0 +1,5 @@
+journalctl -u myservice          # логи сервиса
+journalctl -u myservice -f       # "хвост" логов
+journalctl -b                    # логи текущей загрузки
+journalctl --since "1 hour ago"  # логи за последний час
+journalctl -p err                # только ошибки

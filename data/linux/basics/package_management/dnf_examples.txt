@@ -1,0 +1,7 @@
+sudo dnf check-update           # проверить обновления
+sudo dnf upgrade                # обновить систему
+sudo dnf install nginx          # установить пакет
+sudo dnf remove nginx           # удалить пакет
+sudo dnf info nginx             # информация о пакете
+sudo dnf search keyword         # поиск пакетов
+sudo dnf autoremove             # удалить неиспользуемые зависимости

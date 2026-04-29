@@ -4,7 +4,7 @@
     "name": "Linux Basics",
     "fileName": "basics",
     "category": "linux",
-    "usage": "Основы Linux: структура ОС, FHS, пользователи, права",
+    "usage": "Основы Linux: структура ОС, FHS, пользователи, права кратко о основных темах",
     "isLeaf": false
   },
   {

@@ -1,0 +1,1 @@
+username:password_placeholder:UID:GID:comment:home_directory:shell

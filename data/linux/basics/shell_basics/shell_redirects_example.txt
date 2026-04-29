@@ -1,0 +1,4 @@
+echo "Hello" > file.txt
+echo "More" >> file.txt
+cat < file.txt
+command 2> errors.log

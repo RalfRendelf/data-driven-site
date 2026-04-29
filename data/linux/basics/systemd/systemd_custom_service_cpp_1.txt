@@ -1,0 +1,18 @@
+# Создать юнит
+sudo nano /etc/systemd/system/myapp.service
+
+# Вставить:
+[Unit]
+Description=My C++ App
+
+[Service]
+ExecStart=/usr/local/bin/my_app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# Активировать
+sudo systemctl daemon-reload
+sudo systemctl enable myapp
+sudo systemctl start myapp

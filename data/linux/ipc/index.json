@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "type": "linux",
+    "name": "Pipes",
+    "fileName": "pipes",
+    "category": "linux/ipc",
+    "usage": "Неименованные и именованные каналы: pipe, mkfifo",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Message Queues",
+    "fileName": "message_queues",
+    "category": "linux/ipc",
+    "usage": "Очереди сообщений: POSIX mq_* и System V msg*",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Semaphores",
+    "fileName": "semaphores",
+    "category": "linux/ipc",
+    "usage": "Семафоры POSIX и System V для синхронизации процессов",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Shared Memory",
+    "fileName": "shared_memory",
+    "category": "linux/ipc",
+    "usage": "Разделяемая память: shmget/shmat, POSIX shm_open",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Unix Domain Sockets",
+    "fileName": "unix_sockets",
+    "category": "linux/ipc",
+    "usage": "Локальные сокеты: AF_UNIX, обмен данными между процессами",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Signals",
+    "fileName": "signals",
+    "category": "linux/ipc",
+    "usage": "Сигналы: kill, sigaction, обработка событий между процессами",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Futex",
+    "fileName": "futex",
+    "category": "linux/ipc",
+    "usage": "Fast Userspace Mutex — низкоуровневый механизм синхронизации",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,4 @@
+/etc/passwd      # список пользователей
+/etc/fstab       # таблица монтирования
+/etc/ssh/        # конфигурация SSH
+/etc/systemd/    # конфигурация systemd

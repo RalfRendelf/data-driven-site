@@ -1,0 +1,14 @@
+#include <grp.h>
+#include <unistd.h>
+#include <iostream>
+
+int main() {
+    gid_t groups[32];
+    int count = getgroups(32, groups);
+
+    std::cout << "Groups:" << std::endl;
+    for (int i = 0; i < count; i++) {
+        group* g = getgrgid(groups[i]);
+        std::cout << " - " << g->gr_name << std::endl;
+    }
+}

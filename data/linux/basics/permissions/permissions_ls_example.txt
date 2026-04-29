@@ -1,0 +1,4 @@
+ls -l file.txt
+
+# Вывод:
+# -rw-r--r-- 1 user user 1200 Apr 29 file.txt

@@ -1,0 +1,12 @@
+#include <fstream>
+#include <iostream>
+#include <string>
+
+int main() {
+    std::ifstream mem("/proc/meminfo");
+    std::string line;
+    while (std::getline(mem, line)) {
+        if (line.find("MemAvailable") != std::string::npos)
+            std::cout << line << std::endl;
+    }
+}

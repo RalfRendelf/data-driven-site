@@ -1,0 +1,3 @@
+/proc/cpuinfo   # информация о CPU
+/proc/meminfo   # информация о памяти
+/proc/1234/     # процесс с PID 1234

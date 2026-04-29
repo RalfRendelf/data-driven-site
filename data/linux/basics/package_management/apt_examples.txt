@@ -1,0 +1,8 @@
+sudo apt update                 # обновить список пакетов
+sudo apt upgrade                # обновить установленные пакеты
+sudo apt install nginx          # установить пакет
+sudo apt remove nginx           # удалить пакет
+sudo apt purge nginx            # удалить с конфигами
+sudo apt autoremove             # удалить неиспользуемые зависимости
+apt search keyword              # поиск пакетов
+apt show nginx                  # информация о пакете

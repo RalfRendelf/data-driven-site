@@ -1,0 +1,3 @@
+mkdir test && cd test
+make || echo "Build failed"
+echo "Done"; ls

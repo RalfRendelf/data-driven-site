@@ -1,0 +1,8 @@
+# Debian/Ubuntu
+sudo apt install nginx
+
+# Fedora/RHEL
+sudo dnf install nginx
+
+# Arch Linux
+sudo pacman -S nginx

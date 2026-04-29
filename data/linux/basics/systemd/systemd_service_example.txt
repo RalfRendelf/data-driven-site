@@ -1,0 +1,12 @@
+[Unit]
+Description=My custom service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/my_app
+Restart=on-failure
+User=www-data
+WorkingDirectory=/var/www/app
+
+[Install]
+WantedBy=multi-user.target

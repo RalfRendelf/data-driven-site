@@ -131,14 +131,20 @@ async function loadJsonTree(category, basePath = null, container = jsonRoot) {
 }
 
 
-
-
-
 function setupCodeLoaders(container, basePath) {
   const loaders = container.querySelectorAll('.code-loader');
 
   loaders.forEach(loader => {
-    const fileName = loader.dataset.file;
+    let fileName = loader.dataset.file?.trim();
+
+    if (!fileName || !fileName.endsWith('.txt')) {
+      const btn = loader.querySelector('.code-toggle');
+      if (btn) btn.remove(); 
+
+      loader.classList.remove('code-loader'); 
+      return;
+    }
+
     const button = loader.querySelector('.code-toggle');
     const codeBlock = loader.querySelector('.code-block');
     const codeElement = codeBlock.querySelector('code');
@@ -151,7 +157,6 @@ function setupCodeLoaders(container, basePath) {
           const filePath = `data/${basePath}/${fileName}`;
           const text = await fetch(filePath).then(r => r.text());
 
-          // Экранируем < и >
           const escaped = text
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;");
@@ -170,6 +175,9 @@ function setupCodeLoaders(container, basePath) {
     });
   });
 }
+
+
+
 function transformCodePlaceholders(content) {
 
   const re = /<pre><code>\s*([^<>\r\n]+?)\s*<\/code><\/pre>/g;

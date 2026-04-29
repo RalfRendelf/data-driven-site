@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "type": "linux",
+    "name": "Filesystem Hierarchy (FHS)",
+    "fileName": "fhs",
+    "category": "linux/basics",
+    "usage": "Стандартная структура каталогов Linux: /etc, /usr, /var, /home",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Users & Groups",
+    "fileName": "users_groups",
+    "category": "linux/basics",
+    "usage": "Пользователи, группы, sudo, /etc/passwd, /etc/group",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Permissions",
+    "fileName": "permissions",
+    "category": "linux/basics",
+    "usage": "Права доступа: rwx, chmod, chown, umask",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Processes",
+    "fileName": "processes",
+    "category": "linux/basics",
+    "usage": "Процессы, сигналы, ps, top, kill, приоритеты",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Systemd",
+    "fileName": "systemd",
+    "category": "linux/basics",
+    "usage": "Сервисы, юниты, systemctl, журналы",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Package Management",
+    "fileName": "package_management",
+    "category": "linux/basics",
+    "usage": "Пакеты и репозитории: apt, dnf, pacman",
+    "isLeaf": true
+  },
+  {
+    "type": "linux",
+    "name": "Shell Basics",
+    "fileName": "shell_basics",
+    "category": "linux/basics",
+    "usage": "Основы командной строки: bash, zsh, команды, пайпы",
+    "isLeaf": true
+  }
+]

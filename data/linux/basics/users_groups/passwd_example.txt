@@ -1,0 +1,3 @@
+root:x:0:0:root:/root:/bin/bash
+user:x:1000:1000:Regular User:/home/user:/bin/bash
+nginx:x:997:995:Nginx web server:/var/cache/nginx:/sbin/nologin

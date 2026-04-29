@@ -1,0 +1,15 @@
+mkdir -p ~/.config/systemd/user/
+
+nano ~/.config/systemd/user/myapp.service
+
+[Unit]
+Description=User-level service
+
+[Service]
+ExecStart=/home/user/my_app
+
+[Install]
+WantedBy=default.target
+
+systemctl --user daemon-reload
+systemctl --user start myapp

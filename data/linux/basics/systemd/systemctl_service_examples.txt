@@ -1,0 +1,7 @@
+systemctl start myservice
+systemctl stop myservice
+systemctl restart myservice
+systemctl reload myservice
+systemctl enable myservice
+systemctl disable myservice
+systemctl status myservice

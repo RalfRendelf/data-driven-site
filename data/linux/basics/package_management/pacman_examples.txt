@@ -1,0 +1,6 @@
+sudo pacman -Syu               # обновить систему
+sudo pacman -S nginx           # установить пакет
+sudo pacman -R nginx           # удалить пакет
+sudo pacman -Rs nginx          # удалить с зависимостями
+pacman -Ss keyword             # поиск пакетов
+pacman -Qi nginx               # информация о пакете
