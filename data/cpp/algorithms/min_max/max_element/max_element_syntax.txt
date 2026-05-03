@@ -1,0 +1,6 @@
+template <class ForwardIterator>
+ForwardIterator max_element(ForwardIterator first, ForwardIterator last);
+
+template <class ForwardIterator, class Compare>
+ForwardIterator max_element(ForwardIterator first, ForwardIterator last,
+                           Compare comp);

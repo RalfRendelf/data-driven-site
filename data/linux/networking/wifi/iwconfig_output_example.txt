@@ -1,0 +1,9 @@
+wlan0     IEEE 802.11  ESSID:"MyNetwork"
+          Mode:Managed  Frequency:2.412 GHz  Access Point: 00:11:22:33:44:55
+          Bit Rate=54 Mb/s   Tx-Power=20 dBm
+          Retry short limit:7   RTS thr:off   Fragment thr:off
+          Encryption key:off
+          Power Management:off
+          Link Quality=70/70  Signal level=-40 dBm  Noise level=-90 dBm
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0

@@ -1,0 +1,6 @@
+template <std::random_access_iterator I, std::sentinel_for<I> S, class Comp = std::less<>, class Proj = std::identity>
+constexpr I sort(I first, S last, Comp comp = {}, Proj proj = {});
+
+template <std::ranges::random_access_range R, class Comp = std::less<>, class Proj = std::identity>
+constexpr std::ranges::borrowed_iterator_t<R>
+sort(R&& range, Comp comp = {}, Proj proj = {});

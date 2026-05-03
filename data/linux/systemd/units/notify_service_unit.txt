@@ -1,0 +1,15 @@
+[Unit]
+Description=My Application with Readiness Notification
+After=network.target
+
+[Service]
+Type=notify
+User=myuser
+Group=mygroup
+ExecStart=/usr/bin/myapp
+ExecStop=/usr/bin/myapp --stop
+Restart=on-failure
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

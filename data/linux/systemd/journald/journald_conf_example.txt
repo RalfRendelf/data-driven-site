@@ -1,0 +1,24 @@
+[Journal]
+# Хранить логи в постоянном хранилище
+Storage=persistent
+
+# Размер постоянного хранилища
+SystemMaxUse=100M
+
+# Время хранения логов
+SystemMaxAge=1week
+
+# Максимальное количество файлов логов
+SystemMaxFiles=10
+
+# Сжимать старые логи
+Compress=yes
+
+# Включить форвардинг логов в syslog
+ForwardToSyslog=no
+
+# Включить форвардинг логов в стенд
+ForwardToWall=yes
+
+# Максимальный размер файла лога
+SystemMaxFileSize=10M

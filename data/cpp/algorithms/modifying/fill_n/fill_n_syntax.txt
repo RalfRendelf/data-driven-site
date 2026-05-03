@@ -1,0 +1,2 @@
+template <class OutputIterator, class Size, class T>
+OutputIterator fill_n(OutputIterator first, Size count, const T& value);

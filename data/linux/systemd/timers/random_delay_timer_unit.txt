@@ -1,0 +1,10 @@
+[Unit]
+Description=Random Delay Task Timer
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+RandomizedDelaySec=10min
+Unit=random_delay_task.service
+
+[Install]
+WantedBy=timers.target

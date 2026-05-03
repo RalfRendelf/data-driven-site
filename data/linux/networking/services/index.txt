@@ -1,0 +1,617 @@
+<h2>Сетевые сервисы в Linux: DHCP, SSH, NTP, HTTP(S), systemd-networkd</h2>
+
+<p>
+Сетевые сервисы — это фоновые процессы, обеспечивающие работу сетевой инфраструктуры в Linux.
+Они позволяют управлять IP-адресами, обеспечивать безопасный удалённый доступ, синхронизировать время, обслуживать веб-запросы и настраивать сетевые подключения.
+В этой статье рассмотрены основные сетевые сервисы: <strong>DHCP</strong>, <strong>SSH</strong>, <strong>NTP</strong>, <strong>HTTP(S)</strong> и <strong>systemd-networkd</strong>, а также их настройка и использование.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое сетевые сервисы?</h4>
+<p>
+Сетевые сервисы в Linux — это демон-процессы, которые работают в фоновом режиме и обеспечивают функциональность сети. Они могут быть:
+</p>
+<ul>
+  <li><strong>Локальными</strong> (работают на одном хосте).</li>
+  <li><strong>Сетевыми</strong> (обслуживают запросы от удалённых клиентов).</li>
+  <li><strong>Системными</strong> (входят в состав ОС).</li>
+  <li><strong>Прикладными</strong> (устанавливаются дополнительно).</li>
+</ul>
+
+<h4>Классификация сетевых сервисов</h4>
+<table>
+  <tr>
+    <th>Сервис</th>
+    <th>Порт</th>
+    <th>Протокол</th>
+    <th>Назначение</th>
+  </tr>
+  <tr>
+    <td>DHCP</td>
+    <td>67, 68</td>
+    <td>UDP</td>
+    <td>Автоматическое назначение IP-адресов</td>
+  </tr>
+  <tr>
+    <td>SSH</td>
+    <td>22</td>
+    <td>TCP</td>
+    <td>Безопасный удалённый доступ</td>
+  </tr>
+  <tr>
+    <td>NTP</td>
+    <td>123</td>
+    <td>UDP</td>
+    <td>Синхронизация времени</td>
+  </tr>
+  <tr>
+    <td>HTTP</td>
+    <td>80</td>
+    <td>TCP</td>
+    <td>Передача гипертекста</td>
+  </tr>
+  <tr>
+    <td>HTTPS</td>
+    <td>443</td>
+    <td>TCP</td>
+    <td>Защищённая передача гипертекста</td>
+  </tr>
+  <tr>
+    <td>systemd-networkd</td>
+    <td>—</td>
+    <td>—</td>
+    <td>Управление сетевыми подключениями</td>
+  </tr>
+</table>
+
+---
+<h3>DHCP: Автоматическое назначение IP-адресов</h3>
+
+<h4>Что такое DHCP?</h4>
+<p>
+<strong>DHCP (Dynamic Host Configuration Protocol)</strong> — это протокол, который позволяет устройствам автоматически получать IP-адреса и другие параметры сети (маска подсети, шлюз, DNS-серверы) от DHCP-сервера.
+</p>
+
+<h4>Как работает DHCP?</h4>
+<p>
+Процесс получения IP-адреса через DHCP включает четыре этапа:
+</p>
+<ol>
+  <li><strong>DHCP Discover</strong>: Клиент отправляет широковещательный запрос для поиска DHCP-сервера.</li>
+  <li><strong>DHCP Offer</strong>: DHCP-сервер отвечает, предлагая IP-адрес и другие параметры.</li>
+  <li><strong>DHCP Request</strong>: Клиент отправляет запрос на получение предложенного IP-адреса.</li>
+  <li><strong>DHCP ACK</strong>: DHCP-сервер подтверждает назначение IP-адреса.</li>
+</ol>
+
+<h4>Настройка DHCP-клиента</h4>
+<p>
+В большинстве дистрибутивов Linux DHCP-клиент настраивается автоматически через <code>dhclient</code> или <code>systemd-networkd</code>.
+</p>
+
+<h5>Использование dhclient</h5>
+<p>
+Для получения IP-адреса через DHCP используйте команду:
+</p>
+<pre><code>
+dhclient_example.sh
+</code></pre>
+
+<h5>Конфигурация dhclient</h5>
+<p>
+Конфигурация <code>dhclient</code> хранится в файле <code>/etc/dhcp/dhclient.conf</code>.
+</p>
+<pre><code>
+dhclient_conf_example.txt
+</code></pre>
+
+<h4>Настройка DHCP-сервера</h4>
+<p>
+Для настройки DHCP-сервера используется пакет <code>isc-dhcp-server</code> (или <code>dnsmasq</code> для простых сетей).
+</p>
+
+<h5>Установка isc-dhcp-server</h5>
+<p>
+Для установки DHCP-сервера в Ubuntu/Debian:
+</p>
+<pre><code>
+install_dhcp_server.sh
+</code></pre>
+
+<h5>Конфигурация isc-dhcp-server</h5>
+<p>
+Конфигурация DHCP-сервера хранится в файле <code>/etc/dhcp/dhcpd.conf</code>.
+</p>
+<pre><code>
+dhcpd_conf_example.txt
+</code></pre>
+
+<h5>Запуск DHCP-сервера</h5>
+<p>
+Для запуска DHCP-сервера:
+</p>
+<pre><code>
+start_dhcp_server.sh
+</code></pre>
+
+---
+<h3>SSH: Безопасный удалённый доступ</h3>
+
+<h4>Что такое SSH?</h4>
+<p>
+<strong>SSH (Secure Shell)</strong> — это протокол для безопасного удалённого доступа к серверам через зашифрованное соединение.
+Он позволяет:
+</p>
+<ul>
+  <li>Выполнять команды на удалённом сервере.</li>
+  <li>Передавать файлы (с помощью <code>scp</code> или <code>sftp</code>).</li>
+  <li>Пробрасывать порты.</li>
+</ul>
+
+<h4>Установка SSH-сервера</h4>
+<p>
+Для установки SSH-сервера в Ubuntu/Debian:
+</p>
+<pre><code>
+install_ssh_server.sh
+</code></pre>
+
+<p>
+Для установки SSH-сервера в CentOS/RHEL:
+</p>
+<pre><code>
+install_ssh_server_rhel.sh
+</code></pre>
+
+<h4>Конфигурация SSH-сервера</h4>
+<p>
+Конфигурация SSH-сервера хранится в файле <code>/etc/ssh/sshd_config</code>.
+</p>
+<pre><code>
+sshd_config_example.txt
+</code></pre>
+
+<h4>Запуск SSH-сервера</h4>
+<p>
+Для запуска SSH-сервера:
+</p>
+<pre><code>
+start_ssh_server.sh
+</code></pre>
+
+<h4>Подключение к SSH-серверу</h4>
+<p>
+Для подключения к SSH-серверу используйте команду:
+</p>
+<pre><code>
+ssh_connect.sh
+</code></pre>
+
+<h4>Генерация SSH-ключей</h4>
+<p>
+Для генерации SSH-ключей используйте команду:
+</p>
+<pre><code>
+ssh_keygen.sh
+</code></pre>
+<p>
+<strong>Опции:</strong>
+</p>
+<ul>
+  <li><code>-t rsa</code> — тип ключа (RSA).</li>
+  <li><code>-b 4096</code> — длина ключа (4096 бит).</li>
+  <li><code>-C "user@example.com"</code> — комментарий к ключу.</li>
+</ul>
+
+<h4>Копирование открытого ключа на сервер</h4>
+<p>
+Для копирования открытого ключа на сервер используйте команду:
+</p>
+<pre><code>
+ssh_copy_id.sh
+</code></pre>
+
+---
+<h3>NTP: Синхронизация времени</h3>
+
+<h4>Что такое NTP?</h4>
+<p>
+<strong>NTP (Network Time Protocol)</strong> — это протокол для синхронизации времени между устройствами в сети.
+Он позволяет устройствам получать точное время от NTP-серверов.
+</p>
+
+<h4>Установка NTP-клиента</h4>
+<p>
+Для установки NTP-клиента в Ubuntu/Debian:
+</p>
+<pre><code>
+install_ntp.sh
+</code></pre>
+
+<p>
+Для установки NTP-клиента в CentOS/RHEL:
+</p>
+<pre><code>
+install_ntp_rhel.sh
+</code></pre>
+
+<h4>Конфигурация NTP-клиента</h4>
+<p>
+Конфигурация NTP-клиента хранится в файле <code>/etc/ntp.conf</code>.
+</p>
+<pre><code>
+ntp_conf_example.txt
+</code></pre>
+
+<h4>Запуск NTP-клиента</h4>
+<p>
+Для запуска NTP-клиента:
+</p>
+<pre><code>
+start_ntp.sh
+</code></pre>
+
+<h4>Проверка синхронизации времени</h4>
+<p>
+Для проверки синхронизации времени используйте команду:
+</p>
+<pre><code>
+ntpq_example.sh
+</code></pre>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+ntpq_output_example.txt
+</code></pre>
+
+---
+<h3>HTTP(S): Веб-серверы</h3>
+
+<h4>Что такое HTTP(S)?</h4>
+<p>
+<strong>HTTP (HyperText Transfer Protocol)</strong> — это протокол для передачи гипертекста (веб-страниц) между клиентом и сервером.
+<strong>HTTPS (HTTP Secure)</strong> — это защищённая версия HTTP, использующая шифрование (обычно TLS/SSL).
+</p>
+
+<h4>Установка веб-сервера Apache</h4>
+<p>
+Для установки Apache в Ubuntu/Debian:
+</p>
+<pre><code>
+install_apache.sh
+</code></pre>
+
+<p>
+Для установки Apache в CentOS/RHEL:
+</p>
+<pre><code>
+install_apache_rhel.sh
+</code></pre>
+
+<h4>Конфигурация Apache</h4>
+<p>
+Конфигурация Apache хранится в файлах в директории <code>/etc/apache2/</code> (Ubuntu/Debian) или <code>/etc/httpd/</code> (CentOS/RHEL).
+</p>
+
+<h5>Пример конфигурации виртуального хоста</h5>
+<p>
+Создайте файл конфигурации для виртуального хоста в директории <code>/etc/apache2/sites-available/</code>:
+</p>
+<pre><code>
+apache_vhost_example.txt
+</code></pre>
+
+<h5>Активация виртуального хоста</h5>
+<p>
+Для активации виртуального хоста:
+</p>
+<pre><code>
+enable_apache_vhost.sh
+</code></pre>
+
+<h4>Запуск Apache</h4>
+<p>
+Для запуска Apache:
+</p>
+<pre><code>
+start_apache.sh
+</code></pre>
+
+<h4>Установка веб-сервера Nginx</h4>
+<p>
+Для установки Nginx в Ubuntu/Debian:
+</p>
+<pre><code>
+install_nginx.sh
+</code></pre>
+
+<p>
+Для установки Nginx в CentOS/RHEL:
+</p>
+<pre><code>
+install_nginx_rhel.sh
+</code></pre>
+
+<h4>Конфигурация Nginx</h4>
+<p>
+Конфигурация Nginx хранится в файлах в директории <code>/etc/nginx/</code>.
+</p>
+
+<h5>Пример конфигурации сервера</h5>
+<p>
+Отредактируйте файл <code>/etc/nginx/sites-available/default</code>:
+</p>
+<pre><code>
+nginx_server_example.txt
+</code></pre>
+
+<h5>Активация конфигурации</h5>
+<p>
+Для активации конфигурации:
+</p>
+<pre><code>
+enable_nginx_config.sh
+</code></pre>
+
+<h4>Запуск Nginx</h4>
+<p>
+Для запуска Nginx:
+</p>
+<pre><code>
+start_nginx.sh
+</code></pre>
+
+---
+<h3>systemd-networkd: Управление сетевыми подключениями</h3>
+
+<h4>Что такое systemd-networkd?</h4>
+<p>
+<code>systemd-networkd</code> — это сервис для управления сетевыми подключениями в системах с <code>systemd</code>.
+Он позволяет настраивать:
+</p>
+<ul>
+  <li>IP-адреса (статические и динамические).</li>
+  <li>Маршруты.</li>
+  <li>DNS-серверы.</li>
+  <li>VLAN и мосты.</li>
+</ul>
+
+<h4>Установка systemd-networkd</h4>
+<p>
+<code>systemd-networkd</code> обычно входит в состав <code>systemd</code> и не требует отдельной установки.
+</p>
+
+<h4>Конфигурация systemd-networkd</h4>
+<p>
+Конфигурация <code>systemd-networkd</code> хранится в файлах в директории <code>/etc/systemd/network/</code>.
+</p>
+
+<h5>Пример конфигурации для статического IP-адреса</h5>
+<p>
+Создайте файл <code>/etc/systemd/network/20-wired.network</code>:
+</p>
+<pre><code>
+systemd_networkd_static_example.txt
+</code></pre>
+
+<h5>Пример конфигурации для DHCP</h5>
+<p>
+Создайте файл <code>/etc/systemd/network/20-wired.network</code>:
+</p>
+<pre><code>
+systemd_networkd_dhcp_example.txt
+</code></pre>
+
+<h5>Пример конфигурации для VLAN</h5>
+<p>
+Создайте файл <code>/etc/systemd/network/30-vlan.network</code>:
+</p>
+<pre><code>
+systemd_networkd_vlan_example.txt
+</code></pre>
+
+<h4>Запуск systemd-networkd</h4>
+<p>
+Для запуска <code>systemd-networkd</code>:
+</p>
+<pre><code>
+start_systemd_networkd.sh
+</code></pre>
+
+<h4>Проверка статуса systemd-networkd</h4>
+<p>
+Для проверки статуса:
+</p>
+<pre><code>
+systemd_networkd_status.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте DHCP</strong> для автоматического назначения IP-адресов в локальных сетях.</li>
+  <li><strong>Отключайте SSH-доступ для root</strong> для повышения безопасности.</li>
+  <li><strong>Используйте SSH-ключи</strong> вместо паролей для аутентификации.</li>
+  <li><strong>Синхронизируйте время</strong> с помощью NTP для корректной работы сервисов.</li>
+  <li><strong>Используйте HTTPS</strong> для защиты веб-трафика.</li>
+  <li><strong>Настраивайте systemd-networkd</strong> для управления сетевыми подключениями.</li>
+  <li><strong>Мониторьте логи</strong> для диагностики проблем.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с DHCP</h4>
+<p>
+Если DHCP-клиент не получает IP-адрес, проверьте:
+</p>
+<ul>
+  <li>Работу DHCP-сервера.</li>
+  <li>Настройки сетевого интерфейса.</li>
+  <li>Логи DHCP-клиента:</li>
+</ul>
+<pre><code>
+check_dhcp_logs.sh
+</code></pre>
+
+<h4>Проблемы с SSH</h4>
+<p>
+Если SSH-соединение не работает, проверьте:
+</p>
+<ul>
+  <li>Работу SSH-сервера:</li>
+</ul>
+<pre><code>
+check_ssh_status.sh
+</code></pre>
+<ul>
+  <li>Настройки брандмауэра:</li>
+</ul>
+<pre><code>
+check_ssh_firewall.sh
+</code></pre>
+<ul>
+  <li>Права доступа к ключам:</li>
+</ul>
+<pre><code>
+check_ssh_permissions.sh
+</code></pre>
+
+<h4>Проблемы с NTP</h4>
+<p>
+Если время не синхронизируется, проверьте:
+</p>
+<ul>
+  <li>Работу NTP-сервера:</li>
+</ul>
+<pre><code>
+check_ntp_status.sh
+</code></pre>
+<ul>
+  <li>Настройки брандмауэра (порт 123/UDP):</li>
+</ul>
+<pre><code>
+check_ntp_firewall.sh
+</code></pre>
+
+<h4>Проблемы с веб-серверами</h4>
+<p>
+Если веб-сервер не работает, проверьте:
+</p>
+<ul>
+  <li>Работу веб-сервера:</li>
+</ul>
+<pre><code>
+check_apache_status.sh
+</code></pre>
+<ul>
+  <li>Настройки брандмауэра (порты 80 и 443):</li>
+</ul>
+<pre><code>
+check_web_firewall.sh
+</code></pre>
+<ul>
+  <li>Конфигурацию веб-сервера:</li>
+</ul>
+<pre><code>
+check_apache_config.sh
+</code></pre>
+
+<h4>Проблемы с systemd-networkd</h4>
+<p>
+Если сетевое подключение не работает, проверьте:
+</p>
+<ul>
+  <li>Работу <code>systemd-networkd</code>:</li>
+</ul>
+<pre><code>
+check_systemd_networkd_status.sh
+</code></pre>
+<ul>
+  <li>Конфигурацию в <code>/etc/systemd/network/</code>:</li>
+</ul>
+<pre><code>
+check_systemd_networkd_config.sh
+</code></pre>
+<ul>
+  <li>Логи <code>systemd-networkd</code>:</li>
+</ul>
+<pre><code>
+check_systemd_networkd_logs.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Сетевые сервисы в Linux — это основа для работы в сети. Они обеспечивают:
+</p>
+<ul>
+  <li><strong>Автоматическое назначение IP-адресов</strong> (DHCP).</li>
+  <li><strong>Безопасный удалённый доступ</strong> (SSH).</li>
+  <li><strong>Синхронизацию времени</strong> (NTP).</li>
+  <li><strong>Обслуживание веб-запросов</strong> (HTTP/HTTPS).</li>
+  <li><strong>Управление сетевыми подключениями</strong> (systemd-networkd).</li>
+</ul>
+
+<table>
+  <tr>
+    <th>Сервис</th>
+    <th>Назначение</th>
+    <th>Порт</th>
+    <th>Протокол</th>
+  </tr>
+  <tr>
+    <td>DHCP</td>
+    <td>Автоматическое назначение IP-адресов</td>
+    <td>67, 68</td>
+    <td>UDP</td>
+  </tr>
+  <tr>
+    <td>SSH</td>
+    <td>Безопасный удалённый доступ</td>
+    <td>22</td>
+    <td>TCP</td>
+  </tr>
+  <tr>
+    <td>NTP</td>
+    <td>Синхронизация времени</td>
+    <td>123</td>
+    <td>UDP</td>
+  </tr>
+  <tr>
+    <td>HTTP</td>
+    <td>Передача гипертекста</td>
+    <td>80</td>
+    <td>TCP</td>
+  </tr>
+  <tr>
+    <td>HTTPS</td>
+    <td>Защищённая передача гипертекста</td>
+    <td>443</td>
+    <td>TCP</td>
+  </tr>
+  <tr>
+    <td>systemd-networkd</td>
+    <td>Управление сетевыми подключениями</td>
+    <td>—</td>
+    <td>—</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.ietf.org/rfc/rfc2131.txt">RFC 2131: Dynamic Host Configuration Protocol</a></li>
+  <li><a href="https://www.ietf.org/rfc/rfc4251.txt">RFC 4251: The Secure Shell (SSH) Protocol Architecture</a></li>
+  <li><a href="https://www.ietf.org/rfc/rfc5905.txt">RFC 5905: Network Time Protocol Version 4</a></li>
+  <li><a href="https://httpd.apache.org/docs/2.4/">Apache HTTP Server Documentation</a></li>
+  <li><a href="https://nginx.org/en/docs/">Nginx Documentation</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd-networkd.service.html">systemd-networkd(8) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Network_configuration">Network Configuration (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-a-dhcp-server-in-ubuntu-20-04">How To Install and Configure a DHCP Server</a></li>
+</ul>

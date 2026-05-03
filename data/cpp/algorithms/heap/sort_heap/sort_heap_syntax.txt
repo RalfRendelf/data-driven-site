@@ -1,0 +1,5 @@
+template <class RandomAccessIterator>
+void sort_heap(RandomAccessIterator first, RandomAccessIterator last);
+
+template <class RandomAccessIterator, class Compare>
+void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp);

@@ -1,0 +1,649 @@
+<h2>Unit Files: Структура и настройка unit-файлов systemd</h2>
+
+<p>
+<strong>systemd</strong> — это система инициализации и управления сервисами в Linux, которая заменила традиционную систему <code>init</code>.
+В основе systemd лежат <strong>unit-файлы</strong> — конфигурационные файлы, описывающие, как, когда и в каком порядке должны запускаться сервисы, сокеты, устройства и другие сущности.
+</p>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы работы с unit-файлами.</li>
+  <li>Структура unit-файлов: секции <code>[Unit]</code>, <code>[Service]</code>, <code>[Install]</code>.</li>
+  <li>Типы unit-файлов.</li>
+  <li>Зависимости между unit-файлами.</li>
+  <li>Практические примеры создания и настройки unit-файлов.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое systemd?</h4>
+<p>
+<strong>systemd</strong> — это система инициализации и управления сервисами, которая используется в большинстве современных дистрибутивов Linux (Ubuntu, Debian, CentOS, Arch Linux и др.).
+Она предоставляет:
+</p>
+<ul>
+  <li><strong>Быстрый запуск системы</strong> за счёт параллельного запуска сервисов.</li>
+  <li><strong>Управление зависимостями</strong> между сервисами.</li>
+  <li><strong>Автоматическое восстановление</strong> после сбоев.</li>
+  <li><strong>Мониторинг сервисов</strong> и перезапуск при падении.</li>
+  <li><strong>Унифицированную конфигурацию</strong> через unit-файлы.</li>
+</ul>
+
+<h4>Что такое unit-файл?</h4>
+<p>
+<strong>Unit-файл</strong> — это конфигурационный файл, который описывает:
+</p>
+<ul>
+  <li><strong>Что</strong> должно быть запущено (сервис, сокет, устройство и т. д.).</li>
+  <li><strong>Когда</strong> это должно быть запущено (при старте системы, по требованию и т. д.).</li>
+  <li><strong>Как</strong> это должно быть запущено (с какими параметрами, от какого пользователя и т. д.).</li>
+  <li><strong>Зависимости</strong> от других unit-файлов.</li>
+</ul>
+
+<h4>Типы unit-файлов</h4>
+<p>
+В systemd существует несколько типов unit-файлов, каждый из которых описывает определённый тип сущности:
+</p>
+<table>
+  <tr>
+    <th>Тип</th>
+    <th>Расширение</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>Service</code></td>
+    <td><code>.service</code></td>
+    <td>Описывает сервис (процесс или набор процессов)</td>
+    <td><code>sshd.service</code></td>
+  </tr>
+  <tr>
+    <td><code>Socket</code></td>
+    <td><code>.socket</code></td>
+    <td>Описывает сокет (UNIX или сетевой)</td>
+    <td><code>sshd.socket</code></td>
+  </tr>
+  <tr>
+    <td><code>Target</code></td>
+    <td><code>.target</code></td>
+    <td>Группирует другие unit-файлы (аналог runlevel в SysV)</td>
+    <td><code>multi-user.target</code></td>
+  </tr>
+  <tr>
+    <td><code>Device</code></td>
+    <td><code>.device</code></td>
+    <td>Описывает устройство (созданное ядром)</td>
+    <td><code>dev-sda1.device</code></td>
+  </tr>
+  <tr>
+    <td><code>Mount</code></td>
+    <td><code>.mount</code></td>
+    <td>Описывает точку монтирования</td>
+    <td><code>mnt-data.mount</code></td>
+  </tr>
+  <tr>
+    <td><code>Automount</code></td>
+    <td><code>.automount</code></td>
+    <td>Описывает точку монтирования с автоматическим монтированием</td>
+    <td><code>mnt-data.automount</code></td>
+  </tr>
+  <tr>
+    <td><code>Timer</code></td>
+    <td><code>.timer</code></td>
+    <td>Описывает таймер для запуска сервисов по расписанию</td>
+    <td><code>systemd-tmpfiles-clean.timer</code></td>
+  </tr>
+  <tr>
+    <td><code>Path</code></td>
+    <td><code>.path</code></td>
+    <td>Описывает мониторинг файлов и директорий</td>
+    <td><code>systemd-ask-password-path.path</code></td>
+  </tr>
+  <tr>
+    <td><code>Slice</code></td>
+    <td><code>.slice</code></td>
+    <td>Описывает группу процессов для управления ресурсами</td>
+    <td><code>user.slice</code></td>
+  </tr>
+  <tr>
+    <td><code>Scope</code></td>
+    <td><code>.scope</code></td>
+    <td>Описывает внешние процессы (не запущенные systemd)</td>
+    <td><code>session-1.scope</code></td>
+  </tr>
+</table>
+
+<h4>Расположение unit-файлов</h4>
+<p>
+Unit-файлы могут находиться в следующих директориях:
+</p>
+<table>
+  <tr>
+    <th>Директория</th>
+    <th>Описание</th>
+    <th>Приоритет</th>
+  </tr>
+  <tr>
+    <td><code>/etc/systemd/system/</code></td>
+    <td>Unit-файлы, созданные администратором</td>
+    <td>Высший</td>
+  </tr>
+  <tr>
+    <td><code>/run/systemd/system/</code></td>
+    <td>Unit-файлы, созданные во время работы системы</td>
+    <td>Средний</td>
+  </tr>
+  <tr>
+    <td><code>/usr/lib/systemd/system/</code></td>
+    <td>Unit-файлы, установленные пакетами</td>
+    <td>Низший</td>
+  </tr>
+</table>
+<p>
+<strong>Примечание:</strong> Unit-файлы в <code>/etc/systemd/system/</code> имеют приоритет над файлами в <code>/usr/lib/systemd/system/</code>.
+</p>
+
+---
+<h3>Структура unit-файлов</h3>
+
+<h4>Общая структура</h4>
+<p>
+Unit-файл состоит из нескольких секций, каждая из которых описывает определённые аспекты конфигурации.
+Основные секции:
+</p>
+<ul>
+  <li><code>[Unit]</code> — общие настройки unit-файла.</li>
+  <li><code>[Service]</code> — настройки для сервисов.</li>
+  <li><code>[Install]</code> — настройки для установки unit-файла.</li>
+</ul>
+
+<h4>Секция [Unit]</h4>
+<p>
+Секция <code>[Unit]</code> содержит общие настройки, которые применяются ко всем типам unit-файлов.
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>Description=</code></td>
+    <td>Описание unit-файла</td>
+    <td><code>Description=My Custom Service</code></td>
+  </tr>
+  <tr>
+    <td><code>Documentation=</code></td>
+    <td>Ссылки на документацию</td>
+    <td><code>Documentation=https://example.com/docs</code></td>
+  </tr>
+  <tr>
+    <td><code>Requires=</code></td>
+    <td>Список unit-файлов, которые должны быть запущены</td>
+    <td><code>Requires=network.target</code></td>
+  </tr>
+  <tr>
+    <td><code>Wants=</code></td>
+    <td>Список unit-файлов, которые желательны для запуска</td>
+    <td><code>Wants=nginx.service</code></td>
+  </tr>
+  <tr>
+    <td><code>BindsTo=</code></td>
+    <td>Список unit-файлов, к которым привязан текущий unit</td>
+    <td><code>BindsTo=mysql.service</code></td>
+  </tr>
+  <tr>
+    <td><code>Before=</code></td>
+    <td>Список unit-файлов, которые должны быть запущены после текущего</td>
+    <td><code>Before=nginx.service</code></td>
+  </tr>
+  <tr>
+    <td><code>After=</code></td>
+    <td>Список unit-файлов, которые должны быть запущены до текущего</td>
+    <td><code>After=network.target</code></td>
+  </tr>
+  <tr>
+    <td><code>Conflicts=</code></td>
+    <td>Список unit-файлов, которые не могут работать одновременно с текущим</td>
+    <td><code>Conflicts=apache2.service</code></td>
+  </tr>
+  <tr>
+    <td><code>ConditionPathExists=</code></td>
+    <td>Условие: файл или директория должны существовать</td>
+    <td><code>ConditionPathExists=/etc/myapp/config.conf</code></td>
+  </tr>
+  <tr>
+    <td><code>AssertPathExists=</code></td>
+    <td>Утверждение: файл или директория должны существовать</td>
+    <td><code>AssertPathExists=/etc/myapp/config.conf</code></td>
+  </tr>
+</table>
+
+<h4>Секция [Service]</h4>
+<p>
+Секция <code>[Service]</code> содержит настройки, специфичные для сервисов.
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>Type=</code></td>
+    <td>Тип сервиса</td>
+    <td><code>Type=simple</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStart=</code></td>
+    <td>Команда для запуска сервиса</td>
+    <td><code>ExecStart=/usr/bin/myapp</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStop=</code></td>
+    <td>Команда для остановки сервиса</td>
+    <td><code>ExecStop=/usr/bin/myapp --stop</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecReload=</code></td>
+    <td>Команда для перезагрузки сервиса</td>
+    <td><code>ExecReload=/usr/bin/myapp --reload</code></td>
+  </tr>
+  <tr>
+    <td><code>Restart=</code></td>
+    <td>Политика перезапуска сервиса</td>
+    <td><code>Restart=on-failure</code></td>
+  </tr>
+  <tr>
+    <td><code>User=</code></td>
+    <td>Пользователь, от имени которого запускается сервис</td>
+    <td><code>User=myuser</code></td>
+  </tr>
+  <tr>
+    <td><code>Group=</code></td>
+    <td>Группа, от имени которой запускается сервис</td>
+    <td><code>Group=mygroup</code></td>
+  </tr>
+  <tr>
+    <td><code>WorkingDirectory=</code></td>
+    <td>Рабочая директория для сервиса</td>
+    <td><code>WorkingDirectory=/var/www/myapp</code></td>
+  </tr>
+  <tr>
+    <td><code>Environment=</code></td>
+    <td>Переменные окружения</td>
+    <td><code>Environment="DB_HOST=localhost"</code></td>
+  </tr>
+  <tr>
+    <td><code>EnvironmentFile=</code></td>
+    <td>Файл с переменными окружения</td>
+    <td><code>EnvironmentFile=/etc/myapp/env.conf</code></td>
+  </tr>
+  <tr>
+    <td><code>PIDFile=</code></td>
+    <td>Файл с PID процесса</td>
+    <td><code>PIDFile=/var/run/myapp.pid</code></td>
+  </tr>
+  <tr>
+    <td><code>TimeoutStartSec=</code></td>
+    <td>Таймаут для запуска сервиса</td>
+    <td><code>TimeoutStartSec=30</code></td>
+  </tr>
+  <tr>
+    <td><code>TimeoutStopSec=</code></td>
+    <td>Таймаут для остановки сервиса</td>
+    <td><code>TimeoutStopSec=10</code></td>
+  </tr>
+</table>
+
+<h4>Типы сервисов (Type=)</h4>
+<p>
+Директива <code>Type=</code> определяет, как systemd будет управлять процессом сервиса.
+</p>
+<table>
+  <tr>
+    <th>Тип</th>
+    <th>Описание</th>
+    <th>Когда использовать</th>
+  </tr>
+  <tr>
+    <td><code>simple</code></td>
+    <td>Процесс запускается и работает в переднем плане. systemd считает сервис запущенным, как только <code>ExecStart</code> завершится.</td>
+    <td>Для большинства сервисов</td>
+  </tr>
+  <tr>
+    <td><code>forking</code></td>
+    <td>Процесс запускается и затем раздваивается (fork). systemd ожидает завершения родительского процесса.</td>
+    <td>Для сервисов, которые используют <code>fork()</code> (например, <code>sshd</code>)</td>
+  </tr>
+  <tr>
+    <td><code>oneshot</code></td>
+    <td>Процесс запускается один раз и завершается. systemd считает сервис завершённым после выполнения <code>ExecStart</code>.</td>
+    <td>Для одноразовых задач (например, скрипты)</td>
+  </tr>
+  <tr>
+    <td><code>dbus</code></td>
+    <td>Аналогично <code>simple</code>, но сервис считается запущенным после получения D-Bus имени.</td>
+    <td>Для сервисов, использующих D-Bus</td>
+  </tr>
+  <tr>
+    <td><code>notify</code></td>
+    <td>Аналогично <code>simple</code>, но сервис отправляет уведомление о готовности через <code>sd_notify()</code>.</td>
+    <td>Для сервисов, которые поддерживают уведомления о готовности</td>
+  </tr>
+  <tr>
+    <td><code>idle</code></td>
+    <td>Аналогично <code>simple</code>, но запуск откладывается до завершения других задач.</td>
+    <td>Для сервисов, которые не критичны для запуска системы</td>
+  </tr>
+</table>
+
+<h4>Политики перезапуска (Restart=)</h4>
+<p>
+Директива <code>Restart=</code> определяет, когда сервис должен быть перезапущен.
+</p>
+<table>
+  <tr>
+    <th>Значение</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>no</code></td>
+    <td>Не перезапускать сервис.</td>
+  </tr>
+  <tr>
+    <td><code>on-success</code></td>
+    <td>Перезапускать сервис только если он завершился успешно.</td>
+  </tr>
+  <tr>
+    <td><code>on-failure</code></td>
+    <td>Перезапускать сервис только если он завершился с ошибкой.</td>
+  </tr>
+  <tr>
+    <td><code>on-abnormal</code></td>
+    <td>Перезапускать сервис если он завершился с ошибкой, был убит сигналом или завершился из-за сбоя оборудования.</td>
+  </tr>
+  <tr>
+    <td><code>on-watchdog</code></td>
+    <td>Перезапускать сервис если сработал watchdog.</td>
+  </tr>
+  <tr>
+    <td><code>on-abort</code></td>
+    <td>Перезапускать сервис если он был убит сигналом и не обработал его.</td>
+  </tr>
+  <tr>
+    <td><code>always</code></td>
+    <td>Перезапускать сервис в любом случае.</td>
+  </tr>
+</table>
+
+<h4>Секция [Install]</h4>
+<p>
+Секция <code>[Install]</code> определяет, как unit-файл должен быть установлен (включён в загрузку системы).
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>WantedBy=</code></td>
+    <td>Список target-файлов, в которые должен быть добавлен символический линк на текущий unit-файл</td>
+    <td><code>WantedBy=multi-user.target</code></td>
+  </tr>
+  <tr>
+    <td><code>RequiredBy=</code></td>
+    <td>Список target-файлов, которые требуют текущий unit-файл</td>
+    <td><code>RequiredBy=graphical.target</code></td>
+  </tr>
+  <tr>
+    <td><code>Also=</code></td>
+    <td>Список unit-файлов, которые должны быть установлены вместе с текущим</td>
+    <td><code>Also=myapp-timer.timer</code></td>
+  </tr>
+</table>
+
+---
+<h3>Примеры unit-файлов</h3>
+
+<h4>Пример 1: Простой сервис</h4>
+<p>
+Этот пример демонстрирует простой unit-файл для сервиса, который запускает команду <code>/usr/bin/myapp</code>.
+</p>
+<pre><code>
+simple_service_unit.txt
+</code></pre>
+
+<h4>Пример 2: Сервис с fork</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который использует <code>fork()</code> (например, <code>sshd</code>).
+</p>
+<pre><code>
+forking_service_unit.txt
+</code></pre>
+
+<h4>Пример 3: Сервис с уведомлением о готовности</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который отправляет уведомление о готовности через <code>sd_notify()</code>.
+</p>
+<pre><code>
+notify_service_unit.txt
+</code></pre>
+
+<h4>Пример 4: Сервис с зависимостями</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который зависит от других сервисов.
+</p>
+<pre><code>
+service_with_dependencies_unit.txt
+</code></pre>
+
+<h4>Пример 5: Сервис с таймером</h4>
+<p>
+Этот пример демонстрирует, как настроить сервис, который запускается по таймеру.
+</p>
+
+<h5>Unit-файл сервиса</h5>
+<pre><code>
+timer_service_unit.txt
+</code></pre>
+
+<h5>Unit-файл таймера</h5>
+<pre><code>
+timer_unit.txt
+</code></pre>
+
+<h4>Пример 6: Сервис с несколькими командами</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который запускает несколько команд.
+</p>
+<pre><code>
+multi_command_service_unit.txt
+</code></pre>
+
+---
+<h3>Работа с unit-файлами</h3>
+
+<h4>Просмотр unit-файлов</h4>
+<p>
+Для просмотра unit-файлов используйте команду <code>systemctl cat</code>:
+</p>
+<pre><code>
+view_unit_file.sh
+</code></pre>
+
+<h4>Создание и редактирование unit-файлов</h4>
+<p>
+Для создания или редактирования unit-файлов:
+</p>
+<ol>
+  <li>Создайте файл в директории <code>/etc/systemd/system/</code>:</li>
+</ol>
+<pre><code>
+create_unit_file.sh
+</code></pre>
+<ol start="2">
+  <li>Перезагрузите конфигурацию systemd:</li>
+</ol>
+<pre><code>
+reload_systemd.sh
+</code></pre>
+
+<h4>Запуск, остановка и перезапуск сервисов</h4>
+<p>
+Для управления сервисами используйте команды <code>systemctl</code>:
+</p>
+<pre><code>
+manage_service.sh
+</code></pre>
+
+<h4>Включение и отключение сервисов</h4>
+<p>
+Для включения или отключения сервисов при загрузке системы:
+</p>
+<pre><code>
+enable_disable_service.sh
+</code></pre>
+
+<h4>Просмотр зависимостей</h4>
+<p>
+Для просмотра зависимостей unit-файла используйте команду:
+</p>
+<pre><code>
+view_dependencies.sh
+</code></pre>
+
+<h4>Проверка конфигурации unit-файла</h4>
+<p>
+Для проверки конфигурации unit-файла используйте команду:
+</p>
+<pre><code>
+check_unit_file.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>Type=simple</code></strong> для большинства сервисов.</li>
+  <li><strong>Указывайте зависимости</strong> с помощью <code>After=</code> и <code>Requires=</code>.</li>
+  <li><strong>Используйте <code>Restart=on-failure</code></strong> для автоматического перезапуска сервисов при сбоях.</li>
+  <li><strong>Указывайте пользователя и группу</strong> для запуска сервиса с минимальными правами.</li>
+  <li><strong>Используйте <code>EnvironmentFile=</code></strong> для хранения конфиденциальных данных.</li>
+  <li><strong>Проверяйте конфигурацию</strong> с помощью <code>systemd-analyze verify</code>.</li>
+  <li><strong>Используйте <code>WantedBy=multi-user.target</code></strong> для запуска сервиса при загрузке системы.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если сервис не запускается из-за зависимостей, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>After=</code> и <code>Requires=</code>.</li>
+  <li>Статус зависимых сервисов:</li>
+</ul>
+<pre><code>
+check_dependencies.sh
+</code></pre>
+
+<h4>Проблемы с правами доступа</h4>
+<p>
+Если сервис не может запуститься из-за прав доступа, проверьте:
+</p>
+<ul>
+  <li>Права на файлы и директории:</li>
+</ul>
+<pre><code>
+check_permissions.sh
+</code></pre>
+<ul>
+  <li>Пользователя и группу, от имени которых запускается сервис:</li>
+</ul>
+<pre><code>
+check_user.sh
+</code></pre>
+
+<h4>Проблемы с перезапуском сервисов</h4>
+<p>
+Если сервис не перезапускается автоматически, проверьте:
+</p>
+<ul>
+  <li>Политику перезапуска (<code>Restart=</code>).</li>
+  <li>Логи сервиса:</li>
+</ul>
+<pre><code>
+check_service_logs.sh
+</code></pre>
+
+<h4>Проблемы с таймаутами</h4>
+<p>
+Если сервис не запускается из-за таймаута, проверьте:
+</p>
+<ul>
+  <li>Время запуска сервиса (<code>TimeoutStartSec=</code>).</li>
+  <li>Время остановки сервиса (<code>TimeoutStopSec=</code>).</li>
+</ul>
+
+<h4>Проблемы с конфигурацией</h4>
+<p>
+Если конфигурация unit-файла некорректна, проверьте:
+</p>
+<ul>
+  <li>Синтаксис unit-файла:</li>
+</ul>
+<pre><code>
+verify_unit_file.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Unit-файлы — это основа конфигурации systemd. Они позволяют гибко настраивать запуск, остановку и управление сервисами, а также определять зависимости между ними.
+Понимание структуры и синтаксиса unit-файлов необходимо для эффективного управления системами на базе systemd.
+</p>
+
+<table>
+  <tr>
+    <th>Секция</th>
+    <th>Назначение</th>
+    <th>Основные директивы</th>
+  </tr>
+  <tr>
+    <td><code>[Unit]</code></td>
+    <td>Общие настройки unit-файла</td>
+    <td><code>Description=</code>, <code>After=</code>, <code>Requires=</code></td>
+  </tr>
+  <tr>
+    <td><code>[Service]</code></td>
+    <td>Настройки сервиса</td>
+    <td><code>Type=</code>, <code>ExecStart=</code>, <code>Restart=</code></td>
+  </tr>
+  <tr>
+    <td><code>[Install]</code></td>
+    <td>Настройки установки unit-файла</td>
+    <td><code>WantedBy=</code>, <code>RequiredBy=</code></td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html">systemd.unit(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">systemd.service(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.exec.html">systemd.exec(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.directives.html">Systemd Directives</a></li>
+  <li><a href="https://wiki.archlinux.org/title/systemd">systemd (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files">Understanding Systemd Units and Unit Files</a></li>
+</ul>

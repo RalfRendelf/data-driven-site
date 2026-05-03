@@ -1,0 +1,9 @@
+[Unit]
+Description=Periodic Task Timer
+
+[Timer]
+OnCalendar=*:00,30:00
+Unit=periodic_task.service
+
+[Install]
+WantedBy=timers.target

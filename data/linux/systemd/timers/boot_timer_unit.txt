@@ -1,0 +1,9 @@
+[Unit]
+Description=Boot Task Timer
+
+[Timer]
+OnBootSec=1min
+Unit=boot_task.service
+
+[Install]
+WantedBy=timers.target

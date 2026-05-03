@@ -1,3 +1,70 @@
-<h2>std::ranges::find</h2>
+<h2>std::ranges::find: Поиск элемента в диапазоне</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::find`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который ищет первое вхождение элемента в диапазоне.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+Отличается от <code>std::find</code> тем, что работает с <strong>ranges</strong> (диапазонами) и поддерживает концепцию <code>Range</code>.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_find_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Итераторы начала и конца диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range</code></td>
+    <td>Диапазон (range)</td>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>Значение, которое нужно найти</td>
+  </tr>
+  <tr>
+    <td><code>proj</code></td>
+    <td>Функция проекции (опционально, по умолчанию <code>std::identity</code>)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на первый найденный элемент или <code>last</code>, если элемент не найден.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Поиск элемента в векторе</h4>
+<pre><code>
+ranges_find_vector_example.cpp
+</code></pre>
+
+<h4>Пример 2: Поиск с проекцией</h4>
+<pre><code>
+ranges_find_projection_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::find`</strong> — современный алгоритм для поиска элемента в диапазоне с поддержкой проекций.
+Удобен для работы с структурированными данными и кастомными типами.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/find">std::ranges::find на cppreference.com</a></li>
+</ul>

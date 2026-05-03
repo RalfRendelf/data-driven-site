@@ -1,0 +1,11 @@
+// Версия с унарной операцией
+template <class InputIterator, class T, class BinaryOperation, class UnaryOperation>
+T transform_reduce(InputIterator first, InputIterator last,
+                   T init, BinaryOperation binary_op, UnaryOperation unary_op);
+
+// Версия с бинарной операцией
+template <class InputIterator1, class InputIterator2, class T,
+          class BinaryOperation1, class BinaryOperation2>
+T transform_reduce(InputIterator1 first1, InputIterator1 last1,
+                   InputIterator2 first2, T init,
+                   BinaryOperation1 binary_op1, BinaryOperation2 binary_op2);

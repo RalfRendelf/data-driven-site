@@ -1,0 +1,5 @@
+template <class ForwardIterator>
+bool is_sorted(ForwardIterator first, ForwardIterator last);
+
+template <class ForwardIterator, class Compare>
+bool is_sorted(ForwardIterator first, ForwardIterator last, Compare comp);

@@ -136,14 +136,16 @@ function setupCodeLoaders(container, basePath) {
 
   loaders.forEach(loader => {
     let fileName = loader.dataset.file?.trim();
-
-    if (!fileName || !fileName.endsWith('.txt')) {
-      const btn = loader.querySelector('.code-toggle');
+    const validExtensions = ['.txt', '.cpp', '.c', '.py', '.js','.sh'
+    ];
+if (!fileName || !validExtensions.some(ext => fileName.endsWith(ext))) {
+  const btn = loader.querySelector('.code-toggle');
       if (btn) btn.remove(); 
 
       loader.classList.remove('code-loader'); 
       return;
-    }
+}
+   
 
     const button = loader.querySelector('.code-toggle');
     const codeBlock = loader.querySelector('.code-block');

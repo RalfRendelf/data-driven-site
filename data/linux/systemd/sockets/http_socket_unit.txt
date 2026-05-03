@@ -1,0 +1,11 @@
+[Unit]
+Description=HTTP Server Socket
+After=network.target
+
+[Socket]
+ListenStream=8080
+BindIPv6Only=both
+Backlog=100
+
+[Install]
+WantedBy=sockets.target

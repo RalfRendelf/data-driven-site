@@ -1,0 +1,6 @@
+template <std::input_iterator I, std::sentinel_for<I> S, class T, class Proj = std::identity>
+constexpr I find(I first, S last, const T& value, Proj proj = {});
+
+template <std::ranges::input_range R, class T, class Proj = std::identity>
+constexpr std::ranges::borrowed_iterator_t<R>
+find(R&& range, const T& value, Proj proj = {});

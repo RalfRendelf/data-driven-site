@@ -1,3 +1,56 @@
-<h2>std::nth_element</h2>
+<h2>std::nth_element: Нахождение n-го элемента</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::nth_element`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который переставляет элементы в диапазоне так, что элемент на позиции <strong>n</strong> оказывается на своём месте, как если бы диапазон был отсортирован.
+Все элементы перед <strong>n</strong> будут меньше или равны элементу на позиции <strong>n</strong>, а все элементы после — больше или равны.
+Работает за среднее время <strong>O(N)</strong> и худшее время <strong>O(N²)</strong> (редко), использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+nth_element_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>nth</code></td>
+    <td>Итератор на позицию элемента, который должен быть на своём месте</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Нахождение медианы</h4>
+<pre><code>
+nth_element_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::nth_element`</strong> — алгоритм для нахождения <strong>n-го</strong> элемента в диапазоне без полной сортировки.
+Эффективен для задач, где нужно найти только один элемент (например, медиану).
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/nth_element">std::nth_element на cppreference.com</a></li>
+</ul>

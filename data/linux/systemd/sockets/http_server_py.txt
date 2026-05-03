@@ -1,0 +1,32 @@
+import socket
+import os
+import sys
+from http.server import SimpleHTTPRequestHandler
+from socketserver import UnixStreamServer
+
+# Получаем файловые дескрипторы сокетов из переменной окружения
+listen_fds = os.environ.get("LISTEN_FDS", "0")
+if listen_fds == "0":
+    print("No sockets passed via LISTEN_FDS", file=sys.stderr)
+    sys.exit(1)
+
+listen_fds = int(listen_fds)
+sockets = []
+for i in range(listen_fds):
+    fd = 3 + i  # SD_LISTEN_FDS_START = 3
+    sock = socket.fromfd(fd, socket.AF_INET, socket.SOCK_STREAM)
+    sockets.append(sock)
+
+# Настраиваем HTTP-сервер
+class MyHTTPRequestHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(b"<h1>Hello from Socket Activation!</h1>")
+
+# Запускаем сервер для каждого сокета
+for sock in sockets:
+    server = UnixStreamServer(sock, MyHTTPRequestHandler, bind_and_activate=False)
+    print(f"Serving on {sock.getsockname()}", file=sys.stderr)
+    server.serve_forever()

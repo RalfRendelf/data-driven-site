@@ -1,0 +1,3 @@
+template <class ForwardIterator, class T>
+void replace(ForwardIterator first, ForwardIterator last,
+             const T& old_value, const T& new_value);

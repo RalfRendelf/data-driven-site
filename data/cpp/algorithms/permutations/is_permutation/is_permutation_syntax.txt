@@ -1,0 +1,7 @@
+template <class ForwardIterator1, class ForwardIterator2>
+bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1,
+                    ForwardIterator2 first2);
+
+template <class ForwardIterator1, class ForwardIterator2, class BinaryPredicate>
+bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1,
+                    ForwardIterator2 first2, BinaryPredicate pred);

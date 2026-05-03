@@ -1,0 +1,654 @@
+<h2>systemd Timers: Замена cron для планирования задач в Linux</h2>
+
+<p>
+<strong>systemd Timers</strong> — это современный механизм планирования задач в Linux, который заменяет традиционный <code>cron</code>.
+В отличие от <code>cron</code>, который использует отдельный демон, systemd Timers интегрированы в систему инициализации и позволяют планировать задачи с большей точностью и гибкостью.
+В этой статье рассмотрены основы работы с systemd Timers, их синтаксис, примеры использования и сравнение с <code>cron</code>.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое systemd Timers?</h4>
+<p>
+<strong>systemd Timers</strong> — это механизм планирования задач, который позволяет запускать сервисы или команды по расписанию.
+Он состоит из двух компонентов:
+</p>
+<ul>
+  <li><strong>Timer Unit</strong> — определяет, <strong>когда</strong> должна быть выполнена задача.</li>
+  <li><strong>Service Unit</strong> — определяет, <strong>что</strong> должно быть выполнено.</li>
+</ul>
+
+<h4>Преимущества systemd Timers перед cron</h4>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>systemd Timers</th>
+    <th>cron</th>
+  </tr>
+  <tr>
+    <td><strong>Интеграция с systemd</strong></td>
+    <td>✅ Полная интеграция</td>
+    <td>❌ Отдельный демон</td>
+  </tr>
+  <tr>
+    <td><strong>Точность</strong></td>
+    <td>✅ Высокая (миллисекунды)</td>
+    <td>⚠️ Минуты</td>
+  </tr>
+  <tr>
+    <td><strong>Логирование</strong></td>
+    <td>✅ Интеграция с <code>journalctl</code></td>
+    <td>⚠️ Отдельные логи</td>
+  </tr>
+  <tr>
+    <td><strong>Зависимости</strong></td>
+    <td>✅ Поддержка зависимостей между задачами</td>
+    <td>❌ Нет поддержки</td>
+  </tr>
+  <tr>
+    <td><strong>Управление ресурсами</strong></td>
+    <td>✅ Поддержка ограничений ресурсов (CPU, память)</td>
+    <td>❌ Нет поддержки</td>
+  </tr>
+  <tr>
+    <td><strong>Синтаксис</strong></td>
+    <td>⚠️ Более сложный</td>
+    <td>✅ Простой</td>
+  </tr>
+  <tr>
+    <td><strong>Совместимость</strong></td>
+    <td>⚠️ Только systemd</td>
+    <td>✅ Все Unix-подобные системы</td>
+  </tr>
+</table>
+
+<h4>Компоненты systemd Timers</h4>
+<p>
+Для работы systemd Timers требуются два файла:
+</p>
+<ol>
+  <li><strong>Timer Unit</strong> (файл с расширением <code>.timer</code>) — определяет расписание.</li>
+  <li><strong>Service Unit</strong> (файл с расширением <code>.service</code>) — определяет задачу.</li>
+</ol>
+<p>
+Timer Unit ссылается на Service Unit с помощью директивы <code>Unit=</code>.
+</p>
+
+---
+<h3>Синтаксис Timer Unit</h3>
+
+<h4>Структура Timer Unit</h4>
+<p>
+Timer Unit состоит из нескольких секций:
+</p>
+<ul>
+  <li><code>[Unit]</code> — общие настройки unit-файла.</li>
+  <li><code>[Timer]</code> — настройки расписания.</li>
+  <li><code>[Install]</code> — настройки установки.</li>
+</ul>
+
+<h4>Секция [Timer]</h4>
+<p>
+Секция <code>[Timer]</code> определяет, когда должна быть выполнена задача.
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>OnBootSec=</code></td>
+    <td>Время после загрузки системы</td>
+    <td><code>OnBootSec=5min</code></td>
+  </tr>
+  <tr>
+    <td><code>OnUnitActiveSec=</code></td>
+    <td>Время после активации unit-файла</td>
+    <td><code>OnUnitActiveSec=1h</code></td>
+  </tr>
+  <tr>
+    <td><code>OnCalendar=</code></td>
+    <td>Расписание в формате календаря</td>
+    <td><code>OnCalendar=*-*-* 02:00:00</code></td>
+  </tr>
+  <tr>
+    <td><code>OnMonotonicTimer=</code></td>
+    <td>Таймер на основе монотонных часов</td>
+    <td><code>OnMonotonicTimer=1h</code></td>
+  </tr>
+  <tr>
+    <td><code>AccuracySec=</code></td>
+    <td>Точность таймера</td>
+    <td><code>AccuracySec=1min</code></td>
+  </tr>
+  <tr>
+    <td><code>Unit=</code></td>
+    <td>Unit-файл, который должен быть активирован</td>
+    <td><code>Unit=mybackup.service</code></td>
+  </tr>
+  <tr>
+    <td><code>Persistent=</code></td>
+    <td>Запускать пропущенные задачи при следующем запуске</td>
+    <td><code>Persistent=true</code></td>
+  </tr>
+  <tr>
+    <td><code>RandomizedDelaySec=</code></td>
+    <td>Случайная задержка перед запуском</td>
+    <td><code>RandomizedDelaySec=10min</code></td>
+  </tr>
+</table>
+
+---
+<h3>Формат OnCalendar</h3>
+
+<h4>Синтаксис OnCalendar</h4>
+<p>
+Директива <code>OnCalendar=</code> использует формат, аналогичный <code>cron</code>, но с расширениями.
+Формат:
+</p>
+<pre><code>
+oncalendar_syntax.txt
+</code></pre>
+
+<h4>Компоненты OnCalendar</h4>
+<table>
+  <tr>
+    <th>Компонент</th>
+    <th>Описание</th>
+    <th>Значения</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td>День недели</td>
+    <td>День недели (опционально)</td>
+    <td><code>Mon</code>, <code>Tue</code>, <code>Wed</code>, <code>Thu</code>, <code>Fri</code>, <code>Sat</code>, <code>Sun</code></td>
+    <td><code>Mon</code></td>
+  </tr>
+  <tr>
+    <td>Год</td>
+    <td>Год (опционально)</td>
+    <td><code>*</code> (любой), <code>2023</code>, <code>2023-2025</code></td>
+    <td><code>2023</code></td>
+  </tr>
+  <tr>
+    <td>Месяц</td>
+    <td>Месяц</td>
+    <td><code>*</code> (любой), <code>01-12</code>, <code>Jan-Dec</code></td>
+    <td><code>01</code> или <code>Jan</code></td>
+  </tr>
+  <tr>
+    <td>День</td>
+    <td>День месяца</td>
+    <td><code>*</code> (любой), <code>01-31</code></td>
+    <td><code>15</code></td>
+  </tr>
+  <tr>
+    <td>Часы</td>
+    <td>Часы</td>
+    <td><code>*</code> (любой), <code>00-23</code></td>
+    <td><code>02</code></td>
+  </tr>
+  <tr>
+    <td>Минуты</td>
+    <td>Минуты</td>
+    <td><code>*</code> (любой), <code>00-59</code></td>
+    <td><code>30</code></td>
+  </tr>
+  <tr>
+    <td>Секунды</td>
+    <td>Секунды</td>
+    <td><code>*</code> (любой), <code>00-59</code></td>
+    <td><code>00</code></td>
+  </tr>
+</table>
+
+<h4>Примеры OnCalendar</h4>
+<table>
+  <tr>
+    <th>Описание</th>
+    <th>OnCalendar</th>
+    <th>Аналог в cron</th>
+  </tr>
+  <tr>
+    <td>Ежедневно в 2:00</td>
+    <td><code>*-*-* 02:00:00</code></td>
+    <td><code>0 2 * * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждый понедельник в 3:30</td>
+    <td><code>Mon *-*-* 03:30:00</code></td>
+    <td><code>30 3 * * 1</code></td>
+  </tr>
+  <tr>
+    <td>1-го числа каждого месяца в полночь</td>
+    <td><code>*-*-01 00:00:00</code></td>
+    <td><code>0 0 1 * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждый час</td>
+    <td><code>*-*-* *:00:00</code></td>
+    <td><code>0 * * * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждые 30 минут</td>
+    <td><code>*-*-* *:00:00,*:30:00</code></td>
+    <td><code>*/30 * * * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждую минуту</td>
+    <td><code>*-*-* *:*:00</code></td>
+    <td><code>* * * * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждый день в 2:00 и 14:00</td>
+    <td><code>*-*-* 02:00:00,14:00:00</code></td>
+    <td><code>0 2,14 * * *</code></td>
+  </tr>
+  <tr>
+    <td>Каждый рабочий день в 9:00</td>
+    <td><code>Mon-Fri *-*-* 09:00:00</code></td>
+    <td><code>0 9 * * 1-5</code></td>
+  </tr>
+</table>
+
+<h4>Специальные значения</h4>
+<table>
+  <tr>
+    <th>Значение</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>*</code></td>
+    <td>Любое значение.</td>
+  </tr>
+  <tr>
+    <td><code>..</code></td>
+    <td>Диапазон значений (например, <code>2020-2025</code>).</td>
+  </tr>
+  <tr>
+    <td><code>,</code></td>
+    <td>Список значений (например, <code>Mon,Wed,Fri</code>).</td>
+  </tr>
+  <tr>
+    <td><code>~</code></td>
+    <td>Примерно (например, <code>~hourly</code> — примерно каждый час).</td>
+  </tr>
+  <tr>
+    <td><code>hourly</code></td>
+    <td>Каждый час.</td>
+  </tr>
+  <tr>
+    <td><code>daily</code></td>
+    <td>Ежедневно.</td>
+  </tr>
+  <tr>
+    <td><code>weekly</code></td>
+    <td>Еженедельно.</td>
+  </tr>
+  <tr>
+    <td><code>monthly</code></td>
+    <td>Ежемесячно.</td>
+  </tr>
+  <tr>
+    <td><code>yearly</code></td>
+    <td>Ежегодно.</td>
+  </tr>
+  <tr>
+    <td><code>minutely</code></td>
+    <td>Каждую минуту.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования systemd Timers</h3>
+
+<h4>Пример 1: Ежедневный бэкап</h4>
+<p>
+Этот пример демонстрирует, как настроить ежедневный бэкап с использованием systemd Timers.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+backup_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+backup_timer_unit.txt
+</code></pre>
+
+<h4>Пример 2: Запуск задачи через 5 минут после загрузки</h4>
+<p>
+Этот пример демонстрирует, как запустить задачу через 5 минут после загрузки системы.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+delayed_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+delayed_timer_unit.txt
+</code></pre>
+
+<h4>Пример 3: Запуск задачи каждые 30 минут</h4>
+<p>
+Этот пример демонстрирует, как запускать задачу каждые 30 минут.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+periodic_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+periodic_timer_unit.txt
+</code></pre>
+
+<h4>Пример 4: Запуск задачи в рабочие дни</h4>
+<p>
+Этот пример демонстрирует, как запускать задачу в рабочие дни (понедельник–пятница) в 9:00.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+weekday_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+weekday_timer_unit.txt
+</code></pre>
+
+<h4>Пример 5: Запуск задачи с случайной задержкой</h4>
+<p>
+Этот пример демонстрирует, как запускать задачу с случайной задержкой до 10 минут.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+random_delay_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+random_delay_timer_unit.txt
+</code></pre>
+
+<h4>Пример 6: Запуск задачи при загрузке системы</h4>
+<p>
+Этот пример демонстрирует, как запускать задачу один раз при загрузке системы.
+</p>
+
+<h5>Service Unit</h5>
+<pre><code>
+boot_service_unit.txt
+</code></pre>
+
+<h5>Timer Unit</h5>
+<pre><code>
+boot_timer_unit.txt
+</code></pre>
+
+---
+<h3>Управление Timer Units</h3>
+
+<h4>Просмотр списка таймеров</h4>
+<p>
+Для просмотра списка всех таймеров используйте команду:
+</p>
+<pre><code>
+list_timers.sh
+</code></pre>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+list_timers_output.txt
+</code></pre>
+
+<h4>Запуск, остановка и перезапуск таймеров</h4>
+<p>
+Для управления таймерами используйте команды <code>systemctl</code>:
+</p>
+<pre><code>
+manage_timer.sh
+</code></pre>
+
+<h4>Включение и отключение таймеров</h4>
+<p>
+Для включения или отключения таймеров при загрузке системы используйте команды:
+</p>
+<pre><code>
+enable_disable_timer.sh
+</code></pre>
+
+<h4>Просмотр статуса таймера</h4>
+<p>
+Для просмотра статуса таймера используйте команду:
+</p>
+<pre><code>
+timer_status.sh
+</code></pre>
+
+<h4>Просмотр логов таймера</h4>
+<p>
+Для просмотра логов таймера используйте команду <code>journalctl</code>:
+</p>
+<pre><code>
+view_timer_logs.sh
+</code></pre>
+
+---
+<h3>Сравнение с cron</h3>
+
+<h4>Преобразование cron-выражений в OnCalendar</h4>
+<p>
+В этом разделе приведены примеры преобразования выражений <code>cron</code> в формат <code>OnCalendar</code>.
+</p>
+
+<table>
+  <tr>
+    <th>cron</th>
+    <th>OnCalendar</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>0 * * * *</code></td>
+    <td><code>*-*-* *:00:00</code></td>
+    <td>Каждый час в 0 минут</td>
+  </tr>
+  <tr>
+    <td><code>*/5 * * * *</code></td>
+    <td><code>*-*-* *:00:00,*:05:00,*:10:00,*:15:00,*:20:00,*:25:00,*:30:00,*:35:00,*:40:00,*:45:00,*:50:00,*:55:00</code></td>
+    <td>Каждые 5 минут</td>
+  </tr>
+  <tr>
+    <td><code>0 2 * * *</code></td>
+    <td><code>*-*-* 02:00:00</code></td>
+    <td>Ежедневно в 2:00</td>
+  </tr>
+  <tr>
+    <td><code>0 2 * * 1</code></td>
+    <td><code>Mon *-*-* 02:00:00</code></td>
+    <td>Каждый понедельник в 2:00</td>
+  </tr>
+  <tr>
+    <td><code>0 0 1 * *</code></td>
+    <td><code>*-*-01 00:00:00</code></td>
+    <td>1-го числа каждого месяца в полночь</td>
+  </tr>
+  <tr>
+    <td><code>0 0 * * 0</code></td>
+    <td><code>Sun *-*-* 00:00:00</code></td>
+    <td>Каждое воскресенье в полночь</td>
+  </tr>
+  <tr>
+    <td><code>0 9-17 * * 1-5</code></td>
+    <td><code>Mon-Fri *-*-* 09:00:00,10:00:00,11:00:00,12:00:00,13:00:00,14:00:00,15:00:00,16:00:00,17:00:00</code></td>
+    <td>Каждый час с 9:00 до 17:00 в рабочие дни</td>
+  </tr>
+</table>
+
+<h4>Миграция с cron на systemd Timers</h4>
+<p>
+Для миграции с <code>cron</code> на systemd Timers выполните следующие шаги:
+</p>
+<ol>
+  <li>Создайте <strong>Service Unit</strong> для задачи.</li>
+  <li>Создайте <strong>Timer Unit</strong> с расписанием.</li>
+  <li>Включите Timer Unit.</li>
+  <li>Отключите задачу в <code>cron</code>.</li>
+</ol>
+
+<h5>Пример миграции</h5>
+<p>
+Предположим, у вас есть задача в <code>cron</code>:
+</p>
+<pre><code>
+cron_example.txt
+</code></pre>
+<p>
+Создайте <strong>Service Unit</strong>:
+</p>
+<pre><code>
+backup_service_unit.txt
+</code></pre>
+<p>
+Создайте <strong>Timer Unit</strong>:
+</p>
+<pre><code>
+backup_timer_unit.txt
+</code></pre>
+<p>
+Включите Timer Unit:
+</p>
+<pre><code>
+enable_timer.sh
+</code></pre>
+<p>
+Отключите задачу в <code>cron</code>:
+</p>
+<pre><code>
+disable_cron.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>OnCalendar=</code></strong> для гибкого планирования задач.</li>
+  <li><strong>Используйте <code>Persistent=true</code></strong> для запуска пропущенных задач.</li>
+  <li><strong>Используйте <code>RandomizedDelaySec=</code></strong> для распределения нагрузки.</li>
+  <li><strong>Используйте <code>AccuracySec=</code></strong> для настройки точности таймера.</li>
+  <li><strong>Проверяйте логи</strong> с помощью <code>journalctl</code>.</li>
+  <li><strong>Используйте <code>systemctl list-timers</code></strong> для просмотра всех таймеров.</li>
+  <li><strong>Мигрируйте с <code>cron</code></strong> на systemd Timers для новых задач.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с синтаксисом OnCalendar</h4>
+<p>
+Если таймер не срабатывает, проверьте:
+</p>
+<ul>
+  <li>Синтаксис <code>OnCalendar=</code>.</li>
+  <li>Правильность указания <code>Unit=</code>.</li>
+</ul>
+<pre><code>
+check_timer_syntax.sh
+</code></pre>
+
+<h4>Проблемы с правами доступа</h4>
+<p>
+Если задача не выполняется, проверьте:
+</p>
+<ul>
+  <li>Права доступа к файлам и директориям.</li>
+  <li>Пользователя, от имени которого выполняется задача.</li>
+</ul>
+<pre><code>
+check_permissions.sh
+</code></pre>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если таймер не срабатывает из-за зависимостей, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>After=</code>.</li>
+  <li>Статус зависимых сервисов.</li>
+</ul>
+<pre><code>
+check_dependencies.sh
+</code></pre>
+
+<h4>Проблемы с Persistent</h4>
+<p>
+Если пропущенные задачи не выполняются, проверьте:
+</p>
+<ul>
+  <li>Наличие директивы <code>Persistent=true</code>.</li>
+  <li>Логи таймера:</li>
+</ul>
+<pre><code>
+check_persistent.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>systemd Timers</strong> — это современный и мощный механизм планирования задач в Linux, который предоставляет больше возможностей по сравнению с традиционным <code>cron</code>.
+Они интегрированы в systemd, поддерживают зависимости, ограничения ресурсов и предоставляют удобные средства для мониторинга и отладки.
+</p>
+
+<table>
+  <tr>
+    <th>Компонент</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><strong>Timer Unit</strong></td>
+    <td>Определяет, когда должна быть выполнена задача.</td>
+  </tr>
+  <tr>
+    <td><strong>Service Unit</strong></td>
+    <td>Определяет, что должно быть выполнено.</td>
+  </tr>
+  <tr>
+    <td><strong>OnCalendar=</strong></td>
+    <td>Расписание в формате календаря.</td>
+  </tr>
+  <tr>
+    <td><strong>OnBootSec=</strong></td>
+    <td>Время после загрузки системы.</td>
+  </tr>
+  <tr>
+    <td><strong>OnUnitActiveSec=</strong></td>
+    <td>Время после активации unit-файла.</td>
+  </tr>
+  <tr>
+    <td><strong>Persistent=</strong></td>
+    <td>Запускать пропущенные задачи.</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.timer.html">systemd.timer(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.time.html">systemd.time(7) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemctl.html">systemctl(1) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Systemd/Timers">Systemd Timers (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-systemd-timers-as-a-cron-replacement">How To Use Systemd Timers as a Cron Replacement</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.cron.html">systemd.cron(7) — man page</a></li>
+</ul>

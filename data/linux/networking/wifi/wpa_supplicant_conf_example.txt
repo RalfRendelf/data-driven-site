@@ -1,0 +1,27 @@
+# Версия конфигурации
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=RU
+
+# Сеть 1: Открытая сеть
+network={
+    ssid="FreeWiFi"
+    key_mgmt=NONE
+}
+
+# Сеть 2: WPA-PSK (WPA2-Personal)
+network={
+    ssid="MyNetwork"
+    psk="my_password"
+    key_mgmt=WPA-PSK
+}
+
+# Сеть 3: WPA-EAP (WPA2-Enterprise)
+network={
+    ssid="EnterpriseNetwork"
+    key_mgmt=WPA-EAP
+    eap=PEAP
+    identity="user@example.com"
+    password="my_password"
+    phase2="auth=MSCHAPV2"
+}

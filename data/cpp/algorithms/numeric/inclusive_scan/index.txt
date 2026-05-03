@@ -1,3 +1,60 @@
-<h2>std::inclusive_scan</h2>
+<h2>std::inclusive_scan: Инклюзивный префиксный скан</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::inclusive_scan`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code> (доступен с C++17), который вычисляет инклюзивные префиксные суммы.
+В отличие от <code>std::exclusive_scan</code>, инклюзивный скан включает текущий элемент в сумму.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+inclusive_scan_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>result</code></td>
+    <td>Итератор на начало целевого диапазона для записи результатов</td>
+  </tr>
+  <tr>
+    <td><code>op</code></td>
+    <td>Бинарная операция (опционально, по умолчанию <code>operator+</code>)</td>
+  </tr>
+  <tr>
+    <td><code>init</code></td>
+    <td>Начальное значение для скана (опционально)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Инклюзивный префиксный скан</h4>
+<pre><code>
+inclusive_scan_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::inclusive_scan`</strong> — алгоритм для вычисления инклюзивных префиксных сумм.
+Полезен для задач, где нужно получить накопленные значения с включением текущего элемента.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/inclusive_scan">std::inclusive_scan на cppreference.com</a></li>
+</ul>

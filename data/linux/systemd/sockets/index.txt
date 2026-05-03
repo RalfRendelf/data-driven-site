@@ -1,0 +1,504 @@
+<h2>Socket Activation в systemd: .socket + .service</h2>
+
+<p>
+<strong>Socket Activation</strong> — это механизм в <strong>systemd</strong>, который позволяет запускать сервисы только тогда, когда к ним обращаются через сокет.
+Это позволяет значительно сократить время загрузки системы и ресурсы, так как сервисы запускаются по требованию, а не при старте системы.
+</p>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы Socket Activation.</li>
+  <li>Структура .socket и .service файлов.</li>
+  <li>Примеры настройки для TCP, UDP и Unix-сокетов.</li>
+  <li>Преимущества и недостатки Socket Activation.</li>
+  <li>Практические рекомендации.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое Socket Activation?</h4>
+<p>
+<strong>Socket Activation</strong> — это механизм, при котором:
+</p>
+<ol>
+  <li><code>systemd</code> создаёт и прослушивает сокет от имени сервиса.</li>
+  <li>Когда клиент подключается к сокету, <code>systemd</code> запускает соответствующий сервис.</li>
+  <li>Сокет передаётся сервису через переменную окружения <code>$LISTEN_FDS</code>.</li>
+</ol>
+
+<h4>Преимущества Socket Activation</h4>
+<table>
+  <tr>
+    <th>Преимущество</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><strong>Ленивая загрузка</strong></td>
+    <td>Сервисы запускаются только при необходимости.</td>
+  </tr>
+  <tr>
+    <td><strong>Экономия ресурсов</strong></td>
+    <td>Не используются ресурсы для сервисов, которые не используются.</td>
+  </tr>
+  <tr>
+    <td><strong>Быстрая загрузка системы</strong></td>
+    <td>Сервисы не запускаются при старте системы.</td>
+  </tr>
+  <tr>
+    <td><strong>Автоматическое управление сокетами</strong></td>
+    <td><code>systemd</code> управляет созданием и удалением сокетов.</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка нескольких сокетов</strong></td>
+    <td>Один сервис может прослушивать несколько сокетов.</td>
+  </tr>
+</table>
+
+<h4>Недостатки Socket Activation</h4>
+<table>
+  <tr>
+    <th>Недостаток</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><strong>Сложность настройки</strong></td>
+    <td>Требует создания двух файлов: .socket и .service.</td>
+  </tr>
+  <tr>
+    <td><strong>Ограниченная поддержка</strong></td>
+    <td>Не все сервисы поддерживают Socket Activation.</td>
+  </tr>
+  <tr>
+    <td><strong>Зависимость от systemd</strong></td>
+    <td>Работает только в системах с systemd.</td>
+  </tr>
+</table>
+
+<h4>Как работает Socket Activation?</h4>
+<ol>
+  <li><code>systemd</code> создаёт сокет на основе конфигурации в <code>.socket</code> файле.</li>
+  <li>Клиент подключается к сокету.</li>
+  <li><code>systemd</code> запускает сервис, указанный в <code>.socket</code> файле.</li>
+  <li><code>systemd</code> передаёт сокет сервису через файловый дескриптор.</li>
+  <li>Сервис начинает обрабатывать соединения.</li>
+</ol>
+
+---
+<h3>Структура .socket файла</h3>
+
+<h4>Общая структура</h4>
+<p>
+<code>.socket</code> файл состоит из нескольких секций:
+</p>
+<ul>
+  <li><code>[Unit]</code> — общие настройки unit-файла.</li>
+  <li><code>[Socket]</code> — настройки сокета.</li>
+  <li><code>[Install]</code> — настройки установки.</li>
+</ul>
+
+<h4>Секция [Socket]</h4>
+<p>
+Секция <code>[Socket]</code> определяет параметры сокета.
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>ListenStream=</code></td>
+    <td>Создать потоковый сокет (TCP) для прослушивания</td>
+    <td><code>ListenStream=8080</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenDatagram=</code></td>
+    <td>Создать датаграммный сокет (UDP) для прослушивания</td>
+    <td><code>ListenDatagram=8080</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenSequentialPacket=</code></td>
+    <td>Создать последовательный пакетный сокет (SCTP)</td>
+    <td><code>ListenSequentialPacket=8080</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenFIFO=</code></td>
+    <td>Создать FIFO (именованный канал)</td>
+    <td><code>ListenFIFO=/tmp/myfifo</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenSpecial=</code></td>
+    <td>Создать специальный сокет</td>
+    <td><code>ListenSpecial=/dev/log</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenNetlink=</code></td>
+    <td>Создать Netlink-сокет</td>
+    <td><code>ListenNetlink=netfilter</code></td>
+  </tr>
+  <tr>
+    <td><code>ListenMessageQueue=</code></td>
+    <td>Создать очередь сообщений POSIX</td>
+    <td><code>ListenMessageQueue=/myqueue</code></td>
+  </tr>
+  <tr>
+    <td><code>BindIPv6Only=</code></td>
+    <td>Связывать сокет только с IPv6</td>
+    <td><code>BindIPv6Only=both</code></td>
+  </tr>
+  <tr>
+    <td><code>Backlog=</code></td>
+    <td>Размер очереди для входящих соединений</td>
+    <td><code>Backlog=100</code></td>
+  </tr>
+  <tr>
+    <td><code>SocketMode=</code></td>
+    <td>Права доступа к сокету</td>
+    <td><code>SocketMode=0666</code></td>
+  </tr>
+  <tr>
+    <td><code>SocketUser=</code></td>
+    <td>Владелец сокета</td>
+    <td><code>SocketUser=myuser</code></td>
+  </tr>
+  <tr>
+    <td><code>SocketGroup=</code></td>
+    <td>Группа владельца сокета</td>
+    <td><code>SocketGroup=mygroup</code></td>
+  </tr>
+  <tr>
+    <td><code>Accept=</code></td>
+    <td>Принимать соединения (да/нет)</td>
+    <td><code>Accept=yes</code></td>
+  </tr>
+  <tr>
+    <td><code>MaxConnections=</code></td>
+    <td>Максимальное количество соединений</td>
+    <td><code>MaxConnections=100</code></td>
+  </tr>
+  <tr>
+    <td><code>KeepAlive=</code></td>
+    <td>Включить KeepAlive для сокета</td>
+    <td><code>KeepAlive=yes</code></td>
+  </tr>
+  <tr>
+    <td><code>Priority=</code></td>
+    <td>Приоритет сокета</td>
+    <td><code>Priority=99</code></td>
+  </tr>
+  <tr>
+    <td><code>ReusePort=</code></td>
+    <td>Разрешить повторное использование порта</td>
+    <td><code>ReusePort=yes</code></td>
+  </tr>
+  <tr>
+    <td><code>IPv6Only=</code></td>
+    <td>Использовать только IPv6</td>
+    <td><code>IPv6Only=both</code></td>
+  </tr>
+  <tr>
+    <td><code>TCPKeepAlive=</code></td>
+    <td>Включить TCP KeepAlive</td>
+    <td><code>TCPKeepAlive=yes</code></td>
+  </tr>
+</table>
+
+<h4>Секция [Unit] для .socket файла</h4>
+<p>
+Секция <code>[Unit]</code> в <code>.socket</code> файле может содержать директивы для управления зависимостями и описанием.
+</p>
+
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>Description=</code></td>
+    <td>Описание сокета</td>
+    <td><code>Description=My TCP Socket</code></td>
+  </tr>
+  <tr>
+    <td><code>Before=</code></td>
+    <td>Unit-файлы, которые должны быть запущены после сокета</td>
+    <td><code>Before=myapp.service</code></td>
+  </tr>
+  <tr>
+    <td><code>After=</code></td>
+    <td>Unit-файлы, которые должны быть запущены до сокета</td>
+    <td><code>After=network.target</code></td>
+  </tr>
+  <tr>
+    <td><code>Requires=</code></td>
+    <td>Unit-файлы, которые должны быть запущены</td>
+    <td><code>Requires=network.target</code></td>
+  </tr>
+</table>
+
+---
+<h3>Связь между .socket и .service файлами</h3>
+
+<h4>Как связать .socket и .service?</h4>
+<p>
+Для связывания <code>.socket</code> и <code>.service</code> файлов используйте директиву <code>Service=</code> в секции <code>[Socket]</code>:
+</p>
+<pre><code>
+socket_service_link.txt
+</code></pre>
+
+<h4>Передача сокета сервису</h4>
+<p>
+Когда сервис запускается через Socket Activation, <code>systemd</code> передаёт сокет сервису через:
+</p>
+<ul>
+  <li><strong>Переменную окружения <code>$LISTEN_FDS</code></strong> — количество переданных файловых дескрипторов.</li>
+  <li><strong>Переменную окружения <code>$LISTEN_PID</code></strong> — PID процесса, который должен обрабатывать сокеты.</li>
+  <li><strong>Файловые дескрипторы</strong> — сокеты передаются как файловые дескрипторы, начиная с <code>SD_LISTEN_FDS_START</code> (обычно 3).</li>
+</ul>
+
+<h4>Пример обработки сокетов в сервисе</h4>
+<p>
+Сервис должен быть написан так, чтобы принимать сокеты через файловые дескрипторы.
+</p>
+<pre><code>
+socket_activation_example_c.txt
+</code></pre>
+
+---
+<h3>Примеры Socket Activation</h3>
+
+<h4>Пример 1: TCP-сокет</h4>
+<p>
+Этот пример демонстрирует настройку Socket Activation для TCP-сокета.
+</p>
+
+<h5>.socket файл</h5>
+<pre><code>
+tcp_socket_unit.txt
+</code></pre>
+
+<h5>.service файл</h5>
+<pre><code>
+tcp_service_unit.txt
+</code></pre>
+
+<h4>Пример 2: UDP-сокет</h4>
+<p>
+Этот пример демонстрирует настройку Socket Activation для UDP-сокета.
+</p>
+
+<h5>.socket файл</h5>
+<pre><code>
+udp_socket_unit.txt
+</code></pre>
+
+<h5>.service файл</h5>
+<pre><code>
+udp_service_unit.txt
+</code></pre>
+
+<h4>Пример 3: Unix-сокет</h4>
+<p>
+Этот пример демонстрирует настройку Socket Activation для Unix-сокета.
+</p>
+
+<h5>.socket файл</h5>
+<pre><code>
+unix_socket_unit.txt
+</code></pre>
+
+<h5>.service файл</h5>
+<pre><code>
+unix_service_unit.txt
+</code></pre>
+
+<h4>Пример 4: HTTP-сервер с Socket Activation</h4>
+<p>
+Этот пример демонстрирует настройку Socket Activation для HTTP-сервера на Python.
+</p>
+
+<h5>.socket файл</h5>
+<pre><code>
+http_socket_unit.txt
+</code></pre>
+
+<h5>.service файл</h5>
+<pre><code>
+http_service_unit.txt
+</code></pre>
+
+<h5>Код HTTP-сервера на Python</h5>
+<pre><code>
+http_server_py.txt
+</code></pre>
+
+<h4>Пример 5: Сервис с несколькими сокетами</h4>
+<p>
+Этот пример демонстрирует настройку Socket Activation для сервиса, который прослушивает несколько сокетов.
+</p>
+
+<h5>.socket файл</h5>
+<pre><code>
+multi_socket_unit.txt
+</code></pre>
+
+<h5>.service файл</h5>
+<pre><code>
+multi_service_unit.txt
+</code></pre>
+
+---
+<h3>Управление Socket Activation</h3>
+
+<h4>Запуск и остановка сокетов</h4>
+<p>
+Для управления сокетами используйте команды <code>systemctl</code>:
+</p>
+<pre><code>
+manage_socket.sh
+</code></pre>
+
+<h4>Включение и отключение сокетов</h4>
+<p>
+Для включения или отключения сокетов при загрузке системы используйте команды:
+</p>
+<pre><code>
+enable_disable_socket.sh
+</code></pre>
+
+<h4>Просмотр списка сокетов</h4>
+<p>
+Для просмотра списка всех сокетов используйте команду:
+</p>
+<pre><code>
+list_sockets.sh
+</code></pre>
+
+<h4>Просмотр логов сокета</h4>
+<p>
+Для просмотра логов сокета используйте команду:
+</p>
+<pre><code>
+view_socket_logs.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте Socket Activation</strong> для сервисов, которые не всегда нужны.</li>
+  <li><strong>Настраивайте <code>Backlog=</code></strong> для управления очередью соединений.</li>
+  <li><strong>Используйте <code>BindIPv6Only=both</code></strong> для поддержки IPv4 и IPv6.</li>
+  <li><strong>Проверяйте права доступа</strong> к сокетам (<code>SocketMode=</code>, <code>SocketUser=</code>, <code>SocketGroup=</code>).</li>
+  <li><strong>Используйте <code>Accept=yes</code></strong> для автоматического принятия соединений.</li>
+  <li><strong>Проверяйте логи</strong> с помощью <code>journalctl</code>.</li>
+  <li><strong>Тестируйте сервисы</strong> перед включением в загрузку.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с правами доступа</h4>
+<p>
+Если сервис не может получить доступ к сокету, проверьте:
+</p>
+<ul>
+  <li>Права доступа к сокету (<code>SocketMode=</code>).</li>
+  <li>Владельца сокета (<code>SocketUser=</code>, <code>SocketGroup=</code>).</li>
+</ul>
+<pre><code>
+check_socket_permissions.sh
+</code></pre>
+
+<h4>Проблемы с подключением</h4>
+<p>
+Если клиенты не могут подключиться к сокету, проверьте:
+</p>
+<ul>
+  <li>Порт или путь к сокету.</li>
+  <li>Настройки брандмауэра.</li>
+  <li>Статус сокета:</li>
+</ul>
+<pre><code>
+check_socket_status.sh
+</code></pre>
+
+<h4>Проблемы с передачей сокета</h4>
+<p>
+Если сервис не получает сокет, проверьте:
+</p>
+<ul>
+  <li>Переменные окружения <code>$LISTEN_FDS</code> и <code>$LISTEN_PID</code>.</li>
+  <li>Код сервиса для обработки сокетов.</li>
+</ul>
+<pre><code>
+check_listen_fds.sh
+</code></pre>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если сокет не запускается из-за зависимостей, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>After=</code> и <code>Requires=</code>.</li>
+  <li>Статус зависимых сервисов:</li>
+</ul>
+<pre><code>
+check_dependencies.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>Socket Activation</strong> — это мощный механизм в systemd, который позволяет запускать сервисы по требованию, экономя ресурсы и ускоряя загрузку системы.
+Он особенно полезен для сервисов, которые не всегда нужны, но должны быть доступны при обращении.
+</p>
+
+<table>
+  <tr>
+    <th>Компонент</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>.socket</code> файл</td>
+    <td>Определяет параметры сокета.</td>
+  </tr>
+  <tr>
+    <td><code>.service</code> файл</td>
+    <td>Определяет сервис, который будет обрабатывать сокет.</td>
+  </tr>
+  <tr>
+    <td><code>ListenStream=</code></td>
+    <td>Создаёт TCP-сокет.</td>
+  </tr>
+  <tr>
+    <td><code>ListenDatagram=</code></td>
+    <td>Создаёт UDP-сокет.</td>
+  </tr>
+  <tr>
+    <td><code>$LISTEN_FDS</code></td>
+    <td>Количество переданных файловых дескрипторов.</td>
+  </tr>
+  <tr>
+    <td><code>SD_LISTEN_FDS_START</code></td>
+    <td>Начальный номер файловых дескрипторов (обычно 3).</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.socket.html">systemd.socket(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/sd_listen_fds.html">sd_listen_fds(3) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">systemd.service(5) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Systemd#Socket_activation">Socket Activation (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-socket-activation">Understanding Systemd Socket Activation</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/sd-daemon.html">sd-daemon(3) — man page</a></li>
+</ul>

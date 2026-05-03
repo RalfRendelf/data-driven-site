@@ -1,0 +1,7 @@
+[Unit]
+Description=Boot Task Service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/boot_task.sh

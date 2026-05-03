@@ -1,0 +1,8 @@
+[Unit]
+Description=My TCP Service
+Requires=tcp-socket.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/myapp
+StandardInput=socket

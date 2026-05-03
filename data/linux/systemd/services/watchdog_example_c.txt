@@ -1,0 +1,28 @@
+#include <systemd/sd-daemon.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+
+void handle_signal(int sig) {
+    // Уведомляем systemd о том, что сервис жив
+    sd_notify(0, "WATCHDOG=1");
+}
+
+int main() {
+    // Устанавливаем обработчик сигнала
+    signal(SIGALRM, handle_signal);
+
+    // Уведомляем systemd о том, что сервис готов
+    sd_notify(0, "READY=1");
+
+    // Устанавливаем таймер для отправки уведомлений watchdog
+    alarm(5);
+
+    // Основная логика сервиса
+    while (1) {
+        printf("Service is running...\n");
+        sleep(1);
+    }
+
+    return 0;
+}

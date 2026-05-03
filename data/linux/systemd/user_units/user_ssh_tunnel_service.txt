@@ -1,0 +1,12 @@
+[Unit]
+Description=SSH Tunnel to Remote Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -T -L 8080:localhost:80 user@remote-server
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

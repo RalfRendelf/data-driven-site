@@ -1,3 +1,69 @@
-<h2>std::ranges::for_each</h2>
+<h2>std::ranges::for_each: Применение функции к каждому элементу диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::for_each`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который применяет функцию к каждому элементу диапазона.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_for_each_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Итераторы начала и конца диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range</code></td>
+    <td>Диапазон (range)</td>
+  </tr>
+  <tr>
+    <td><code>func</code></td>
+    <td>Функция, применяемая к каждому элементу</td>
+  </tr>
+  <tr>
+    <td><code>proj</code></td>
+    <td>Функция проекции (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на конец диапазона (<code>last</code>).
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Вывод элементов вектора</h4>
+<pre><code>
+ranges_for_each_example.cpp
+</code></pre>
+
+<h4>Пример: Изменение элементов с проекцией</h4>
+<pre><code>
+ranges_for_each_projection_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::for_each`</strong> — современный алгоритм для применения функции к каждому элементу диапазона.
+Поддерживает проекции, что делает его удобным для работы со структурированными данными.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/for_each">std::ranges::for_each на cppreference.com</a></li>
+</ul>

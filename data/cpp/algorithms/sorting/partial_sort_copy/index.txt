@@ -1,3 +1,60 @@
-<h2>std::partial_sort_copy</h2>
+<h2>std::partial_sort_copy: Копирование и частичная сортировка</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::partial_sort_copy`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который копирует элементы из исходного диапазона в целевой и сортирует первые <strong>K</strong> элементов.
+Работает за время <strong>O(N log K)</strong> и использует <strong>O(K)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+partial_sort_copy_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Исходный диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>result_first, result_last</code></td>
+    <td>Целевой диапазон для копирования и сортировки</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на элемент, следующий за последним скопированным и отсортированным элементом в целевом диапазоне.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Копирование и частичная сортировка</h4>
+<pre><code>
+partial_sort_copy_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::partial_sort_copy`</strong> — алгоритм для копирования и частичной сортировки диапазона.
+Полезен, когда нужно скопировать и отсортировать только часть элементов без изменения исходного диапазона.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/partial_sort_copy">std::partial_sort_copy на cppreference.com</a></li>
+</ul>

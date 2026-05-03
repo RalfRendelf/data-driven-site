@@ -1,0 +1,2 @@
+template <class InputIterator, class UnaryPredicate>
+bool is_partitioned(InputIterator first, InputIterator last, UnaryPredicate pred);

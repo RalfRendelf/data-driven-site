@@ -1,0 +1,2 @@
+template <class ForwardIterator, class UnaryPredicate>
+ForwardIterator partition(ForwardIterator first, ForwardIterator last, UnaryPredicate pred);

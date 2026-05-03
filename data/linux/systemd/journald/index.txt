@@ -1,0 +1,630 @@
+<h2>Journald: Система журналов systemd в Linux</h2>
+
+<p>
+<strong>Journald</strong> — это система журналов, входящая в состав <strong>systemd</strong>, которая собирает и хранит логи от всех процессов, сервисов и ядра Linux.
+В отличие от традиционных систем логгирования (например, <code>syslog</code>), journald предоставляет структурированное хранение логов, удобные инструменты для фильтрации и анализа, а также интеграцию с другими компонентами systemd.
+</p>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы работы journald.</li>
+  <li>Команда <code>journalctl</code> и её опции.</li>
+  <li>Фильтрация и анализ логов.</li>
+  <li>Настройка journald.</li>
+  <li>Сравнение с традиционными системами логгирования.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое journald?</h4>
+<p>
+<strong>Journald</strong> — это демон (<code>systemd-journald</code>), который:
+</p>
+<ul>
+  <li>Собирает логи от всех процессов, сервисов и ядра.</li>
+  <li>Хранит логи в структурированном формате.</li>
+  <li>Предоставляет удобные инструменты для фильтрации и анализа логов.</li>
+  <li>Интегрирован с <code>systemd</code> и другими компонентами.</li>
+</ul>
+
+<h4>Преимущества journald</h4>
+<table>
+  <tr>
+    <th>Преимущество</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><strong>Структурированные логи</strong></td>
+    <td>Логи хранятся в бинарном формате с метаданными (например, PID, UID, имя сервиса).</td>
+  </tr>
+  <tr>
+    <td><strong>Быстрый поиск</strong></td>
+    <td>Поддержка быстрого поиска и фильтрации логов.</td>
+  </tr>
+  <tr>
+    <td><strong>Интеграция с systemd</strong></td>
+    <td>Полная интеграция с сервисами и другими компонентами systemd.</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка метаданных</strong></td>
+    <td>Хранение дополнительной информации (например, приоритет, идентификатор сессии).</td>
+  </tr>
+  <tr>
+    <td><strong>Удобные инструменты</strong></td>
+    <td>Команда <code>journalctl</code> для просмотра и фильтрации логов.</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка постоянного хранения</strong></td>
+    <td>Возможность хранения логов на диске (<code>Persistent</code>).</td>
+  </tr>
+</table>
+
+<h4>Компоненты journald</h4>
+<ul>
+  <li><strong>systemd-journald</strong> — демон, собирающий логи.</li>
+  <li><strong>journalctl</strong> — утилита для просмотра и фильтрации логов.</li>
+  <li><strong>/var/log/journal/</strong> — директория для хранения постоянных логов.</li>
+  <li><strong>/run/log/journal/</strong> — директория для хранения временных логов (в памяти).</li>
+</ul>
+
+---
+<h3>Команда journalctl</h3>
+
+<h4>Синтаксис journalctl</h4>
+<p>
+Основной синтаксис команды <code>journalctl</code>:
+</p>
+<pre><code>
+journalctl_syntax.txt
+</code></pre>
+
+<h4>Основные опции journalctl</h4>
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>-u &lt;unit&gt;</code></td>
+    <td>Показать логи для указанного unit-файла</td>
+    <td><code>journalctl -u nginx.service</code></td>
+  </tr>
+  <tr>
+    <td><code>-f</code></td>
+    <td>Следить за новыми записями (аналог <code>tail -f</code>)</td>
+    <td><code>journalctl -f</code></td>
+  </tr>
+  <tr>
+    <td><code>-n &lt;num&gt;</code></td>
+    <td>Показать последние <code>num</code> записей</td>
+    <td><code>journalctl -n 50</code></td>
+  </tr>
+  <tr>
+    <td><code>--since &lt;time&gt;</code></td>
+    <td>Показать записи начиная с указанного времени</td>
+    <td><code>journalctl --since "2023-10-01 12:00:00"</code></td>
+  </tr>
+  <tr>
+    <td><code>--until &lt;time&gt;</code></td>
+    <td>Показать записи до указанного времени</td>
+    <td><code>journalctl --until "2023-10-01 13:00:00"</code></td>
+  </tr>
+  <tr>
+    <td><code>-p &lt;priority&gt;</code></td>
+    <td>Фильтрация по приоритету (0-7)</td>
+    <td><code>journalctl -p err</code></td>
+  </tr>
+  <tr>
+    <td><code>--no-pager</code></td>
+    <td>Отключить постраничный вывод</td>
+    <td><code>journalctl --no-pager</code></td>
+  </tr>
+  <tr>
+    <td><code>--merge</code></td>
+    <td>Объединить логи из разных источников</td>
+    <td><code>journalctl --merge</code></td>
+  </tr>
+  <tr>
+    <td><code>--reverse</code></td>
+    <td>Показать записи в обратном порядке</td>
+    <td><code>journalctl --reverse</code></td>
+  </tr>
+  <tr>
+    <td><code>--disk-usage</code></td>
+    <td>Показать объём дискового пространства, занимаемый логами</td>
+    <td><code>journalctl --disk-usage</code></td>
+  </tr>
+  <tr>
+    <td><code>--vacuum-time &lt;time&gt;</code></td>
+    <td>Удалить записи старше указанного времени</td>
+    <td><code>journalctl --vacuum-time=2weeks</code></td>
+  </tr>
+</table>
+
+---
+<h3>Фильтрация логов</h3>
+
+<h4>Фильтрация по unit-файлу</h4>
+<p>
+Для фильтрации логов по unit-файлу используйте опцию <code>-u</code>:
+</p>
+<pre><code>
+filter_by_unit.sh
+</code></pre>
+
+<h4>Фильтрация по приоритету</h4>
+<p>
+Логи в journald имеют приоритеты от 0 (наивысший) до 7 (наименьший):
+</p>
+<table>
+  <tr>
+    <th>Приоритет</th>
+    <th>Значение</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td><code>emerg</code></td>
+    <td>Критическая ошибка (система неработоспособна)</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td><code>alert</code></td>
+    <td>Срочное уведомление (требует немедленных действий)</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><code>crit</code></td>
+    <td>Критическая ошибка</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><code>err</code></td>
+    <td>Ошибка</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td><code>warning</code></td>
+    <td>Предупреждение</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td><code>notice</code></td>
+    <td>Уведомление</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td><code>info</code></td>
+    <td>Информационное сообщение</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td><code>debug</code></td>
+    <td>Отладочное сообщение</td>
+  </tr>
+</table>
+<p>
+Для фильтрации по приоритету используйте опцию <code>-p</code>:
+</p>
+<pre><code>
+filter_by_priority.sh
+</code></pre>
+
+<h4>Фильтрация по времени</h4>
+<p>
+Для фильтрации по времени используйте опции <code>--since</code> и <code>--until</code>:
+</p>
+<pre><code>
+filter_by_time.sh
+</code></pre>
+
+<h4>Фильтрация по PID или UID</h4>
+<p>
+Для фильтрации по идентификатору процесса (PID) или пользователя (UID) используйте опции <code>_PID=</code> и <code>_UID=</code>:
+</p>
+<pre><code>
+filter_by_pid_uid.sh
+</code></pre>
+
+<h4>Фильтрация по полям</h4>
+<p>
+Journald позволяет фильтровать логи по различным полям. Для просмотра всех доступных полей используйте опцию <code>--list-fields</code>:
+</p>
+<pre><code>
+list_fields.sh
+</code></pre>
+<p>
+Примеры фильтрации по полям:
+</p>
+<pre><code>
+filter_by_fields.sh
+</code></pre>
+
+<h4>Комбинирование фильтров</h4>
+<p>
+Фильтры можно комбинировать для более точного поиска:
+</p>
+<pre><code>
+combine_filters.sh
+</code></pre>
+
+---
+<h3>Просмотр и анализ логов</h3>
+
+<h4>Просмотр логов в реальном времени</h4>
+<p>
+Для просмотра логов в реальном времени используйте опцию <code>-f</code>:
+</p>
+<pre><code>
+follow_logs.sh
+</code></pre>
+
+<h4>Просмотр логов в формате JSON</h4>
+<p>
+Для просмотра логов в формате JSON используйте опцию <code>--output=json</code>:
+</p>
+<pre><code>
+json_logs.sh
+</code></pre>
+
+<h4>Просмотр логов с уникальными значениями поля</h4>
+<p>
+Для просмотра уникальных значений поля используйте опцию <code>--output=cat</code> с <code>sort</code> и <code>uniq</code>:
+</p>
+<pre><code>
+unique_values.sh
+</code></pre>
+
+<h4>Просмотр статистики логов</h4>
+<p>
+Для просмотра статистики по логам используйте опцию <code>--list-boots</code>:
+</p>
+<pre><code>
+list_boots.sh
+</code></pre>
+<p>
+Для просмотра статистики по сервисам:
+</p>
+<pre><code>
+service_stats.sh
+</code></pre>
+
+---
+<h3>Настройка journald</h3>
+
+<h4>Конфигурационный файл journald</h4>
+<p>
+Конфигурация journald хранится в файле <code>/etc/systemd/journald.conf</code>.
+</p>
+<pre><code>
+journald_conf_example.txt
+</code></pre>
+
+<h4>Опции конфигурации journald</h4>
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+    <th>Значения</th>
+  </tr>
+  <tr>
+    <td><code>Storage=</code></td>
+    <td>Тип хранения логов</td>
+    <td><code>volatile</code> (в памяти), <code>persistent</code> (на диске), <code>auto</code>, <code>none</code></td>
+  </tr>
+  <tr>
+    <td><code>SystemMaxUse=</code></td>
+    <td>Максимальный объём дискового пространства для логов</td>
+    <td><code>100M</code>, <code>1G</code> и т. д.</td>
+  </tr>
+  <tr>
+    <td><code>SystemMaxAge=</code></td>
+    <td>Максимальный возраст логов</td>
+    <td><code>1week</code>, <code>1month</code>, <code>1year</code> и т. д.</td>
+  </tr>
+  <tr>
+    <td><code>SystemMaxFiles=</code></td>
+    <td>Максимальное количество файлов логов</td>
+    <td><code>10</code>, <code>100</code> и т. д.</td>
+  </tr>
+  <tr>
+    <td><code>SystemMaxFileSize=</code></td>
+    <td>Максимальный размер одного файла лога</td>
+    <td><code>10M</code>, <code>100M</code> и т. д.</td>
+  </tr>
+  <tr>
+    <td><code>Compress=</code></td>
+    <td>Сжимать старые логи</td>
+    <td><code>yes</code>, <code>no</code></td>
+  </tr>
+  <tr>
+    <td><code>ForwardToSyslog=</code></td>
+    <td>Форвардить логи в syslog</td>
+    <td><code>yes</code>, <code>no</code></td>
+  </tr>
+  <tr>
+    <td><code>ForwardToWall=</code></td>
+    <td>Форвардить логи в <code>/dev/console</code></td>
+    <td><code>yes</code>, <code>no</code></td>
+  </tr>
+</table>
+
+<h4>Перезапуск journald</h4>
+<p>
+После изменения конфигурации перезапустите journald:
+</p>
+<pre><code>
+restart_journald.sh
+</code></pre>
+
+<h4>Очистка логов</h4>
+<p>
+Для очистки старых логов используйте команды:
+</p>
+<pre><code>
+clean_logs.sh
+</code></pre>
+
+---
+<h3>Сравнение с традиционными системами логгирования</h3>
+
+<h4>Journald vs. Syslog</h4>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>Journald</th>
+    <th>Syslog</th>
+  </tr>
+  <tr>
+    <td><strong>Формат хранения</strong></td>
+    <td>Бинарный, структурированный</td>
+    <td>Текстовый</td>
+  </tr>
+  <tr>
+    <td><strong>Метаданные</strong></td>
+    <td>Да (PID, UID, приоритет и т. д.)</td>
+    <td>Ограниченные</td>
+  </tr>
+  <tr>
+    <td><strong>Поиск и фильтрация</strong></td>
+    <td>Быстрый, гибкий</td>
+    <td>Медленный, ограниченный</td>
+  </tr>
+  <tr>
+    <td><strong>Интеграция с systemd</strong></td>
+    <td>Полная</td>
+    <td>Нет</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка постоянного хранения</strong></td>
+    <td>Да</td>
+    <td>Да</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка удалённого логгирования</strong></td>
+    <td>Да (через <code>systemd-journal-remote</code>)</td>
+    <td>Да</td>
+  </tr>
+  <tr>
+    <td><strong>Совместимость</strong></td>
+    <td>Только systemd</td>
+    <td>Все Unix-подобные системы</td>
+  </tr>
+</table>
+
+<h4>Journald vs. rsyslog</h4>
+<p>
+<code>rsyslog</code> — это расширенная версия <code>syslog</code>, которая поддерживает фильтрацию, форматирование и удалённое логгирование.
+Journald и rsyslog могут работать вместе: journald собирает логи, а rsyslog форвардит их на удалённые серверы.
+</p>
+
+---
+<h3>Практические примеры</h3>
+
+<h4>Пример 1: Просмотр логов для сервиса</h4>
+<p>
+Просмотрите логи для сервиса <code>nginx</code>:
+</p>
+<pre><code>
+view_nginx_logs.sh
+</code></pre>
+
+<h4>Пример 2: Просмотр логов за последние 2 часа</h4>
+<p>
+Просмотрите логи за последние 2 часа:
+</p>
+<pre><code>
+view_recent_logs.sh
+</code></pre>
+
+<h4>Пример 3: Просмотр ошибок для сервиса</h4>
+<p>
+Просмотрите ошибки для сервиса <code>mysql</code>:
+</p>
+<pre><code>
+view_mysql_errors.sh
+</code></pre>
+
+<h4>Пример 4: Просмотр логов в реальном времени</h4>
+<p>
+Следите за логами в реальном времени:
+</p>
+<pre><code>
+follow_logs.sh
+</code></pre>
+
+<h4>Пример 5: Просмотр логов для конкретного процесса</h4>
+<p>
+Просмотрите логи для процесса с PID 1234:
+</p>
+<pre><code>
+view_pid_logs.sh
+</code></pre>
+
+<h4>Пример 6: Просмотр логов для конкретного пользователя</h4>
+<p>
+Просмотрите логи для пользователя <code>nginx</code>:
+</p>
+<pre><code>
+view_user_logs.sh
+</code></pre>
+
+<h4>Пример 7: Просмотр логов ядра</h4>
+<p>
+Просмотрите логи ядра:
+</p>
+<pre><code>
+view_kernel_logs.sh
+</code></pre>
+
+<h4>Пример 8: Экспорт логов в файл</h4>
+<p>
+Экспортируйте логи в текстовый файл:
+</p>
+<pre><code>
+export_logs.sh
+</code></pre>
+<p>
+Экспортируйте логи в формате JSON:
+</p>
+<pre><code>
+export_json_logs.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>journalctl</code></strong> для просмотра и фильтрации логов.</li>
+  <li><strong>Настраивайте <code>Storage=persistent</code></strong> для хранения логов на диске.</li>
+  <li><strong>Ограничивайте размер логов</strong> с помощью <code>SystemMaxUse=</code> и <code>SystemMaxAge=</code>.</li>
+  <li><strong>Используйте <code>-f</code></strong> для мониторинга логов в реальном времени.</li>
+  <li><strong>Фильтруйте логи</strong> по unit-файлам, приоритетам, времени и другим полям.</li>
+  <li><strong>Очищайте старые логи</strong> с помощью <code>journalctl --vacuum-time</code>.</li>
+  <li><strong>Используйте <code>--merge</code></strong> для объединения логов из разных источников.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с постоянным хранением</h4>
+<p>
+Если логи не сохраняются после перезагрузки, проверьте:
+</p>
+<ul>
+  <li>Наличие директории <code>/var/log/journal/</code>:</li>
+</ul>
+<pre><code>
+check_journal_dir.sh
+</code></pre>
+<ul>
+  <li>Наличие опции <code>Storage=persistent</code> в конфигурации:</li>
+</ul>
+<pre><code>
+check_storage.sh
+</code></pre>
+
+<h4>Проблемы с правами доступа</h4>
+<p>
+Если пользователи не могут просматривать логи, проверьте:
+</p>
+<ul>
+  <li>Права доступа к директории <code>/var/log/journal/</code>:</li>
+</ul>
+<pre><code>
+check_journal_permissions.sh
+</code></pre>
+<ul>
+  <li>Группу <code>systemd-journal</code>:</li>
+</ul>
+<pre><code>
+add_to_journal_group.sh
+</code></pre>
+
+<h4>Проблемы с объёмом логов</h4>
+<p>
+Если логи занимают слишком много места, проверьте:
+</p>
+<ul>
+  <li>Объём логов:</li>
+</ul>
+<pre><code>
+check_journal_size.sh
+</code></pre>
+<ul>
+  <li>Настройки ограничения размера:</li>
+</ul>
+<pre><code>
+check_journal_limits.sh
+</code></pre>
+
+<h4>Проблемы с фильтрацией</h4>
+<p>
+Если фильтрация не работает, проверьте:
+</p>
+<ul>
+  <li>Правильность указания опций.</li>
+  <li>Наличие логов для указанного фильтра:</li>
+</ul>
+<pre><code>
+check_filter.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>Journald</strong> — это современная и мощная система логгирования, которая предоставляет структурированное хранение логов, удобные инструменты для фильтрации и анализа, а также полную интеграцию с systemd.
+Она заменяет традиционные системы логгирования, такие как <code>syslog</code>, и предоставляет больше возможностей для мониторинга и отладки систем.
+</p>
+
+<table>
+  <tr>
+    <th>Команда</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>journalctl</code></td>
+    <td>Просмотр и фильтрация логов</td>
+  </tr>
+  <tr>
+    <td><code>journalctl -u &lt;unit&gt;</code></td>
+    <td>Просмотр логов для unit-файла</td>
+  </tr>
+  <tr>
+    <td><code>journalctl -f</code></td>
+    <td>Следить за логами в реальном времени</td>
+  </tr>
+  <tr>
+    <td><code>journalctl -p &lt;priority&gt;</code></td>
+    <td>Фильтрация по приоритету</td>
+  </tr>
+  <tr>
+    <td><code>journalctl --since &lt;time&gt;</code></td>
+    <td>Фильтрация по времени</td>
+  </tr>
+  <tr>
+    <td><code>journalctl --disk-usage</code></td>
+    <td>Просмотр объёма логов</td>
+  </tr>
+  <tr>
+    <td><code>journalctl --vacuum-time &lt;time&gt;</code></td>
+    <td>Очистка старых логов</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html">systemd-journald.service(8) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/journalctl.html">journalctl(1) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/journald.conf.html">journald.conf(5) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Systemd/Journal">Systemd Journal (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs">How To Use Journalctl to View and Manipulate Systemd Logs</a></li>
+  <li><a href="https://www.loggly.com/ultimate-guide/understanding-systemd-journald/">Understanding systemd Journald</a></li>
+</ul>

@@ -1,0 +1,8 @@
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int sockfd = socket(AF_INET, SOCK_STREAM, 0); // IPv4, TCP
+if (sockfd == -1) {
+    perror("socket");
+    exit(EXIT_FAILURE);
+}

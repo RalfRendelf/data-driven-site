@@ -1,0 +1,127 @@
+#include <iostream>
+#include <string>
+#include <libnftnl/table.h>
+#include <libnftnl/chain.h>
+#include <libnftnl/rule.h>
+#include <libnftnl/expr.h>
+#include <netlink.h>
+#include <linux/netfilter.h>
+#include <linux/netfilter_nfnetlink.h>
+
+int main() {
+    struct nftnl_table *table;
+    struct nftnl_chain *chain;
+    struct nftnl_rule *rule;
+    struct nftnl_expr *expr;
+    struct nl_sock *sock;
+    struct nlmsghdr *nlh;
+    uint32_t seq = 0;
+
+    // Создаём сокет Netlink
+    sock = nl_socket_alloc();
+    if (!sock) {
+        std::cerr << "Failed to allocate Netlink socket" << std::endl;
+        return 1;
+    }
+
+    // Подключаемся к Netfilter
+    if (nl_connect(sock, NETLINK_NETFILTER) < 0) {
+        std::cerr << "Failed to connect to Netfilter" << std::endl;
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    // Создаём таблицу
+    table = nftnl_table_alloc();
+    if (!table) {
+        std::cerr << "Failed to allocate table" << std::endl;
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    nftnl_table_set_str(table, NFTNL_TABLE_NAME, "filter");
+    nftnl_table_set_u32(table, NFTNL_TABLE_FAMILY, NFPROTO_IPV4);
+
+    // Создаём цепочку
+    chain = nftnl_chain_alloc();
+    if (!chain) {
+        std::cerr << "Failed to allocate chain" << std::endl;
+        nftnl_table_free(table);
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    nftnl_chain_set_str(chain, NFTNL_CHAIN_NAME, "input");
+    nftnl_chain_set_str(chain, NFTNL_CHAIN_TABLE, "filter");
+    nftnl_chain_set_u32(chain, NFTNL_CHAIN_HOOKNUM, NF_INET_PRE_ROUTING);
+    nftnl_chain_set_u32(chain, NFTNL_CHAIN_PRIO, 0);
+
+    // Создаём правило
+    rule = nftnl_rule_alloc();
+    if (!rule) {
+        std::cerr << "Failed to allocate rule" << std::endl;
+        nftnl_chain_free(chain);
+        nftnl_table_free(table);
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    // Добавляем выражение для разрешения TCP на порт 22
+    expr = nftnl_expr_alloc("match");
+    if (!expr) {
+        std::cerr << "Failed to allocate expression" << std::endl;
+        nftnl_rule_free(rule);
+        nftnl_chain_free(chain);
+        nftnl_table_free(table);
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    nftnl_expr_set_str(expr, NFTNL_EXPR_MATCH_NAME, "tcp");
+    nftnl_expr_set_u32(expr, NFTNL_EXPR_MATCH_DPORT, htons(22));
+
+    nftnl_rule_add_expr(rule, expr);
+
+    // Добавляем целевое действие (accept)
+    expr = nftnl_expr_alloc("accept");
+    if (!expr) {
+        std::cerr << "Failed to allocate accept expression" << std::endl;
+        nftnl_rule_free(rule);
+        nftnl_chain_free(chain);
+        nftnl_table_free(table);
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    nftnl_rule_add_expr(rule, expr);
+
+    // Отправляем правило в ядро
+    nlh = nftnl_nlmsg_build_hdr(
+        nlmsg_buf(sock),
+        NFT_MSG_NEWRULE,
+        NFPROTO_IPV4,
+        NLM_F_CREATE | NLM_F_ACK,
+        seq++
+    );
+
+    nftnl_rule_nlmsg_build_payload(nlh, rule);
+
+    if (nl_send_auto(sock, nlh) < 0) {
+        std::cerr << "Failed to send rule" << std::endl;
+        nftnl_rule_free(rule);
+        nftnl_chain_free(chain);
+        nftnl_table_free(table);
+        nl_socket_free(sock);
+        return 1;
+    }
+
+    std::cout << "Rule added successfully" << std::endl;
+
+    // Освобождаем ресурсы
+    nftnl_rule_free(rule);
+    nftnl_chain_free(chain);
+    nftnl_table_free(table);
+    nl_socket_free(sock);
+
+    return 0;
+}

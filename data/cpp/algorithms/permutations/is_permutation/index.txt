@@ -1,3 +1,65 @@
-<h2>std::is_permutation</h2>
+<h2>std::is_permutation: Проверка, является ли диапазон перестановкой другого</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::is_permutation`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который проверяет, является ли один диапазон перестановкой другого.
+Работает за линейное время <strong>O(N)</strong> (если диапазоны имеют одинаковый размер) и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+is_permutation_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first1, last1</code></td>
+    <td>Первый диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>first2</code></td>
+    <td>Начало второго диапазона (длина должна совпадать с первым)</td>
+  </tr>
+  <tr>
+    <td><code>pred</code></td>
+    <td>Бинарный предикат для сравнения элементов (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>true</code>, если второй диапазон является перестановкой первого, и <code>false</code> в противном случае.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Проверка перестановки</h4>
+<pre><code>
+is_permutation_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного предиката</h4>
+<pre><code>
+is_permutation_predicate_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::is_permutation`</strong> — алгоритм для проверки, является ли один диапазон перестановкой другого.
+Полезен для сравнения последовательностей, где порядок элементов не важен.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/is_permutation">std::is_permutation на cppreference.com</a></li>
+</ul>

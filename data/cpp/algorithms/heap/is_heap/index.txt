@@ -1,3 +1,56 @@
-<h2>std::is_heap</h2>
+<h2>std::is_heap: Проверка, является ли диапазон кучей</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::is_heap`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который проверяет, является ли диапазон кучей.
+Работает за время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+is_heap_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон для проверки</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>true</code>, если диапазон является кучей, и <code>false</code> в противном случае.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Проверка, является ли вектор кучей</h4>
+<pre><code>
+is_heap_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::is_heap`</strong> — алгоритм для проверки, является ли диапазон кучей.
+Полезен для отладки и проверки корректности структуры данных.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/is_heap">std::is_heap на cppreference.com</a></li>
+</ul>

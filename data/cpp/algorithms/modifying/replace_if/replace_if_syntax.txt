@@ -1,0 +1,3 @@
+template <class ForwardIterator, class UnaryPredicate, class T>
+void replace_if(ForwardIterator first, ForwardIterator last,
+                UnaryPredicate pred, const T& new_value);

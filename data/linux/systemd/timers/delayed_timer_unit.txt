@@ -1,0 +1,9 @@
+[Unit]
+Description=Delayed Task Timer
+
+[Timer]
+OnBootSec=5min
+Unit=delayed_task.service
+
+[Install]
+WantedBy=timers.target

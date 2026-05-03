@@ -1,0 +1,17 @@
+[Unit]
+Description=My Application with Resource Limits
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+Group=mygroup
+ExecStart=/usr/bin/myapp
+Restart=on-failure
+LimitNOFILE=1024
+LimitNPROC=512
+MemoryLimit=100M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

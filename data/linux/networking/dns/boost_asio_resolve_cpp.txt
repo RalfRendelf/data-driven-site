@@ -1,0 +1,19 @@
+#include <iostream>
+#include <boost/asio.hpp>
+
+using boost::asio::ip::tcp;
+
+int main() {
+    boost::asio::io_context io_context;
+    tcp::resolver resolver(io_context);
+
+    // Разрешаем имя домена
+    auto endpoints = resolver.resolve("example.com", "80");
+
+    std::cout << "IP addresses for example.com:\n";
+    for (const auto& endpoint : endpoints) {
+        std::cout << "  " << endpoint.address() << std::endl;
+    }
+
+    return 0;
+}

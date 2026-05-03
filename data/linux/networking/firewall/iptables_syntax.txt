@@ -1,0 +1,1 @@
+iptables [-t table] [-A|-D|-I|-R|-L|-F|-Z|-N|-X|-P|-E] [chain] [rules] [options]

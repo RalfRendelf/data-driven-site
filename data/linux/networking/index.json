@@ -1,1 +1,73 @@
-[]
+[{
+      "type": "linux",
+      "name": "TCP/IP Basics",
+      "fileName": "tcp_ip_basics",
+      "category": "linux/networking",
+      "usage": "Основы сетевого стека: IP, TCP, UDP, маршрутизация",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Sockets API",
+      "fileName": "sockets",
+      "category": "linux/networking",
+      "usage": "Сетевое программирование: socket(), bind(), listen(), accept(), connect()",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Epoll & Multiplexing",
+      "fileName": "epoll",
+      "category": "linux/networking",
+      "usage": "Мультиплексирование: epoll, select, poll, edge-triggered, level-triggered",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Routing & Interfaces",
+      "fileName": "routing",
+      "category": "linux/networking",
+      "usage": "Маршруты, интерфейсы, iproute2, таблицы маршрутизации",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Firewall & Netfilter",
+      "fileName": "firewall",
+      "category": "linux/networking",
+      "usage": "iptables, nftables, netfilter, правила фильтрации",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "DNS & Name Resolution",
+      "fileName": "dns",
+      "category": "linux/networking",
+      "usage": "DNS, /etc/resolv.conf, systemd-resolved, dig, nslookup",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Network Tools",
+      "fileName": "tools",
+      "category": "linux/networking",
+      "usage": "netstat, ss, tcpdump, wireshark, traceroute, ping",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Wireless & Wi-Fi",
+      "fileName": "wifi",
+      "category": "linux/networking",
+      "usage": "iw, iwconfig, wpa_supplicant, управление беспроводными интерфейсами",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Network Services",
+      "fileName": "services",
+      "category": "linux/networking",
+      "usage": "DHCP, SSH, NTP, HTTP(S), systemd-networkd",
+      "isLeaf": true
+    }
+  ] 

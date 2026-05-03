@@ -1,0 +1,7 @@
+template <class ForwardIterator>
+std::pair<ForwardIterator, ForwardIterator>
+minmax_element(ForwardIterator first, ForwardIterator last);
+
+template <class ForwardIterator, class Compare>
+std::pair<ForwardIterator, ForwardIterator>
+minmax_element(ForwardIterator first, ForwardIterator last, Compare comp);

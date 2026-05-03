@@ -1,3 +1,75 @@
-<h2>std::count</h2>
+<h2>std::count: Подсчёт количества вхождений элемента в диапазоне</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::count`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который подсчитывает количество элементов в диапазоне, равных заданному значению.
+Работает за линейное время <strong>O(N)</strong>, где N — размер диапазона.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+count_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first</code></td>
+    <td>Итератор на начало диапазона</td>
+  </tr>
+  <tr>
+    <td><code>last</code></td>
+    <td>Итератор на конец диапазона (не включается)</td>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>Значение, количество вхождений которого нужно подсчитать</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает количество элементов в диапазоне <code>[first, last)</code>, равных <code>value</code>.
+Тип возвращаемого значения — <code>typename iterator_traits<InputIterator>::difference_type</code> (обычно <code>ptrdiff_t</code>).
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Подсчёт вхождений числа в векторе</h4>
+<pre><code>
+count_vector_example.cpp
+</code></pre>
+
+<h4>Пример 2: Подсчёт вхождений символа в строке</h4>
+<pre><code>
+count_string_example.cpp
+</code></pre>
+
+---
+<h3>Шаблон применения</h3>
+
+<p><strong>Шаблон применения <code>std::count</code>:</strong></p>
+<pre><code>
+count_template.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::count`</strong> — простой и эффективный алгоритм для подсчёта количества вхождений элемента в диапазоне.
+Работает за линейное время <strong>O(N)</strong> и подходит для любых контейнеров, поддерживающих итераторы ввода.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/count">std::count на cppreference.com</a></li>
+</ul>

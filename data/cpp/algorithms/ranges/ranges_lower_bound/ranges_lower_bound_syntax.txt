@@ -1,0 +1,6 @@
+template <std::forward_iterator I, std::sentinel_for<I> S, class T, class Comp = std::less<>, class Proj = std::identity>
+constexpr I lower_bound(I first, S last, const T& value, Comp comp = {}, Proj proj = {});
+
+template <std::ranges::forward_range R, class T, class Comp = std::less<>, class Proj = std::identity>
+constexpr std::ranges::borrowed_iterator_t<R>
+lower_bound(R&& range, const T& value, Comp comp = {}, Proj proj = {});

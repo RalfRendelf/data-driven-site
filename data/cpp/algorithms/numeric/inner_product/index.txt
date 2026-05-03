@@ -1,3 +1,70 @@
-<h2>std::inner_product</h2>
+<h2>std::accumulate: Суммирование элементов диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::accumulate`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code>, который вычисляет сумму элементов в диапазоне или применяет бинарную операцию к элементам.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+accumulate_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>init</code></td>
+    <td>Начальное значение аккумулятора</td>
+  </tr>
+  <tr>
+    <td><code>op</code></td>
+    <td>Бинарная операция (опционально, по умолчанию используется <code>operator+</code>)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает результат аккумуляции (сумму или результат применения бинарной операции).
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Суммирование элементов вектора</h4>
+<pre><code>
+accumulate_sum_example.cpp
+</code></pre>
+
+<h4>Пример 2: Умножение элементов вектора</h4>
+<pre><code>
+accumulate_multiply_example.cpp
+</code></pre>
+
+<h4>Пример 3: Конкатенация строк</h4>
+<pre><code>
+accumulate_string_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::accumulate`</strong> — универсальный алгоритм для свёртки диапазона в одно значение с использованием бинарной операции.
+Чаще всего используется для суммирования элементов, но поддерживает любые бинарные операции.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/accumulate">std::accumulate на cppreference.com</a></li>
+</ul>

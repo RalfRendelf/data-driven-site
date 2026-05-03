@@ -1,3 +1,64 @@
-<h2>std::transform</h2>
+<h2>std::transform: Применение функции к диапазону</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::transform`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который применяет функцию к каждому элементу диапазона и сохраняет результат в другом диапазоне.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+transform_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first1, last1</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>first2</code></td>
+    <td>Начало второго диапазона (для бинарной функции)</td>
+  </tr>
+  <tr>
+    <td><code>result</code></td>
+    <td>Итератор на начало целевого диапазона</td>
+  </tr>
+  <tr>
+    <td><code>op</code></td>
+    <td>Функция (унарная или бинарная), применяемая к элементам</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Применение унарной функции</h4>
+<pre><code>
+transform_unary_example.cpp
+</code></pre>
+
+<h4>Пример 2: Применение бинарной функции</h4>
+<pre><code>
+transform_binary_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::transform`</strong> — мощный алгоритм для применения функции к элементам диапазона.
+Поддерживает как унарные, так и бинарные функции, что позволяет выполнять различные преобразования данных.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/transform">std::transform на cppreference.com</a></li>
+</ul>

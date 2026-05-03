@@ -1,0 +1,1 @@
+journalctl --list-fields

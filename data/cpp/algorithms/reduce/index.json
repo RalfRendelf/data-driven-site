@@ -1,0 +1,17 @@
+[
+      {
+    "type": "cpp",
+    "name": "std::reduce",
+    "fileName": "reduce",
+    "category": "algorithms/reduce",
+    "usage": "Применение функции к диапазону (O(N) время, O(1) память)",
+    "isLeaf": true
+  },  {
+    "type": "cpp",
+    "name": "std::transform_reduce",
+    "fileName": "transform_reduce",
+    "category": "algorithms/reduce",
+    "usage": "Комбинация transform + reduce (O(N) время, O(1) память)",
+    "isLeaf": true
+  }
+]

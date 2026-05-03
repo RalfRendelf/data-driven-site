@@ -1,0 +1,86 @@
+<h2>std::transform_reduce: Комбинация transform + reduce</h2>
+
+<p>
+<strong>`std::transform_reduce`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code> (доступен с C++17), который объединяет <code>std::transform</code> и <code>std::reduce</code>.
+Сначала применяет унарную операцию к каждому элементу диапазона, затем выполняет свёртку результатов.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+transform_reduce_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>first2</code></td>
+    <td>Начало второго диапазона (для бинарной версии)</td>
+  </tr>
+  <tr>
+    <td><code>init</code></td>
+    <td>Начальное значение аккумулятора</td>
+  </tr>
+  <tr>
+    <td><code>binary_op</code></td>
+    <td>Бинарная операция для свёртки</td>
+  </tr>
+  <tr>
+    <td><code>unary_op</code></td>
+    <td>Унарная операция для преобразования элементов</td>
+  </tr>
+  <tr>
+    <td><code>binary_op2</code></td>
+    <td>Бинарная операция для преобразования элементов (в версии с двумя диапазонами)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Сумма квадратов элементов</h4>
+<pre><code>
+transform_reduce_squares_example.cpp
+</code></pre>
+
+<h4>Пример 2: Скалярное произведение с преобразованием</h4>
+<pre><code>
+transform_reduce_dot_product_example.cpp
+</code></pre>
+
+<h4>Пример 3: Конкатенация строк с преобразованием</h4>
+<pre><code>
+transform_reduce_string_example.cpp
+</code></pre>
+
+---
+<h3>Отличия от комбинации std::transform + std::reduce</h3>
+<ul>
+  <li><strong>Эффективность:</strong> <code>std::transform_reduce</code> может выполнять преобразование и свёртку за один проход, что более эффективно.</li>
+  <li><strong>Параллельное выполнение:</strong> Поддерживает параллельное выполнение, если компилятор это позволяет.</li>
+  <li><strong>Удобство:</strong> Объединяет два шага (преобразование и свёртку) в один вызов функции.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::transform_reduce`</strong> — алгоритм для комбинированного преобразования и свёртки диапазона.
+Полезен для задач, где нужно сначала преобразовать элементы, а затем получить одно значение (например, сумма квадратов, скалярное произведение).
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/transform_reduce">std::transform_reduce на cppreference.com</a></li>
+</ul>

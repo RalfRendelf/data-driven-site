@@ -1,0 +1,1 @@
+systemctl cat nginx.service

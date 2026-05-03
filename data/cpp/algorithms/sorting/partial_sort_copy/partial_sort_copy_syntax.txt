@@ -1,0 +1,10 @@
+template <class InputIterator, class RandomAccessIterator>
+RandomAccessIterator partial_sort_copy(InputIterator first, InputIterator last,
+                                       RandomAccessIterator result_first,
+                                       RandomAccessIterator result_last);
+
+template <class InputIterator, class RandomAccessIterator, class Compare>
+RandomAccessIterator partial_sort_copy(InputIterator first, InputIterator last,
+                                       RandomAccessIterator result_first,
+                                       RandomAccessIterator result_last,
+                                       Compare comp);

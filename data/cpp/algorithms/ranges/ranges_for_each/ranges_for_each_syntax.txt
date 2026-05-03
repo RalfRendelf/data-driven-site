@@ -1,0 +1,6 @@
+template <std::input_iterator I, std::sentinel_for<I> S, class F, class Proj = std::identity>
+constexpr I for_each(I first, S last, F func, Proj proj = {});
+
+template <std::ranges::input_range R, class F, class Proj = std::identity>
+constexpr std::ranges::borrowed_iterator_t<R>
+for_each(R&& range, F func, Proj proj = {});

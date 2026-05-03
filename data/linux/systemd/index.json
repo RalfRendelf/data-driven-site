@@ -1,1 +1,66 @@
-[]
+[
+    {
+      "type": "linux",
+      "name": "Unit Files",
+      "fileName": "units",
+      "category": "linux/systemd",
+      "usage": "Структура unit-файлов: [Unit], [Service], [Install], зависимости",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Services",
+      "fileName": "services",
+      "category": "linux/systemd",
+      "usage": "Сервисы systemd: ExecStart, Restart, Type, управление сервисами",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Timers",
+      "fileName": "timers",
+      "category": "linux/systemd",
+      "usage": "systemd timers: OnCalendar, OnBootSec, OnUnitActiveSec, замена cron",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Journald",
+      "fileName": "journald",
+      "category": "linux/systemd",
+      "usage": "Журналы systemd: journalctl, persistent logs, фильтрация",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Socket Activation",
+      "fileName": "sockets",
+      "category": "linux/systemd",
+      "usage": "Сокеты systemd: socket activation, .socket + .service",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Targets",
+      "fileName": "targets",
+      "category": "linux/systemd",
+      "usage": "systemd targets: multi-user.target, graphical.target, boot sequence",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Overrides",
+      "fileName": "overrides",
+      "category": "linux/systemd",
+      "usage": "Override-файлы: systemctl edit, drop-in конфигурации",
+      "isLeaf": true
+    },
+      {
+        "type": "linux",
+        "name": "User Services",
+        "fileName": "user_units",
+        "category": "linux/systemd",
+        "usage": "Пользовательские сервисы systemd: systemctl --user, linger",
+        "isLeaf": true
+      }
+]

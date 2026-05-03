@@ -1,0 +1,4 @@
+template <class InputIterator, class OutputIterator, class T>
+OutputIterator replace_copy(InputIterator first, InputIterator last,
+                          OutputIterator result,
+                          const T& old_value, const T& new_value);

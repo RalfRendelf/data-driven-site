@@ -1,0 +1,20 @@
+# Порт SSH-сервера
+Port 22
+
+# Разрешить подключение root
+PermitRootLogin no
+
+# Аутентификация по паролю
+PasswordAuthentication yes
+
+# Аутентификация по ключам
+PubkeyAuthentication yes
+
+# Разрешённые пользователи
+AllowUsers user1 user2
+
+# Запрещённые пользователи
+DenyUsers user3
+
+# Максимальное количество подключений
+MaxSessions 10

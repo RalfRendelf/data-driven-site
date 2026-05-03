@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <poll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#define PORT 8080
+#define BUFFER_SIZE 1024
+#define MAX_CLIENTS 10
+
+int main() {
+    int server_fd, client_fds[MAX_CLIENTS];
+    struct sockaddr_in address;
+    struct pollfd fds[MAX_CLIENTS + 1]; // +1 для серверного сокета
+    int nfds = 1; // Количество дескрипторов
+    char buffer[BUFFER_SIZE];
+
+    // Инициализация массива клиентских дескрипторов
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        client_fds[i] = -1;
+    }
+
+    // Создание сокета
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Настройка адреса сервера
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    // Связывание сокета с адресом
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Прослушивание входящих соединений
+    if (listen(server_fd, MAX_CLIENTS) < 0) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+
+    // Инициализация массива fds
+    fds[0].fd = server_fd;
+    fds[0].events = POLLIN;
+
+    printf("Server listening on port %d...\n", PORT);
+
+    while (1) {
+        int ret = poll(fds, nfds, -1);
+        if (ret == -1) {
+            perror("poll");
+            break;
+        }
+
+        // Проверка серверного сокета на новые соединения
+        if (fds[0].revents & POLLIN) {
+            struct sockaddr_in client_addr;
+            socklen_t client_len = sizeof(client_addr);
+            int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);
+            if (client_fd == -1) {
+                perror("accept");
+            } else {
+                // Добавление нового клиента в массив fds
+                for (int i = 1; i < MAX_CLIENTS + 1; i++) {
+                    if (client_fds[i - 1] == -1) {
+                        client_fds[i - 1] = client_fd;
+                        fds[i].fd = client_fd;
+                        fds[i].events = POLLIN;
+                        nfds++;
+                        printf("New client connected (fd=%d)\n", client_fd);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Обработка данных от клиентов
+        for (int i = 1; i < nfds; i++) {
+            if (fds[i].revents & POLLIN) {
+                ssize_t bytes_read = recv(fds[i].fd, buffer, BUFFER_SIZE, 0);
+                if (bytes_read <= 0) {
+                    close(fds[i].fd);
+                    client_fds[i - 1] = -1;
+                    // Удаление дескриптора из массива fds
+                    for (int j = i; j < nfds - 1; j++) {
+                        fds[j] = fds[j + 1];
+                    }
+                    nfds--;
+                    printf("Client disconnected (fd=%d)\n", fds[i].fd);
+                } else {
+                    buffer[bytes_read] = '\0';
+                    printf("Received from client %d: %s\n", fds[i].fd, buffer);
+                    send(fds[i].fd, buffer, bytes_read, 0); // Эхо-ответ
+                }
+            }
+        }
+    }
+
+    close(server_fd);
+    return 0;
+}

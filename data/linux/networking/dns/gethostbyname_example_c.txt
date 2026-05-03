@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+int main() {
+    struct hostent *host;
+    char **p;
+    char ip[INET_ADDRSTRLEN];
+
+    // Разрешаем имя домена
+    host = gethostbyname("example.com");
+    if (host == NULL) {
+        herror("gethostbyname");
+        return 1;
+    }
+
+    printf("Official name: %s\n", host->h_name);
+    printf("IP addresses:\n");
+
+    // Проходим по всем IP-адресам
+    for (p = host->h_addr_list; *p != NULL; p++) {
+        inet_ntop(AF_INET, *p, ip, sizeof(ip));
+        printf("  %s\n", ip);
+    }
+
+    return 0;
+}

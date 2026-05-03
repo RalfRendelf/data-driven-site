@@ -1,3 +1,75 @@
-<h2>std::mismatch</h2>
+<h2>std::mismatch: Поиск первого несовпадения в диапазонах</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::mismatch`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который находит первую позицию, где элементы двух диапазонов различаются.
+Работает за линейное время <strong>O(N)</strong>, где N — минимальная длина из двух диапазонов.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+mismatch_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first1, last1</code></td>
+    <td>Диапазон первого набора элементов</td>
+  </tr>
+  <tr>
+    <td><code>first2</code></td>
+    <td>Начало второго диапазона</td>
+  </tr>
+  <tr>
+    <td><code>pred</code></td>
+    <td>Бинарный предикат для сравнения элементов (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>std::pair</code> из итераторов, указывающих на первые несовпадающие элементы в каждом диапазоне.
+Если все элементы совпадают, возвращает пару <code>(last1, first2 + (last1 - first1))</code>.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Поиск первого несовпадения в векторах</h4>
+<pre><code>
+mismatch_vector_example.cpp
+</code></pre>
+
+<h4>Пример 2: Использование предиката для сравнения</h4>
+<pre><code>
+mismatch_predicate_example.cpp
+</code></pre>
+
+---
+<h3>Шаблон применения</h3>
+
+<p><strong>Шаблон применения <code>std::mismatch</code>:</strong></p>
+<pre><code>
+mismatch_template.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::mismatch`</strong> — полезный алгоритм для поиска первого несовпадения между двумя диапазонами.
+Работает за линейное время <strong>O(N)</strong> и поддерживает использование кастомных предикатов для сравнения.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/mismatch">std::mismatch на cppreference.com</a></li>
+</ul>

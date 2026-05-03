@@ -1,0 +1,4 @@
+NEXT                         LEFT     LAST                         PASSED  UNIT                         ACTIVATES
+Mon 2023-10-02 02:00:00 UTC  12h left  Sun 2023-10-01 02:00:00 UTC  12h ago  backup.timer                backup.service
+Mon 2023-10-02 09:00:00 UTC  19h left  Mon 2023-10-01 09:00:00 UTC  19h ago  weekday.timer              weekday_task.service
+Mon 2023-10-02 02:00:00 UTC  12h left  n/a                          n/a     random_delay.timer          random_delay_task.service

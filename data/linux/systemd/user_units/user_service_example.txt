@@ -1,0 +1,11 @@
+[Unit]
+Description=My User Application
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/myapp
+Restart=on-failure
+Environment="MY_VAR=my_value"
+
+[Install]
+WantedBy=default.target

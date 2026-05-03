@@ -1,3 +1,62 @@
-<h2>std::max_element</h2>
+<h2>std::max_element: Поиск максимального элемента в диапазоне</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::max_element`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который находит максимальный элемент в диапазоне.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+max_element_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на максимальный элемент в диапазоне <code>[first, last)</code>.
+Если диапазон пуст, возвращает <code>last</code>.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Поиск максимального элемента в векторе</h4>
+<pre><code>
+max_element_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного компаратора</h4>
+<pre><code>
+max_element_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::max_element`</strong> — алгоритм для нахождения максимального элемента в диапазоне.
+Поддерживает использование кастомных компараторов для нестандартных критериев сравнения.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/max_element">std::max_element на cppreference.com</a></li>
+</ul>

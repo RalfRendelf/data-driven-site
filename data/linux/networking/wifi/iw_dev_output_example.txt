@@ -1,0 +1,9 @@
+phy#0
+	Interface wlan0
+		ifindex 3
+		wdev 0x1
+		addr 00:11:22:33:44:55
+		ssid MyNetwork
+		type managed
+		channel 6 (2437 MHz), width: 20 MHz, center1: 2437 MHz
+		txpower 20.00 dBm

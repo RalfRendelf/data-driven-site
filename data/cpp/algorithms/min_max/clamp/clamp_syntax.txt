@@ -1,0 +1,5 @@
+template <class T>
+const T& clamp(const T& value, const T& low, const T& high);
+
+template <class T, class Compare>
+const T& clamp(const T& value, const T& low, const T& high, Compare comp);

@@ -1,3 +1,62 @@
-<h2>std::minmax_element</h2>
+<h2>std::minmax_element: Поиск минимального и максимального элементов за один проход</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::minmax_element`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который находит минимальный и максимальный элементы в диапазоне за один проход.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+minmax_element_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>std::pair</code> из итераторов, где <code>first</code> — итератор на минимальный элемент, а <code>second</code> — итератор на максимальный элемент.
+Если диапазон пуст, возвращает <code>{last, last}</code>.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Поиск min и max в векторе</h4>
+<pre><code>
+minmax_element_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного компаратора</h4>
+<pre><code>
+minmax_element_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::minmax_element`</strong> — эффективный алгоритм для одновременного нахождения минимального и максимального элементов в диапазоне за один проход.
+Экономит время по сравнению с отдельными вызовами <code>std::min_element</code> и <code>std::max_element</code>.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/minmax_element">std::minmax_element на cppreference.com</a></li>
+</ul>

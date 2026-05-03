@@ -1,0 +1,3 @@
+template <class ForwardIterator1, class ForwardIterator2>
+ForwardIterator2 swap_ranges(ForwardIterator1 first1, ForwardIterator1 last1,
+                            ForwardIterator2 first2);

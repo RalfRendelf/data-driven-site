@@ -1,0 +1,421 @@
+<h2>Пользовательские сервисы systemd: Запуск сервисов от имени пользователя</h2>
+
+<p>
+В <strong>systemd</strong> можно запускать сервисы не только от имени <code>root</code>, но и от имени обычных пользователей.
+Это позволяет:
+</p>
+<ul>
+  <li>Запускать приложения без прав администратора.</li>
+  <li>Управлять сервисами на уровне пользователя (например, для разработки или тестирования).</li>
+  <li>Изолировать сервисы разных пользователей друг от друга.</li>
+</ul>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы пользовательских сервисов в systemd.</li>
+  <li>Создание и управление пользовательскими сервисами.</li>
+  <li>Использование <code>systemctl --user</code>.</li>
+  <li>Настройка <code>linger</code> для работы сервисов после выхода пользователя.</li>
+  <li>Примеры использования.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое пользовательские сервисы?</h4>
+<p>
+<strong>Пользовательские сервисы</strong> — это сервисы systemd, которые запускаются от имени конкретного пользователя (не <code>root</code>).
+Они позволяют:
+</p>
+<ul>
+  <li>Запускать приложения без прав администратора.</li>
+  <li>Управлять сервисами на уровне пользователя.</li>
+  <li>Изолировать сервисы разных пользователей.</li>
+</ul>
+
+<h4>Отличия пользовательских сервисов от системных</h4>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>Пользовательские сервисы</th>
+    <th>Системные сервисы</th>
+  </tr>
+  <tr>
+    <td><strong>Права доступа</strong></td>
+    <td>Запускаются от имени пользователя</td>
+    <td>Запускаются от имени <code>root</code></td>
+  </tr>
+  <tr>
+    <td><strong>Директория unit-файлов</strong></td>
+    <td><code>~/.config/systemd/user/</code></td>
+    <td><code>/etc/systemd/system/</code>, <code>/usr/lib/systemd/system/</code></td>
+  </tr>
+  <tr>
+    <td><strong>Команда управления</strong></td>
+    <td><code>systemctl --user</code></td>
+    <td><code>systemctl</code></td>
+  </tr>
+  <tr>
+    <td><strong>Автозапуск</strong></td>
+    <td>Требует <code>linger</code> для работы после выхода</td>
+    <td>Автоматически запускаются при загрузке</td>
+  </tr>
+  <tr>
+    <td><strong>Изоляция</strong></td>
+    <td>Сервисы изолированы между пользователями</td>
+    <td>Сервисы работают от имени <code>root</code></td>
+  </tr>
+</table>
+
+<h4>Как работают пользовательские сервисы?</h4>
+<ol>
+  <li>Пользователь создаёт unit-файл в директории <code>~/.config/systemd/user/</code>.</li>
+  <li>Пользователь запускает сервис с помощью <code>systemctl --user</code>.</li>
+  <li>Сервис запускается от имени пользователя.</li>
+  <li>Если включён <code>linger</code>, сервис продолжает работать после выхода пользователя.</li>
+</ol>
+
+---
+<h3>Создание пользовательских сервисов</h3>
+
+<h4>Директории для пользовательских unit-файлов</h4>
+<p>
+Пользовательские unit-файлы хранятся в следующих директориях:
+</p>
+<table>
+  <tr>
+    <th>Директория</th>
+    <th>Описание</th>
+    <th>Приоритет</th>
+  </tr>
+  <tr>
+    <td><code>~/.config/systemd/user/</code></td>
+    <td>Unit-файлы, созданные пользователем</td>
+    <td>Высший</td>
+  </tr>
+  <tr>
+    <td><code>~/.local/share/systemd/</code></td>
+    <td>Unit-файлы, созданные пользовательскими приложениями</td>
+    <td>Средний</td>
+  </tr>
+  <tr>
+    <td><code>/usr/lib/systemd/user/</code></td>
+    <td>Unit-файлы, установленные пакетами</td>
+    <td>Низший</td>
+  </tr>
+</table>
+
+<h4>Создание пользовательского сервиса</h4>
+<p>
+Для создания пользовательского сервиса:
+</p>
+<ol>
+  <li>Создайте директорию для unit-файлов:</li>
+</ol>
+<pre><code>
+create_user_service_dir.sh
+</code></pre>
+<ol start="2">
+  <li>Создайте unit-файл сервиса:</li>
+</ol>
+<pre><code>
+create_user_service.sh
+</code></pre>
+<p>
+Пример unit-файла для пользовательского сервиса:
+</p>
+<pre><code>
+user_service_example.txt
+</code></pre>
+
+<h4>Управление пользовательскими сервисами</h4>
+<p>
+Для управления пользовательскими сервисами используйте команду <code>systemctl --user</code>:
+</p>
+<pre><code>
+manage_user_service.sh
+</code></pre>
+
+---
+<h3>Linger: Работа сервисов после выхода пользователя</h3>
+
+<h4>Что такое linger?</h4>
+<p>
+По умолчанию пользовательские сервисы останавливаются при выходе пользователя из системы.
+Чтобы сервисы продолжали работать после выхода, используйте механизм <strong>linger</strong>.
+</p>
+
+<h4>Включение linger</h4>
+<p>
+Для включения <code>linger</code> для пользователя используйте команду:
+</p>
+<pre><code>
+enable_linger.sh
+</code></pre>
+<p>
+Для включения <code>linger</code> для всех пользователей:
+</p>
+<pre><code>
+enable_linger_all.sh
+</code></pre>
+
+<h4>Отключение linger</h4>
+<p>
+Для отключения <code>linger</code> для пользователя используйте команду:
+</p>
+<pre><code>
+disable_linger.sh
+</code></pre>
+
+<h4>Проверка статуса linger</h4>
+<p>
+Для проверки статуса <code>linger</code> для пользователя используйте команду:
+</p>
+<pre><code>
+check_linger.sh
+</code></pre>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+linger_status.txt
+</code></pre>
+
+<h4>Просмотр списка пользователей с включённым linger</h4>
+<p>
+Для просмотра списка пользователей с включённым <code>linger</code> используйте команду:
+</p>
+<pre><code>
+list_linger_users.sh
+</code></pre>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Запуск веб-сервера от имени пользователя</h4>
+<p>
+Этот пример демонстрирует, как запустить веб-сервер на Python от имени пользователя.
+</p>
+
+<h5>Unit-файл сервиса</h5>
+<pre><code>
+user_web_server_service.txt
+</code></pre>
+
+<h5>Создание и запуск сервиса</h5>
+<pre><code>
+create_user_web_server.sh
+</code></pre>
+
+<h4>Пример 2: Запуск SSH-туннеля от имени пользователя</h4>
+<p>
+Этот пример демонстрирует, как запустить SSH-туннель от имени пользователя.
+</p>
+
+<h5>Unit-файл сервиса</h5>
+<pre><code>
+user_ssh_tunnel_service.txt
+</code></pre>
+
+<h5>Создание и запуск сервиса</h5>
+<pre><code>
+create_user_ssh_tunnel.sh
+</code></pre>
+
+<h4>Пример 3: Запуск Syncthing от имени пользователя</h4>
+<p>
+Этот пример демонстрирует, как запустить Syncthing от имени пользователя.
+</p>
+
+<h5>Unit-файл сервиса</h5>
+<pre><code>
+user_syncthing_service.txt
+</code></pre>
+
+<h5>Создание и запуск сервиса</h5>
+<pre><code>
+create_user_syncthing.sh
+</code></pre>
+
+<h4>Пример 4: Запуск пользовательского таймера</h4>
+<p>
+Этот пример демонстрирует, как запустить пользовательский таймер для резервного копирования.
+</p>
+
+<h5>Unit-файл сервиса</h5>
+<pre><code>
+user_backup_service.txt
+</code></pre>
+
+<h5>Unit-файл таймера</h5>
+<pre><code>
+user_backup_timer.txt
+</code></pre>
+
+<h5>Создание и запуск таймера</h5>
+<pre><code>
+create_user_backup_timer.sh
+</code></pre>
+
+---
+<h3>Управление пользовательскими сервисами</h3>
+
+<h4>Просмотр списка пользовательских сервисов</h4>
+<p>
+Для просмотра списка пользовательских сервисов используйте команду:
+</p>
+<pre><code>
+list_user_services.sh
+</code></pre>
+
+<h4>Просмотр статуса пользовательского сервиса</h4>
+<p>
+Для просмотра статуса пользовательского сервиса используйте команду:
+</p>
+<pre><code>
+user_service_status.sh
+</code></pre>
+
+<h4>Просмотр логов пользовательского сервиса</h4>
+<p>
+Для просмотра логов пользовательского сервиса используйте команду:
+</p>
+<pre><code>
+user_service_logs.sh
+</code></pre>
+
+<h4>Перезагрузка конфигурации пользовательских сервисов</h4>
+<p>
+После изменения unit-файлов необходимо перезагрузить конфигурацию systemd:
+</p>
+<pre><code>
+reload_user_systemd.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>systemctl --user</code></strong> для управления пользовательскими сервисами.</li>
+  <li><strong>Храните unit-файлы в <code>~/.config/systemd/user/</code></strong>.</li>
+  <li><strong>Включайте <code>linger</code></strong> для работы сервисов после выхода.</li>
+  <li><strong>Используйте <code>WorkingDirectory=</code></strong> для указания рабочей директории.</li>
+  <li><strong>Настраивайте <code>Environment=</code></strong> для передачи переменных окружения.</li>
+  <li><strong>Проверяйте логи</strong> с помощью <code>journalctl --user</code>.</li>
+  <li><strong>Используйте <code>After=network-online.target</code></strong> для сервисов, которые требуют сетевого подключения.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с правами доступа</h4>
+<p>
+Если сервис не запускается, проверьте:
+</p>
+<ul>
+  <li>Права доступа к файлам и директориям.</li>
+  <li>Права на выполнение скриптов.</li>
+</ul>
+<pre><code>
+check_user_permissions.sh
+</code></pre>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если сервис не запускается из-за зависимостей, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>After=</code> и <code>Requires=</code>.</li>
+  <li>Статус зависимых сервисов.</li>
+</ul>
+<pre><code>
+check_user_dependencies.sh
+</code></pre>
+
+<h4>Проблемы с linger</h4>
+<p>
+Если сервис останавливается после выхода пользователя, проверьте:
+</p>
+<ul>
+  <li>Включён ли <code>linger</code> для пользователя:</li>
+</ul>
+<pre><code>
+check_linger_status.sh
+</code></pre>
+
+<h4>Проблемы с перезагрузкой конфигурации</h4>
+<p>
+Если изменения не применяются, убедитесь, что вы перезагрузили конфигурацию systemd:
+</p>
+<pre><code>
+reload_user_config.sh
+</code></pre>
+
+<h4>Проблемы с окружением</h4>
+<p>
+Если сервис не может найти файлы или команды, проверьте:
+</p>
+<ul>
+  <li>Переменные окружения (<code>Environment=</code>).</li>
+  <li>Рабочую директорию (<code>WorkingDirectory=</code>).</li>
+</ul>
+<pre><code>
+check_user_env.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>Пользовательские сервисы systemd</strong> — это мощный инструмент для запуска приложений от имени пользователя без прав администратора.
+Они позволяют управлять сервисами на уровне пользователя, изолировать сервисы разных пользователей и запускать задачи по расписанию.
+</p>
+
+<table>
+  <tr>
+    <th>Действие</th>
+    <th>Команда</th>
+  </tr>
+  <tr>
+    <td>Создание сервиса</td>
+    <td><code>nano ~/.config/systemd/user/myapp.service</code></td>
+  </tr>
+  <tr>
+    <td>Запуск сервиса</td>
+    <td><code>systemctl --user start myapp.service</code></td>
+  </tr>
+  <tr>
+    <td>Остановка сервиса</td>
+    <td><code>systemctl --user stop myapp.service</code></td>
+  </tr>
+  <tr>
+    <td>Включение сервиса</td>
+    <td><code>systemctl --user enable myapp.service</code></td>
+  </tr>
+  <tr>
+    <td>Включение linger</td>
+    <td><code>sudo loginctl enable-linger $USER</code></td>
+  </tr>
+  <tr>
+    <td>Просмотр статуса сервиса</td>
+    <td><code>systemctl --user status myapp.service</code></td>
+  </tr>
+  <tr>
+    <td>Просмотр логов сервиса</td>
+    <td><code>journalctl --user -u myapp.service</code></td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html">systemd.unit(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemctl.html">systemctl(1) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/loginctl.html">loginctl(1) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Systemd/User">Systemd User (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-run-a-service-as-a-user-on-ubuntu-20-04-with-systemd">How To Run a Service as a User on Ubuntu with Systemd</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd--user.html">systemd --user (man page)</a></li>
+</ul>

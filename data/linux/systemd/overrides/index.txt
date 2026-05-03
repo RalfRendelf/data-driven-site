@@ -1,0 +1,364 @@
+<h2>Override-файлы в systemd: Изменение конфигурации сервисов без редактирования исходных файлов</h2>
+
+<p>
+В <strong>systemd</strong> <strong>Override-файлы</strong> (или <strong>drop-in файлы</strong>) позволяют изменять конфигурацию сервисов, сокетов, таймеров и других unit-файлов <strong>без прямого редактирования исходных файлов</strong>.
+Это особенно полезно для:
+</p>
+<ul>
+  <li>Изменения конфигурации сервисов, установленных из пакетов.</li>
+  <li>Добавления пользовательских настроек к стандартным сервисам.</li>
+  <li>Управления конфигурацией в системах с несколькими администраторами.</li>
+</ul>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Что такое Override-файлы и как они работают.</li>
+  <li>Способы создания Override-файлов (<code>systemctl edit</code>, ручное создание).</li>
+  <li>Структура и синтаксис Override-файлов.</li>
+  <li>Примеры использования для сервисов, сокетов и таймеров.</li>
+  <li>Управление Override-файлами.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое Override-файлы?</h4>
+<p>
+<strong>Override-файлы</strong> (или <strong>drop-in файлы</strong>) — это файлы, которые позволяют <strong>дополнять или переопределять</strong> настройки unit-файлов без изменения исходных файлов.
+Они хранятся в специальной директории и имеют более высокий приоритет, чем исходные unit-файлы.
+</p>
+
+<h4>Зачем использовать Override-файлы?</h4>
+<ul>
+  <li><strong>Сохранение изменений при обновлении пакетов</strong>: Исходные unit-файлы могут быть перезаписаны при обновлении пакетов, а Override-файлы остаются нетронутыми.</li>
+  <li><strong>Чистота конфигурации</strong>: Разделение стандартных настроек и пользовательских изменений.</li>
+  <li><strong>Удобство управления</strong>: Возможность изменять конфигурацию без прав root (для пользовательских сервисов).</li>
+  <li><strong>Модульность</strong>: Возможность добавлять несколько Override-файлов для одного unit-файла.</li>
+</ul>
+
+<h4>Как работают Override-файлы?</h4>
+<ol>
+  <li>Systemd ищет unit-файл в стандартных директориях (<code>/usr/lib/systemd/system/</code>, <code>/etc/systemd/system/</code>).</li>
+  <li>Если для unit-файла существует директория <code>unit.d/</code> в <code>/etc/systemd/system/</code>, systemd загружает все файлы из этой директории <strong>после</strong> исходного unit-файла.</li>
+  <li>Настройки из Override-файлов <strong>дополняют или переопределяют</strong> настройки из исходного unit-файла.</li>
+</ol>
+
+<h4>Директории для Override-файлов</h4>
+<p>
+Override-файлы хранятся в директориях с суффиксом <code>.d/</code>:
+</p>
+<table>
+  <tr>
+    <th>Тип unit-файла</th>
+    <th>Директория Override-файлов</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td>Сервис (<code>.service</code>)</td>
+    <td><code>/etc/systemd/system/&lt;service&gt;.service.d/</code></td>
+    <td><code>/etc/systemd/system/nginx.service.d/</code></td>
+  </tr>
+  <tr>
+    <td>Сокет (<code>.socket</code>)</td>
+    <td><code>/etc/systemd/system/&lt;socket&gt;.socket.d/</code></td>
+    <td><code>/etc/systemd/system/myapp.socket.d/</code></td>
+  </tr>
+  <tr>
+    <td>Таймер (<code>.timer</code>)</td>
+    <td><code>/etc/systemd/system/&lt;timer&gt;.timer.d/</code></td>
+    <td><code>/etc/systemd/system/backup.timer.d/</code></td>
+  </tr>
+  <tr>
+    <td>Любой unit-файл</td>
+    <td><code>/etc/systemd/system/&lt;unit&gt;.d/</code></td>
+    <td><code>/etc/systemd/system/myapp.service.d/</code></td>
+  </tr>
+</table>
+
+---
+<h3>Создание Override-файлов</h3>
+
+<h4>Способ 1: Использование systemctl edit</h4>
+<p>
+Самый простой способ создать Override-файл — использовать команду <code>systemctl edit</code>.
+Она автоматически создаёт директорию <code>.d/</code> и открывает файл для редактирования в редакторе по умолчанию.
+</p>
+<pre><code>
+edit_service.sh
+</code></pre>
+<p>
+<strong>Примечание:</strong> Если директория <code>.d/</code> или файл не существуют, <code>systemctl edit</code> создаст их автоматически.
+</p>
+
+<h4>Способ 2: Ручное создание Override-файла</h4>
+<p>
+Вы также можете создать Override-файл вручную:
+</p>
+<pre><code>
+create_override_manually.sh
+</code></pre>
+
+<h4>Структура Override-файла</h4>
+<p>
+Override-файл имеет ту же структуру, что и обычный unit-файл, но может содержать только те секции и директивы, которые вы хотите изменить.
+</p>
+<p>
+<strong>Пример:</strong>
+</p>
+<pre><code>
+override_example.conf
+</code></pre>
+
+<h4>Приоритет настроек</h4>
+<p>
+Настройки в Override-файлах имеют более высокий приоритет, чем настройки в исходных unit-файлах.
+Если одна и та же директива определена и в исходном файле, и в Override-файле, будет использоваться значение из Override-файла.
+</p>
+<p>
+<strong>Исключение:</strong> Директивы <code>ExecStart=</code>, <code>ExecStop=</code> и подобные не переопределяются, а <strong>дополняются</strong>.
+Чтобы полностью заменить команду, используйте директиву с префиксом <code>-</code>:
+</p>
+<pre><code>
+override_exec_example.conf
+</code></pre>
+
+---
+<h3>Примеры использования Override-файлов</h3>
+
+<h4>Пример 1: Изменение пользователя для сервиса</h4>
+<p>
+Изменим пользователя, от имени которого запускается сервис <code>nginx</code>:
+</p>
+<pre><code>
+override_user.conf
+</code></pre>
+<p>
+Создаём файл:
+</p>
+<pre><code>
+create_user_override.sh
+</code></pre>
+<p>
+В открывшемся редакторе добавьте:
+</p>
+<pre><code>
+override_user_input.txt
+</code></pre>
+
+<h4>Пример 2: Добавление переменных окружения</h4>
+<p>
+Добавим переменные окружения для сервиса <code>myapp</code>:
+</p>
+<pre><code>
+override_env.conf
+</code></pre>
+<p>
+Или используем файл с переменными окружения:
+</p>
+<pre><code>
+override_env_file.conf
+</code></pre>
+
+<h4>Пример 3: Изменение параметров запуска</h4>
+<p>
+Изменим параметры запуска для сервиса <code>myapp</code>:
+</p>
+<pre><code>
+override_exec.conf
+</code></pre>
+
+<h4>Пример 4: Изменение ограничений ресурсов</h4>
+<p>
+Добавим ограничения на ресурсы для сервиса <code>myapp</code>:
+</p>
+<pre><code>
+override_limits.conf
+</code></pre>
+
+<h4>Пример 5: Изменение зависимостей</h4>
+<p>
+Добавим зависимости для сервиса <code>myapp</code>:
+</p>
+<pre><code>
+override_dependencies.conf
+</code></pre>
+
+<h4>Пример 6: Изменение параметров сокета</h4>
+<p>
+Изменим параметры сокета для <code>myapp.socket</code>:
+</p>
+<pre><code>
+override_socket.conf
+</code></pre>
+
+<h4>Пример 7: Изменение расписания таймера</h4>
+<p>
+Изменим расписание для таймера <code>backup.timer</code>:
+</p>
+<pre><code>
+override_timer.conf
+</code></pre>
+
+---
+<h3>Управление Override-файлами</h3>
+
+<h4>Просмотр Override-файлов</h4>
+<p>
+Для просмотра Override-файлов используйте команду:
+</p>
+<pre><code>
+view_override.sh
+</code></pre>
+
+<h4>Редактирование Override-файлов</h4>
+<p>
+Для редактирования Override-файлов используйте команду:
+</p>
+<pre><code>
+edit_override.sh
+</code></pre>
+
+<h4>Удаление Override-файлов</h4>
+<p>
+Для удаления Override-файлов удалите файл или директорию:
+</p>
+<pre><code>
+remove_override.sh
+</code></pre>
+
+<h4>Перезагрузка конфигурации</h4>
+<p>
+После изменения Override-файлов необходимо перезагрузить конфигурацию systemd:
+</p>
+<pre><code>
+reload_systemd.sh
+</code></pre>
+<p>
+И перезапустить сервис (если он уже запущен):
+</p>
+<pre><code>
+restart_service.sh
+</code></pre>
+
+<h4>Просмотр применимых настроек</h4>
+<p>
+Для просмотра всех применимых настроек (включая Override-файлы) используйте команду:
+</p>
+<pre><code>
+show_full_config.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>systemctl edit</code></strong> для создания Override-файлов.</li>
+  <li><strong>Храните Override-файлы в <code>/etc/systemd/system/</code></strong>.</li>
+  <li><strong>Перезагружайте конфигурацию systemd</strong> после изменения Override-файлов.</li>
+  <li><strong>Используйте префикс <code>-</code></strong> для полной замены директив (например, <code>ExecStart=</code>).</li>
+  <li><strong>Документируйте изменения</strong> в Override-файлах.</li>
+  <li><strong>Проверяйте конфигурацию</strong> с помощью <code>systemd-analyze verify</code>.</li>
+  <li><strong>Используйте отдельные файлы</strong> для разных типов изменений (например, <code>env.conf</code>, <code>limits.conf</code>).</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с синтаксисом</h4>
+<p>
+Если Override-файл содержит ошибки, systemd может не применить настройки.
+Проверьте синтаксис с помощью:
+</p>
+<pre><code>
+verify_override.sh
+</code></pre>
+
+<h4>Проблемы с приоритетом</h4>
+<p>
+Если настройки не применяются, проверьте:
+</p>
+<ul>
+  <li>Правильность пути к Override-файлу.</li>
+  <li>Права доступа к файлу.</li>
+  <li>Наличие конфликтующих Override-файлов.</li>
+</ul>
+<pre><code>
+check_override_path.sh
+</code></pre>
+
+<h4>Проблемы с перезагрузкой конфигурации</h4>
+<p>
+Если изменения не применяются, убедитесь, что вы перезагрузили конфигурацию systemd:
+</p>
+<pre><code>
+reload_and_restart.sh
+</code></pre>
+
+<h4>Проблемы с переопределением команд</h4>
+<p>
+Если команды не переопределяются, используйте префикс <code>-</code>:
+</p>
+<pre><code>
+override_exec_fix.conf
+</code></pre>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если зависимости не применяются, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>Requires=</code> и <code>After=</code>.</li>
+  <li>Статус зависимых сервисов.</li>
+</ul>
+<pre><code>
+check_dependencies.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>Override-файлы</strong> — это мощный инструмент в systemd, который позволяет изменять конфигурацию сервисов, сокетов, таймеров и других unit-файлов без прямого редактирования исходных файлов.
+Они обеспечивают гибкость, модульность и удобство управления конфигурацией, а также сохраняют изменения при обновлении пакетов.
+</p>
+
+<table>
+  <tr>
+    <th>Действие</th>
+    <th>Команда</th>
+  </tr>
+  <tr>
+    <td>Создание Override-файла</td>
+    <td><code>sudo systemctl edit &lt;unit&gt;</code></td>
+  </tr>
+  <tr>
+    <td>Редактирование Override-файла</td>
+    <td><code>sudo systemctl edit &lt;unit&gt;</code></td>
+  </tr>
+  <tr>
+    <td>Просмотр Override-файлов</td>
+    <td><code>sudo systemctl cat &lt;unit&gt;</code></td>
+  </tr>
+  <tr>
+    <td>Удаление Override-файлов</td>
+    <td><code>sudo rm -rf /etc/systemd/system/&lt;unit&gt;.d/</code></td>
+  </tr>
+  <tr>
+    <td>Перезагрузка конфигурации</td>
+    <td><code>sudo systemctl daemon-reload</code></td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html">systemd.unit(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemctl.html">systemctl(1) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.override.html">systemd.override(5) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Systemd#Drop-in_files">Drop-in Files (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-edit-and-use-systemd-service-files-on-a-linux-vps">How To Edit and Use Systemd Service Files</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd-delta.html">systemd-delta(1) — man page</a></li>
+</ul>

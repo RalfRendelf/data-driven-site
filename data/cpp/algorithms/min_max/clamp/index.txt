@@ -1,3 +1,74 @@
-<h2>std::clamp</h2>
+<h2>std::clamp: Ограничение значения диапазоном</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::clamp`</strong> — функция из библиотеки <code>&lt;algorithm&gt;</code> (доступна с C++17), которая ограничивает значение заданным диапазоном <code>[low, high]</code>.
+Работает за константное время <strong>O(1)</strong> и использует <strong>O(1)</strong> памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+clamp_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>Значение, которое нужно ограничить</td>
+  </tr>
+  <tr>
+    <td><code>low</code></td>
+    <td>Нижняя граница диапазона</td>
+  </tr>
+  <tr>
+    <td><code>high</code></td>
+    <td>Верхняя граница диапазона</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает:
+</p>
+<ul>
+  <li><code>low</code>, если <code>value < low</code>;</li>
+  <li><code>value</code>, если <code>low <= value <= high</code>;</li>
+  <li><code>high</code>, если <code>value > high</code>.</li>
+</ul>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Ограничение числа диапазоном</h4>
+<pre><code>
+clamp_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного компаратора</h4>
+<pre><code>
+clamp_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::clamp`</strong> — удобная функция для ограничения значения заданным диапазоном.
+Полезна для проверки входных данных, настройки параметров и других задач, где нужно гарантировать, что значение находится в заданных границах.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/clamp">std::clamp на cppreference.com</a></li>
+</ul>

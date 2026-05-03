@@ -1,3 +1,61 @@
-<h2>std::adjacent_difference</h2>
+<h2>std::adjacent_difference: Вычисление разностей соседних элементов</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::adjacent_difference`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code>, который вычисляет разности между соседними элементами в диапазоне.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+adjacent_difference_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>result</code></td>
+    <td>Итератор на начало целевого диапазона для записи разностей</td>
+  </tr>
+  <tr>
+    <td><code>op</code></td>
+    <td>Бинарная операция (опционально, по умолчанию <code>operator-</code>)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на элемент, следующий за последним записанным элементом в целевом диапазоне.
+Первый элемент результата всегда равен первому элементу исходного диапазона.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Вычисление разностей соседних элементов</h4>
+<pre><code>
+adjacent_difference_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::adjacent_difference`</strong> — алгоритм для вычисления разностей между соседними элементами в диапазоне.
+Полезен для анализа изменений в последовательностях данных.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/adjacent_difference">std::adjacent_difference на cppreference.com</a></li>
+</ul>

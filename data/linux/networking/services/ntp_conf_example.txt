@@ -1,0 +1,15 @@
+# NTP-серверы
+server 0.pool.ntp.org iburst
+server 1.pool.ntp.org iburst
+server 2.pool.ntp.org iburst
+server 3.pool.ntp.org iburst
+
+# Локальный сервер (стратум 10)
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+
+# Дрифт-файл
+driftfile /var/lib/ntp/ntp.drift
+
+# Логи
+logfile /var/log/ntp.log

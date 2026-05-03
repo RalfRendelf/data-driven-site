@@ -1,3 +1,88 @@
-<h2>std::copy_n</h2>
-
-<p>Статья пока не заполнена.</p>
+{
+    "type": "cpp",
+    "name": "std::copy_n",
+    "fileName": "copy_n",
+    "category": "algorithms/modifying",
+    "usage": "Копирование N элементов (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::move",
+    "fileName": "move",
+    "category": "algorithms/modifying",
+    "usage": "Перемещение элементов диапазона (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::move_backward",
+    "fileName": "move_backward",
+    "category": "algorithms/modifying",
+    "usage": "Перемещение элементов с конца диапазона (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::fill",
+    "fileName": "fill",
+    "category": "algorithms/modifying",
+    "usage": "Заполнение диапазона значением (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::fill_n",
+    "fileName": "fill_n",
+    "category": "algorithms/modifying",
+    "usage": "Заполнение N элементов значением (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::transform",
+    "fileName": "transform",
+    "category": "algorithms/modifying",
+    "usage": "Применение функции к диапазону (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::swap_ranges",
+    "fileName": "swap_ranges",
+    "category": "algorithms/modifying",
+    "usage": "Обмен элементами двух диапазонов (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::replace",
+    "fileName": "replace",
+    "category": "algorithms/modifying",
+    "usage": "Замена элементов, равных значению (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::replace_if",
+    "fileName": "replace_if",
+    "category": "algorithms/modifying",
+    "usage": "Замена элементов по предикату (O(N) время, O(1) память)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::replace_copy",
+    "fileName": "replace_copy",
+    "category": "algorithms/modifying",
+    "usage": "Копирование диапазона с заменой элементов (O(N) время, O(N) память — создаёт копию)",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "std::replace_copy_if",
+    "fileName": "replace_copy_if",
+    "category": "algorithms/modifying",
+    "usage": "Копирование диапазона с заменой по предикату (O(N) время, O(N) память — создаёт копию)",
+    "isLeaf": true
+  }

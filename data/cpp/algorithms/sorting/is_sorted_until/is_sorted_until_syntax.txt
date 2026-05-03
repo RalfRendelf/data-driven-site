@@ -1,0 +1,5 @@
+template <class ForwardIterator>
+ForwardIterator is_sorted_until(ForwardIterator first, ForwardIterator last);
+
+template <class ForwardIterator, class Compare>
+ForwardIterator is_sorted_until(ForwardIterator first, ForwardIterator last, Compare comp);

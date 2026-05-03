@@ -1,0 +1,7 @@
+[Unit]
+Description=Random Delay Task Service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/random_delay_task.sh

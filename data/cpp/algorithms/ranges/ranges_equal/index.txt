@@ -1,3 +1,68 @@
-<h2>std::ranges::equal</h2>
+<h2>std::ranges::equal: Проверка равенства двух диапазонов</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::equal`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который проверяет, равны ли элементы двух диапазонов.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_equal_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first1, last1</code></td>
+    <td>Итераторы начала и конца первого диапазона</td>
+  </tr>
+  <tr>
+    <td><code>first2, last2</code></td>
+    <td>Итераторы начала и конца второго диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range1, range2</code></td>
+    <td>Диапазоны для сравнения</td>
+  </tr>
+  <tr>
+    <td><code>pred</code></td>
+    <td>Предикат для сравнения элементов (опционально)</td>
+  </tr>
+  <tr>
+    <td><code>proj1, proj2</code></td>
+    <td>Функции проекции (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>true</code>, если все элементы диапазонов равны, и <code>false</code> в противном случае.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Проверка равенства двух векторов</h4>
+<pre><code>
+ranges_equal_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::equal`</strong> — современный алгоритм для проверки равенства двух диапазонов.
+Поддерживает кастомные предикаты и проекции.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/equal">std::ranges::equal на cppreference.com</a></li>
+</ul>

@@ -1,0 +1,6 @@
+template <class InputIterator, class OutputIterator>
+OutputIterator partial_sum(InputIterator first, InputIterator last, OutputIterator result);
+
+template <class InputIterator, class OutputIterator, class BinaryOperation>
+OutputIterator partial_sum(InputIterator first, InputIterator last,
+                          OutputIterator result, BinaryOperation op);

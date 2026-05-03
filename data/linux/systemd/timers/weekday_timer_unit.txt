@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekday Task Timer
+
+[Timer]
+OnCalendar=Mon-Fri *-*-* 09:00:00
+Unit=weekday_task.service
+
+[Install]
+WantedBy=timers.target

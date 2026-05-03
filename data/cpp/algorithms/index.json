@@ -79,7 +79,16 @@
     "usage": "Алгоритмы и адаптеры ranges: views, actions, range-based overloads",
     "isLeaf": false
   },
-{
+  
+  {
+    "type": "cpp",
+    "name": "std::reduce / std::transform_reduce",
+    "fileName": "reduce",
+    "category": "algorithms",
+    "usage": "Параллельные и последовательные свёртки диапазонов",
+    "isLeaf": false
+  },
+  {
     "type": "cpp",
     "name": "std::sort",
     "fileName": "sort",
@@ -117,14 +126,6 @@
     "fileName": "for_each",
     "category": "algorithms",
     "usage": "Применение функции к каждому элементу диапазона",
-    "isLeaf": true
-  },
-  {
-    "type": "cpp",
-    "name": "std::reduce / std::transform_reduce",
-    "fileName": "reduce",
-    "category": "algorithms",
-    "usage": "Параллельные и последовательные свёртки диапазонов",
     "isLeaf": true
   }
 ]

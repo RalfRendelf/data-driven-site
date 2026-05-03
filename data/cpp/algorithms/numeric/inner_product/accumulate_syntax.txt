@@ -1,0 +1,5 @@
+template <class InputIterator, class T>
+T accumulate(InputIterator first, InputIterator last, T init);
+
+template <class InputIterator, class T, class BinaryOperation>
+T accumulate(InputIterator first, InputIterator last, T init, BinaryOperation op);

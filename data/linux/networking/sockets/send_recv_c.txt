@@ -1,0 +1,17 @@
+char buffer[1024];
+ssize_t bytes_read = recv(sockfd, buffer, sizeof(buffer) - 1, 0);
+if (bytes_read == -1) {
+    perror("recv");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}
+buffer[bytes_read] = '\0';
+printf("Received: %s\n", buffer);
+
+const char *message = "Hello from server!";
+ssize_t bytes_sent = send(sockfd, message, strlen(message), 0);
+if (bytes_sent == -1) {
+    perror("send");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}

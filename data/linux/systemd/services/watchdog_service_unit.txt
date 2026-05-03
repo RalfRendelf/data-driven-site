@@ -1,0 +1,14 @@
+[Unit]
+Description=My Application with Watchdog
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+Group=mygroup
+ExecStart=/usr/bin/myapp
+Restart=on-failure
+WatchdogSec=10s
+
+[Install]
+WantedBy=multi-user.target

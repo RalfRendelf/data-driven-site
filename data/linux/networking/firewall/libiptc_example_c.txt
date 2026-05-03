@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <iptables.h>
+#include <linux/netfilter.h>
+#include <linux/netfilter_ipv4.h>
+
+int main() {
+    struct xtables_target *target;
+    struct xtables_rule_match *match;
+    struct ipt_entry *entry;
+    struct ipt_replace *repl;
+    int sockfd;
+
+    // Инициализируем библиотеку
+    xtables_init();
+
+    // Создаём правило
+    entry = calloc(1, sizeof(struct ipt_entry));
+    if (!entry) {
+        fprintf(stderr, "Failed to allocate memory for entry\n");
+        return 1;
+    }
+
+    // Настраиваем правило для разрешения SSH (порт 22)
+    target = xtables_find_target("ACCEPT", XTF_LOAD_MUST_BE_FOUND);
+    if (!target) {
+        fprintf(stderr, "Failed to find ACCEPT target\n");
+        free(entry);
+        return 1;
+    }
+
+    // Добавляем условие для TCP и порта 22
+    match = xtables_find_match("tcp", XTF_LOAD_MUST_BE_FOUND);
+    if (!match) {
+        fprintf(stderr, "Failed to find tcp match\n");
+        free(entry);
+        return 1;
+    }
+
+    // Настраиваем match для порта 22
+    xtables_option_tpcall(match, NULL, "--dport", "22", 0);
+
+    // Добавляем match в правило
+    entry->matches = match;
+    entry->target = target;
+
+    // Создаём структуру для замены правил
+    repl = calloc(1, sizeof(struct ipt_replace));
+    if (!repl) {
+        fprintf(stderr, "Failed to allocate memory for repl\n");
+        free(entry);
+        return 1;
+    }
+
+    // Настраиваем замену для цепочки INPUT
+    strncpy(repl->name, "filter", sizeof(repl->name));
+    repl->num_entries = 1;
+    repl->entries = entry;
+
+    // Открываем сокет для работы с Netfilter
+    sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+    if (sockfd < 0) {
+        perror("socket");
+        free(entry);
+        free(repl);
+        return 1;
+    }
+
+    // Добавляем правило в цепочку INPUT
+    if (iptc_append_entry(repl->name, repl, sockfd) < 0) {
+        fprintf(stderr, "Failed to append rule: %s\n", iptc_strerror(errno));
+        close(sockfd);
+        free(entry);
+        free(repl);
+        return 1;
+    }
+
+    printf("Rule added successfully\n");
+
+    // Освобождаем ресурсы
+    close(sockfd);
+    free(entry);
+    free(repl);
+    xtables_fini();
+
+    return 0;
+}

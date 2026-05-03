@@ -1,0 +1,16 @@
+[Unit]
+Description=My Custom Application
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+Group=mygroup
+WorkingDirectory=/var/www/myapp
+ExecStart=/usr/bin/myapp
+Restart=on-failure
+Environment="DB_HOST=localhost"
+Environment="DB_USER=myuser"
+
+[Install]
+WantedBy=multi-user.target

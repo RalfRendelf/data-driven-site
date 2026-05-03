@@ -1,0 +1,543 @@
+<h2>Сервисы systemd: Управление, конфигурация и лучшие практики</h2>
+
+<p>
+<strong>Сервисы systemd</strong> — это основной механизм управления процессами в современных дистрибутивах Linux.
+В отличие от традиционной системы <code>init</code>, systemd предоставляет более гибкие и мощные средства для запуска, остановки, мониторинга и управления сервисами.
+В этой статье рассмотрены основные аспекты работы с сервисами в systemd, включая конфигурацию, управление и устранение неполадок.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое сервис в systemd?</h4>
+<p>
+Сервис в systemd — это <strong>unit-файл типа <code>service</code></strong>, который описывает, как запускать, останавливать и управлять процессом или набором процессов.
+Сервисы могут быть:
+</p>
+<ul>
+  <li><strong>Системными</strong> (например, <code>sshd.service</code>, <code>cron.service</code>).</li>
+  <li><strong>Пользовательскими</strong> (например, <code>myapp.service</code>).</li>
+  <li><strong>Временными</strong> (созданными во время работы системы).</li>
+</ul>
+
+<h4>Жизненный цикл сервиса</h4>
+<p>
+Сервис в systemd проходит через несколько состояний в течение своего жизненного цикла:
+</p>
+<ol>
+  <li><strong>inactive (dead)</strong> — сервис не запущен.</li>
+  <li><strong>activating</strong> — сервис запускается.</li>
+  <li><strong>active (running)</strong> — сервис работает.</li>
+  <li><strong>deactivating</strong> — сервис останавливается.</li>
+  <li><strong>failed</strong> — сервис завершился с ошибкой.</li>
+</ol>
+
+<h4>Типы сервисов</h4>
+<p>
+В systemd существует несколько типов сервисов, которые определяют, как systemd управляет процессом:
+</p>
+<table>
+  <tr>
+    <th>Тип</th>
+    <th>Описание</th>
+    <th>Когда использовать</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>simple</code></td>
+    <td>Процесс запускается и работает в переднем плане. systemd считает сервис запущенным сразу после выполнения <code>ExecStart</code>.</td>
+    <td>Для большинства сервисов, которые не раздваиваются (fork).</td>
+    <td><code>nginx.service</code></td>
+  </tr>
+  <tr>
+    <td><code>forking</code></td>
+    <td>Процесс запускается и затем раздваивается (fork). systemd ожидает завершения родительского процесса.</td>
+    <td>Для сервисов, которые используют <code>fork()</code> (например, <code>sshd</code>, <code>postgresql</code>).</td>
+    <td><code>sshd.service</code></td>
+  </tr>
+  <tr>
+    <td><code>oneshot</code></td>
+    <td>Процесс запускается один раз и завершается. systemd считает сервис завершённым после выполнения <code>ExecStart</code>.</td>
+    <td>Для одноразовых задач (например, скрипты настройки).</td>
+    <td><code>backup.service</code></td>
+  </tr>
+  <tr>
+    <td><code>dbus</code></td>
+    <td>Аналогично <code>simple</code>, но сервис считается запущенным после получения имени D-Bus.</td>
+    <td>Для сервисов, которые регистрируют имя в D-Bus.</td>
+    <td><code>dbus.service</code></td>
+  </tr>
+  <tr>
+    <td><code>notify</code></td>
+    <td>Аналогично <code>simple</code>, но сервис отправляет уведомление о готовности через <code>sd_notify()</code>.</td>
+    <td>Для сервисов, которые поддерживают уведомления о готовности.</td>
+    <td><code>docker.service</code></td>
+  </tr>
+  <tr>
+    <td><code>idle</code></td>
+    <td>Аналогично <code>simple</code>, но запуск откладывается до завершения других задач.</td>
+    <td>Для сервисов, которые не критичны для запуска системы.</td>
+    <td><code>preload.service</code></td>
+  </tr>
+</table>
+
+---
+<h3>Конфигурация сервисов</h3>
+
+<h4>Секция [Service]</h4>
+<p>
+Секция <code>[Service]</code> содержит настройки, специфичные для сервисов. Она определяет, как сервис должен запускаться, останавливаться и управляться.
+</p>
+
+<h5>Основные директивы секции [Service]</h5>
+<table>
+  <tr>
+    <th>Директива</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>Type=</code></td>
+    <td>Тип сервиса (<code>simple</code>, <code>forking</code>, <code>oneshot</code>, <code>dbus</code>, <code>notify</code>, <code>idle</code>).</td>
+    <td><code>Type=simple</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStart=</code></td>
+    <td>Команда для запуска сервиса.</td>
+    <td><code>ExecStart=/usr/bin/myapp</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStartPre=</code></td>
+    <td>Команда, выполняемая перед запуском сервиса.</td>
+    <td><code>ExecStartPre=/usr/bin/myapp --setup</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStartPost=</code></td>
+    <td>Команда, выполняемая после запуска сервиса.</td>
+    <td><code>ExecStartPost=/usr/bin/myapp --post-setup</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecStop=</code></td>
+    <td>Команда для остановки сервиса.</td>
+    <td><code>ExecStop=/usr/bin/myapp --stop</code></td>
+  </tr>
+  <tr>
+    <td><code>ExecReload=</code></td>
+    <td>Команда для перезагрузки конфигурации сервиса.</td>
+    <td><code>ExecReload=/usr/bin/myapp --reload</code></td>
+  </tr>
+  <tr>
+    <td><code>Restart=</code></td>
+    <td>Политика перезапуска сервиса.</td>
+    <td><code>Restart=on-failure</code></td>
+  </tr>
+  <tr>
+    <td><code>RestartSec=</code></td>
+    <td>Интервал между перезапусками (в секундах).</td>
+    <td><code>RestartSec=5</code></td>
+  </tr>
+  <tr>
+    <td><code>User=</code></td>
+    <td>Пользователь, от имени которого запускается сервис.</td>
+    <td><code>User=myuser</code></td>
+  </tr>
+  <tr>
+    <td><code>Group=</code></td>
+    <td>Группа, от имени которой запускается сервис.</td>
+    <td><code>Group=mygroup</code></td>
+  </tr>
+  <tr>
+    <td><code>WorkingDirectory=</code></td>
+    <td>Рабочая директория для сервиса.</td>
+    <td><code>WorkingDirectory=/var/www/myapp</code></td>
+  </tr>
+  <tr>
+    <td><code>Environment=</code></td>
+    <td>Переменные окружения.</td>
+    <td><code>Environment="DB_HOST=localhost"</code></td>
+  </tr>
+  <tr>
+    <td><code>EnvironmentFile=</code></td>
+    <td>Файл с переменными окружения.</td>
+    <td><code>EnvironmentFile=/etc/myapp/env.conf</code></td>
+  </tr>
+  <tr>
+    <td><code>PIDFile=</code></td>
+    <td>Файл с PID процесса.</td>
+    <td><code>PIDFile=/var/run/myapp.pid</code></td>
+  </tr>
+  <tr>
+    <td><code>TimeoutStartSec=</code></td>
+    <td>Таймаут для запуска сервиса.</td>
+    <td><code>TimeoutStartSec=30</code></td>
+  </tr>
+  <tr>
+    <td><code>TimeoutStopSec=</code></td>
+    <td>Таймаут для остановки сервиса.</td>
+    <td><code>TimeoutStopSec=10</code></td>
+  </tr>
+  <tr>
+    <td><code>LimitNOFILE=</code></td>
+    <td>Ограничение на количество открытых файлов.</td>
+    <td><code>LimitNOFILE=1024</code></td>
+  </tr>
+  <tr>
+    <td><code>LimitNPROC=</code></td>
+    <td>Ограничение на количество процессов.</td>
+    <td><code>LimitNPROC=512</code></td>
+  </tr>
+</table>
+
+---
+<h3>Управление сервисами</h3>
+
+<h4>Просмотр списка сервисов</h4>
+<p>
+Для просмотра списка всех сервисов используйте команду:
+</p>
+<pre><code>
+list_services.sh
+</code></pre>
+<p>
+Для просмотра списка только активных сервисов:
+</p>
+<pre><code>
+list_active_services.sh
+</code></pre>
+
+<h4>Просмотр статуса сервиса</h4>
+<p>
+Для просмотра статуса конкретного сервиса используйте команду:
+</p>
+<pre><code>
+service_status.sh
+</code></pre>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+service_status_output.txt
+</code></pre>
+
+<h4>Запуск, остановка и перезапуск сервисов</h4>
+<p>
+Для управления сервисами используйте команды:
+</p>
+<pre><code>
+manage_service.sh
+</code></pre>
+
+<h4>Включение и отключение сервисов</h4>
+<p>
+Для включения или отключения сервисов при загрузке системы используйте команды:
+</p>
+<pre><code>
+enable_disable_service.sh
+</code></pre>
+
+<h4>Просмотр логов сервиса</h4>
+<p>
+Для просмотра логов сервиса используйте команду <code>journalctl</code>:
+</p>
+<pre><code>
+view_service_logs.sh
+</code></pre>
+
+<h4>Проверка конфигурации сервиса</h4>
+<p>
+Для проверки конфигурации сервиса используйте команду:
+</p>
+<pre><code>
+verify_service.sh
+</code></pre>
+
+---
+<h3>Практические примеры</h3>
+
+<h4>Пример 1: Простой сервис</h4>
+<p>
+Этот пример демонстрирует простой unit-файл для сервиса, который запускает команду <code>/usr/bin/myapp</code>.
+</p>
+<pre><code>
+simple_service_unit.txt
+</code></pre>
+
+<h4>Пример 2: Сервис с fork</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который использует <code>fork()</code> (например, <code>sshd</code>).
+</p>
+<pre><code>
+forking_service_unit.txt
+</code></pre>
+
+<h4>Пример 3: Сервис с уведомлением о готовности</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который отправляет уведомление о готовности через <code>sd_notify()</code>.
+</p>
+<pre><code>
+notify_service_unit.txt
+</code></pre>
+<p>
+<strong>Пример кода на C для отправки уведомления:</strong>
+</p>
+<pre><code>
+sd_notify_example_c.txt
+</code></pre>
+
+<h4>Пример 4: Сервис с зависимостями</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который зависит от других сервисов.
+</p>
+<pre><code>
+service_with_dependencies_unit.txt
+</code></pre>
+
+<h4>Пример 5: Сервис с ограничениями ресурсов</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса с ограничениями на ресурсы.
+</p>
+<pre><code>
+service_with_limits_unit.txt
+</code></pre>
+
+<h4>Пример 6: Сервис с несколькими командами</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса, который запускает несколько команд.
+</p>
+<pre><code>
+multi_command_service_unit.txt
+</code></pre>
+
+---
+<h3>Политики перезапуска</h3>
+
+<h4>Описание политик перезапуска</h4>
+<p>
+Директива <code>Restart=</code> определяет, когда сервис должен быть перезапущен.
+</p>
+<table>
+  <tr>
+    <th>Значение</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>no</code></td>
+    <td>Не перезапускать сервис.</td>
+  </tr>
+  <tr>
+    <td><code>on-success</code></td>
+    <td>Перезапускать сервис только если он завершился успешно (код возврата 0).</td>
+  </tr>
+  <tr>
+    <td><code>on-failure</code></td>
+    <td>Перезапускать сервис только если он завершился с ошибкой (код возврата ≠ 0).</td>
+  </tr>
+  <tr>
+    <td><code>on-abnormal</code></td>
+    <td>Перезапускать сервис если он завершился с ошибкой, был убит сигналом или завершился из-за сбоя оборудования.</td>
+  </tr>
+  <tr>
+    <td><code>on-watchdog</code></td>
+    <td>Перезапускать сервис если сработал watchdog.</td>
+  </tr>
+  <tr>
+    <td><code>on-abort</code></td>
+    <td>Перезапускать сервис если он был убит сигналом и не обработал его.</td>
+  </tr>
+  <tr>
+    <td><code>always</code></td>
+    <td>Перезапускать сервис в любом случае.</td>
+  </tr>
+</table>
+
+<h4>Пример использования watchdog</h4>
+<p>
+Этот пример демонстрирует unit-файл для сервиса с включённым watchdog.
+</p>
+<pre><code>
+watchdog_service_unit.txt
+</code></pre>
+<p>
+<strong>Пример кода на C для поддержки watchdog:</strong>
+</p>
+<pre><code>
+watchdog_example_c.txt
+</code></pre>
+
+---
+<h3>Мониторинг и отладка сервисов</h3>
+
+<h4>Просмотр зависимостей сервиса</h4>
+<p>
+Для просмотра зависимостей сервиса используйте команду:
+</p>
+<pre><code>
+view_dependencies.sh
+</code></pre>
+
+<h4>Просмотр времени загрузки сервисов</h4>
+<p>
+Для просмотра времени загрузки сервисов используйте команду:
+</p>
+<pre><code>
+boot_time.sh
+</code></pre>
+
+<h4>Просмотр критической цепочки загрузки</h4>
+<p>
+Для просмотра критической цепочки загрузки используйте команду:
+</p>
+<pre><code>
+critical_chain.sh
+</code></pre>
+
+<h4>Проверка конфигурации системы</h4>
+<p>
+Для проверки конфигурации системы используйте команду:
+</p>
+<pre><code>
+verify_system.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>Type=simple</code></strong> для большинства сервисов.</li>
+  <li><strong>Указывайте зависимости</strong> с помощью <code>After=</code> и <code>Requires=</code>.</li>
+  <li><strong>Используйте <code>Restart=on-failure</code></strong> для автоматического перезапуска сервисов при сбоях.</li>
+  <li><strong>Указывайте пользователя и группу</strong> для запуска сервиса с минимальными правами.</li>
+  <li><strong>Используйте <code>EnvironmentFile=</code></strong> для хранения конфиденциальных данных.</li>
+  <li><strong>Проверяйте конфигурацию</strong> с помощью <code>systemd-analyze verify</code>.</li>
+  <li><strong>Используйте <code>WatchdogSec=</code></strong> для мониторинга сервисов.</li>
+  <li><strong>Используйте <code>WantedBy=multi-user.target</code></strong> для запуска сервиса при загрузке системы.</li>
+  <li><strong>Мониторьте логи</strong> с помощью <code>journalctl</code>.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с запуском сервисов</h4>
+<p>
+Если сервис не запускается, проверьте:
+</p>
+<ul>
+  <li>Логи сервиса:</li>
+</ul>
+<pre><code>
+check_service_logs.sh
+</code></pre>
+<ul>
+  <li>Статус сервиса:</li>
+</ul>
+<pre><code>
+check_service_status.sh
+</code></pre>
+<ul>
+  <li>Права доступа к файлам и директориям:</li>
+</ul>
+<pre><code>
+check_permissions.sh
+</code></pre>
+
+<h4>Проблемы с зависимостями</h4>
+<p>
+Если сервис не запускается из-за зависимостей, проверьте:
+</p>
+<ul>
+  <li>Правильность указания зависимостей в <code>After=</code> и <code>Requires=</code>.</li>
+  <li>Статус зависимых сервисов:</li>
+</ul>
+<pre><code>
+check_dependencies_status.sh
+</code></pre>
+
+<h4>Проблемы с перезапуском сервисов</h4>
+<p>
+Если сервис не перезапускается автоматически, проверьте:
+</p>
+<ul>
+  <li>Политику перезапуска (<code>Restart=</code>).</li>
+  <li>Интервал между перезапусками (<code>RestartSec=</code>).</li>
+</ul>
+
+<h4>Проблемы с таймаутами</h4>
+<p>
+Если сервис не запускается из-за таймаута, проверьте:
+</p>
+<ul>
+  <li>Время запуска сервиса (<code>TimeoutStartSec=</code>).</li>
+  <li>Время остановки сервиса (<code>TimeoutStopSec=</code>).</li>
+</ul>
+
+<h4>Проблемы с конфигурацией</h4>
+<p>
+Если конфигурация сервиса некорректна, проверьте:
+</p>
+<ul>
+  <li>Синтаксис unit-файла:</li>
+</ul>
+<pre><code>
+verify_unit_file.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Сервисы systemd — это мощный инструмент для управления процессами в Linux.
+Они предоставляют гибкие средства для запуска, остановки, мониторинга и управления сервисами, а также позволяют настраивать зависимости, ограничения ресурсов и политики перезапуска.
+Понимание основ работы с сервисами systemd необходимо для эффективного управления системами на базе systemd.
+</p>
+
+<table>
+  <tr>
+    <th>Команда</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>systemctl start &lt;service&gt;</code></td>
+    <td>Запуск сервиса.</td>
+  </tr>
+  <tr>
+    <td><code>systemctl stop &lt;service&gt;</code></td>
+    <td>Остановка сервиса.</td>
+  </tr>
+  <tr>
+    <td><code>systemctl restart &lt;service&gt;</code></td>
+    <td>Перезапуск сервиса.</td>
+  </tr>
+  <tr>
+    <td><code>systemctl reload &lt;service&gt;</code></td>
+    <td>Перезагрузка конфигурации сервиса.</td>
+  </tr>
+  <tr>
+    <td><code>systemctl status &lt;service&gt;</code></td>
+    <td>Просмотр статуса сервиса.</td>
+  </tr>
+  <tr>
+    <td><code>systemctl enable &lt;service&gt;</code></td>
+    <td>Включение сервиса (запуск при загрузке).</td>
+  </tr>
+  <tr>
+    <td><code>systemctl disable &lt;service&gt;</code></td>
+    <td>Отключение сервиса (не запускать при загрузке).</td>
+  </tr>
+  <tr>
+    <td><code>journalctl -u &lt;service&gt;</code></td>
+    <td>Просмотр логов сервиса.</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html">systemd.service(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemctl.html">systemctl(1) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.exec.html">systemd.exec(5) — man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/sd_notify.html">sd_notify(3) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/systemd">systemd (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units">How To Use systemctl to Manage Systemd Services</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files">Understanding Systemd Units and Unit Files</a></li>
+</ul>

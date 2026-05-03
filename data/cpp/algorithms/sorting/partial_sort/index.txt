@@ -1,3 +1,56 @@
-<h2>std::partial_sort</h2>
+<h2>std::partial_sort: Частичная сортировка диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::partial_sort`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который сортирует первые <strong>K</strong> элементов диапазона.
+Остальные элементы остаются в неопределённом порядке.
+Работает за время <strong>O(N log K)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+partial_sort_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>middle</code></td>
+    <td>Итератор на позицию, до которой нужно отсортировать элементы</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Частичная сортировка вектора</h4>
+<pre><code>
+partial_sort_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::partial_sort`</strong> — алгоритм для частичной сортировки диапазона.
+Полезен, когда нужно отсортировать только часть элементов (например, для нахождения топ-K элементов).
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/partial_sort">std::partial_sort на cppreference.com</a></li>
+</ul>

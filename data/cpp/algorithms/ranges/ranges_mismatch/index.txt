@@ -1,3 +1,69 @@
-<h2>std::ranges::mismatch</h2>
+<h2>std::ranges::mismatch: Поиск первой позиции различия двух диапазонов</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::mismatch`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который находит первую позицию, где элементы двух диапазонов различаются.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_mismatch_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first1, last1</code></td>
+    <td>Итераторы начала и конца первого диапазона</td>
+  </tr>
+  <tr>
+    <td><code>first2, last2</code></td>
+    <td>Итераторы начала и конца второго диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range1, range2</code></td>
+    <td>Диапазоны для сравнения</td>
+  </tr>
+  <tr>
+    <td><code>pred</code></td>
+    <td>Предикат для сравнения элементов (опционально)</td>
+  </tr>
+  <tr>
+    <td><code>proj1, proj2</code></td>
+    <td>Функции проекции (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>std::ranges::mismatch_result</code>, содержащий пару итераторов на первые различающиеся элементы в каждом диапазоне.
+Если все элементы равны, возвращает пару <code>{last1, last2}</code>.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Поиск первого различия между двумя векторами</h4>
+<pre><code>
+ranges_mismatch_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::mismatch`</strong> — современный алгоритм для поиска первой позиции различия между двумя диапазонами.
+Полезен для сравнения данных и поиска расхождений.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/mismatch">std::ranges::mismatch на cppreference.com</a></li>
+</ul>

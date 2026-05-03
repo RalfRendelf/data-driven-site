@@ -1,0 +1,7 @@
+[Unit]
+Description=Weekday Task Service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/weekday_task.sh

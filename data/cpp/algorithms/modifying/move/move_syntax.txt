@@ -1,0 +1,2 @@
+template <class InputIterator, class OutputIterator>
+OutputIterator move(InputIterator first, InputIterator last, OutputIterator result);

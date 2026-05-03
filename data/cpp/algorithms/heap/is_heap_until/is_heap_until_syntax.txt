@@ -1,0 +1,5 @@
+template <class RandomAccessIterator>
+RandomAccessIterator is_heap_until(RandomAccessIterator first, RandomAccessIterator last);
+
+template <class RandomAccessIterator, class Compare>
+RandomAccessIterator is_heap_until(RandomAccessIterator first, RandomAccessIterator last, Compare comp);

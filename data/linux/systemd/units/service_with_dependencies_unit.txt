@@ -1,0 +1,16 @@
+[Unit]
+Description=My Application with Dependencies
+Requires=mysql.service postgresql.service
+After=network.target mysql.service postgresql.service
+Conflicts=apache2.service
+
+[Service]
+Type=simple
+User=myuser
+Group=mygroup
+ExecStart=/usr/bin/myapp
+Restart=on-failure
+Environment="DB_HOST=localhost"
+
+[Install]
+WantedBy=multi-user.target

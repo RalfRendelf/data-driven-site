@@ -1,0 +1,5 @@
+template <class RandomAccessIterator>
+bool is_heap(RandomAccessIterator first, RandomAccessIterator last);
+
+template <class RandomAccessIterator, class Compare>
+bool is_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp);

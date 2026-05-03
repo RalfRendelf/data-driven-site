@@ -1,0 +1,7 @@
+[Unit]
+Description=Delayed Task Service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/delayed_task.sh

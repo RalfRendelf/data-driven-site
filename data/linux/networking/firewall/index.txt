@@ -1,0 +1,490 @@
+<h2>Firewall и Netfilter: iptables, nftables и правила фильтрации в Linux</h2>
+
+<p>
+<strong>Firewall</strong> (межсетевой экран) — это система безопасности, контролирующая входящий и исходящий сетевой трафик на основе заданных правил.
+В Linux межсетевой экран реализован с помощью подсистемы <strong>Netfilter</strong>, которая работает на уровне ядра и предоставляет инструменты <strong>iptables</strong> и <strong>nftables</strong> для управления правилами фильтрации.
+</p>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы работы Netfilter и межсетевых экранов.</li>
+  <li>Инструменты <code>iptables</code> и <code>nftables</code>.</li>
+  <li>Цепочки (chains) и таблицы (tables).</li>
+  <li>Практические примеры настройки правил.</li>
+  <li>Интеграция с C и C++ для программного управления правилами.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое Netfilter?</h4>
+<p>
+<strong>Netfilter</strong> — это подсистема ядра Linux, отвечающая за:
+</p>
+<ul>
+  <li><strong>Фильтрацию пакетов</strong> (firewall).</li>
+  <li><strong>Трансляцию сетевых адресов (NAT)</strong>.</li>
+  <li><strong>Модификацию пакетов</strong> (mangle).</li>
+</ul>
+<p>
+Netfilter работает на уровне ядра и интегрирован с сетевым стеком Linux. Он перехватывает пакеты на разных этапах их обработки и применяет к ним правила из заданных таблиц.
+</p>
+
+<h4>Архитектура Netfilter</h4>
+<p>
+Netfilter использует <strong>таблицы</strong> и <strong>цепочки</strong> для организации правил. Каждая таблица предназначена для определённых задач:
+</p>
+<table>
+  <tr>
+    <th>Таблица</th>
+    <th>Назначение</th>
+    <th>Цепочки</th>
+  </tr>
+  <tr>
+    <td><code>filter</code></td>
+    <td>Фильтрация пакетов (принятие/отклонение)</td>
+    <td><code>INPUT</code>, <code>FORWARD</code>, <code>OUTPUT</code></td>
+  </tr>
+  <tr>
+    <td><code>nat</code></td>
+    <td>Трансляция сетевых адресов (NAT)</td>
+    <td><code>PREROUTING</code>, <code>POSTROUTING</code>, <code>OUTPUT</code></td>
+  </tr>
+  <tr>
+    <td><code>mangle</code></td>
+    <td>Модификация пакетов (изменение заголовков)</td>
+    <td><code>PREROUTING</code>, <code>INPUT</code>, <code>FORWARD</code>, <code>OUTPUT</code>, <code>POSTROUTING</code></td>
+  </tr>
+  <tr>
+    <td><code>raw</code></td>
+    <td>Обработка пакетов до соединения (например, для NOTRACK)</td>
+    <td><code>PREROUTING</code>, <code>OUTPUT</code></td>
+  </tr>
+</table>
+
+<h4>Цепочки (Chains)</h4>
+<p>
+Цепочки определяют, на каком этапе обрабатывается пакет:
+</p>
+<table>
+  <tr>
+    <th>Цепочка</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>PREROUTING</code></td>
+    <td>Обрабатывает пакеты при получении, до маршрутизации.</td>
+  </tr>
+  <tr>
+    <td><code>INPUT</code></td>
+    <td>Обрабатывает пакеты, предназначенные для локального хоста.</td>
+  </tr>
+  <tr>
+    <td><code>FORWARD</code></td>
+    <td>Обрабатывает пакеты, проходящие через хост (маршрутизируемые).</td>
+  </tr>
+  <tr>
+    <td><code>OUTPUT</code></td>
+    <td>Обрабатывает пакеты, сгенерированные локально.</td>
+  </tr>
+  <tr>
+    <td><code>POSTROUTING</code></td>
+    <td>Обрабатывает пакеты перед отправкой, после маршрутизации.</td>
+  </tr>
+</table>
+
+<h4>Порядок обработки пакетов</h4>
+<p>
+Пакеты проходят через цепочки в следующем порядке:
+</p>
+<ol>
+  <li><strong>Входящие пакеты:</strong>
+    <ol>
+      <li><code>PREROUTING</code> (таблица <code>raw</code> → <code>mangle</code> → <code>nat</code>).</li>
+      <li>Маршрутизация.</li>
+      <li><code>INPUT</code> (таблица <code>mangle</code> → <code>filter</code>).</li>
+    </ol>
+  </li>
+  <li><strong>Маршрутизируемые пакеты:</strong>
+    <ol>
+      <li><code>PREROUTING</code> (таблица <code>raw</code> → <code>mangle</code> → <code>nat</code>).</li>
+      <li>Маршрутизация.</li>
+      <li><code>FORWARD</code> (таблица <code>mangle</code> → <code>filter</code>).</li>
+      <li><code>POSTROUTING</code> (таблица <code>mangle</code> → <code>nat</code>).</li>
+    </ol>
+  </li>
+  <li><strong>Исходящие пакеты:</strong>
+    <ol>
+      <li><code>OUTPUT</code> (таблица <code>raw</code> → <code>mangle</code> → <code>nat</code> → <code>filter</code>).</li>
+      <li><code>POSTROUTING</code> (таблица <code>mangle</code> → <code>nat</code>).</li>
+    </ol>
+  </li>
+</ol>
+
+---
+<h3>iptables: Классический инструмент для Netfilter</h3>
+
+<h4>Основы iptables</h4>
+<p>
+<code>iptables</code> — это пользовательский интерфейс для управления Netfilter. Он позволяет добавлять, удалять и изменять правила в таблицах и цепочках.
+</p>
+
+<h4>Синтаксис iptables</h4>
+<p>
+Основной синтаксис команды <code>iptables</code>:
+</p>
+<pre><code>
+iptables_syntax.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-t table</code></td>
+    <td>Указывает таблицу (<code>filter</code>, <code>nat</code>, <code>mangle</code>, <code>raw</code>).</td>
+  </tr>
+  <tr>
+    <td><code>-A chain</code></td>
+    <td>Добавляет правило в цепочку.</td>
+  </tr>
+  <tr>
+    <td><code>-D chain</code></td>
+    <td>Удаляет правило из цепочки.</td>
+  </tr>
+  <tr>
+    <td><code>-I chain</code></td>
+    <td>Вставляет правило в цепочку.</td>
+  </tr>
+  <tr>
+    <td><code>-L chain</code></td>
+    <td>Показывает правила в цепочке.</td>
+  </tr>
+  <tr>
+    <td><code>-F chain</code></td>
+    <td>Очищает цепочку.</td>
+  </tr>
+  <tr>
+    <td><code>-P chain policy</code></td>
+    <td>Устанавливает политику по умолчанию для цепочки (<code>ACCEPT</code>, <code>DROP</code>, <code>REJECT</code>).</td>
+  </tr>
+</table>
+
+<h4>Примеры использования iptables</h4>
+
+<h5>Просмотр текущих правил</h5>
+<p>
+Для просмотра правил в таблице <code>filter</code>:
+</p>
+<pre><code>
+iptables_list.sh
+</code></pre>
+<p>
+<strong>Опции:</strong>
+</p>
+<ul>
+  <li><code>-L</code> — показать правила.</li>
+  <li><code>-v</code> — показать подробную информацию.</li>
+  <li><code>-n</code> — не разрешать имена хостов (показывать IP-адреса).</li>
+</ul>
+
+<h5>Установка политики по умолчанию</h5>
+<p>
+Установим политику <code>DROP</code> для всех цепочек таблицы <code>filter</code>:
+</p>
+<pre><code>
+iptables_policy.sh
+</code></pre>
+
+<h5>Добавление правил для разрешения трафика</h5>
+<p>
+Разрешим входящие соединения на порт 22 (SSH) и исходящий трафик:
+</p>
+<pre><code>
+iptables_allow_ssh.sh
+</code></pre>
+
+<h5>Блокировка IP-адреса</h5>
+<p>
+Заблокируем входящий трафик с IP-адреса <code>192.168.1.100</code>:
+</p>
+<pre><code>
+iptables_block_ip.sh
+</code></pre>
+
+<h5>Трансляция сетевых адресов (NAT)</h5>
+<p>
+Настроим NAT для разделяемого доступа в Интернет:
+</p>
+<pre><code>
+iptables_nat.sh
+</code></pre>
+
+<h5>Сохранение и восстановление правил</h5>
+<p>
+Правила <code>iptables</code> не сохраняются после перезагрузки. Для их сохранения используйте:
+</p>
+<pre><code>
+iptables_save.sh
+</code></pre>
+
+---
+<h3>nftables: Современная замена iptables</h3>
+
+<h4>Основы nftables</h4>
+<p>
+<code>nftables</code> — это современная замена <code>iptables</code>, представленная в ядре Linux 3.13. Она предоставляет более гибкий и удобный синтаксис, а также лучшую производительность.
+</p>
+
+<h4>Синтаксис nftables</h4>
+<p>
+Основной синтаксис команды <code>nft</code>:
+</p>
+<pre><code>
+nftables_syntax.txt
+</code></pre>
+
+<h4>Примеры использования nftables</h4>
+
+<h5>Просмотр текущих правил</h5>
+<p>
+Для просмотра всех правил:
+</p>
+<pre><code>
+nft_list.sh
+</code></pre>
+
+<h5>Создание таблицы и цепочки</h5>
+<p>
+Создадим таблицу <code>filter</code> с цепочками <code>input</code>, <code>forward</code> и <code>output</code>:
+</p>
+<pre><code>
+nftables_create_table.sh
+</code></pre>
+
+<h5>Добавление правил</h5>
+<p>
+Добавим правила для разрешения SSH и ICMP:
+</p>
+<pre><code>
+nftables_add_rules.sh
+</code></pre>
+
+<h5>Трансляция сетевых адресов (NAT)</h5>
+<p>
+Настроим NAT для разделяемого доступа в Интернет:
+</p>
+<pre><code>
+nftables_nat.sh
+</code></pre>
+
+<h5>Сохранение и восстановление правил</h5>
+<p>
+Для сохранения правил <code>nftables</code>:
+</p>
+<pre><code>
+nftables_save.sh
+</code></pre>
+
+---
+<h3>Сравнение iptables и nftables</h3>
+
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>iptables</th>
+    <th>nftables</th>
+  </tr>
+  <tr>
+    <td><strong>Синтаксис</strong></td>
+    <td>Сложный, много опций</td>
+    <td>Простой и последовательный</td>
+  </tr>
+  <tr>
+    <td><strong>Производительность</strong></td>
+    <td>Средняя</td>
+    <td>Высокая</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка в ядре</strong></td>
+    <td>Все версии Linux</td>
+    <td>Linux 3.13+</td>
+  </tr>
+  <tr>
+    <td><strong>Гибкость</strong></td>
+    <td>Ограниченная</td>
+    <td>Высокая (поддержка множества таблиц и цепочек)</td>
+  </tr>
+  <tr>
+    <td><strong>Сохранение правил</strong></td>
+    <td>Требует дополнительных утилит (<code>iptables-save</code>)</td>
+    <td>Встроенная поддержка</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка IPv6</strong></td>
+    <td>Требует отдельной утилиты (<code>ip6tables</code>)</td>
+    <td>Единый синтаксис для IPv4 и IPv6</td>
+  </tr>
+</table>
+
+---
+<h3>Программное управление правилами на C</h3>
+
+<h4>Использование libiptc</h4>
+<p>
+Библиотека <code>libiptc</code> позволяет управлять правилами <code>iptables</code> из программ на C.
+</p>
+
+<h5>Пример: Добавление правила с помощью libiptc</h5>
+<p>
+Этот пример демонстрирует, как добавить правило в цепочку <code>INPUT</code> таблицы <code>filter</code> с использованием <code>libiptc</code>.
+</p>
+<pre><code>
+libiptc_example_c.txt
+</code></pre>
+
+<h5>Компиляция программы с libiptc</h5>
+<p>
+Для компиляции программы с <code>libiptc</code> используйте:
+</p>
+<pre><code>
+compile_libiptc.sh
+</code></pre>
+
+---
+<h3>Программное управление правилами на C++</h3>
+
+<h4>Использование libnftnl</h4>
+<p>
+Библиотека <code>libnftnl</code> позволяет управлять правилами <code>nftables</code> из программ на C++.
+</p>
+
+<h5>Пример: Добавление правила с помощью libnftnl</h5>
+<p>
+Этот пример демонстрирует, как добавить правило в цепочку <code>input</code> таблицы <code>filter</code> с использованием <code>libnftnl</code>.
+</p>
+<pre><code>
+libnftnl_example_cpp.txt
+</code></pre>
+
+<h5>Компиляция программы с libnftnl</h5>
+<p>
+Для компиляции программы с <code>libnftnl</code> используйте:
+</p>
+<pre><code>
+compile_libnftnl.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>nftables</code></strong> для новых проектов (более современный и гибкий).</li>
+  <li><strong>Используйте <code>iptables</code></strong> для совместимости со старыми системами.</li>
+  <li><strong>Устанавливайте политику по умолчанию <code>DROP</code></strong> для входящего трафика.</li>
+  <li><strong>Разрешайте только необходимые порты</strong> (например, SSH, HTTP, HTTPS).</li>
+  <li><strong>Используйте <code>state</code> модуль</strong> для разрешения установленных соединений.</li>
+  <li><strong>Сохраняйте правила</strong> после настройки.</li>
+  <li><strong>Тестируйте правила</strong> перед применением в продакшене.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с порядком правил</h4>
+<p>
+Порядок правил в <code>iptables</code> и <code>nftables</code> имеет значение. Правила обрабатываются сверху вниз, и первое совпадение определяет действие.
+</p>
+<ul>
+  <li>Добавляйте более специфичные правила перед общими.</li>
+  <li>Используйте <code>-I</code> для вставки правил в начало цепочки.</li>
+</ul>
+
+<h4>Проблемы с NAT</h4>
+<p>
+При настройке NAT убедитесь, что:
+</p>
+<ul>
+  <li>Включена маршрутизация пакетов (<code>net.ipv4.ip_forward=1</code>).</li>
+  <li>Правила NAT добавлены в цепочку <code>POSTROUTING</code>.</li>
+</ul>
+<pre><code>
+enable_ip_forward.sh
+</code></pre>
+
+<h4>Проблемы с производительностью</h4>
+<p>
+Большое количество правил может снизить производительность. Для оптимизации:
+</p>
+<ul>
+  <li>Используйте <code>nftables</code> вместо <code>iptables</code>.</li>
+  <li>Объединяйте правила с помощью <code>sets</code> и <code>maps</code> в <code>nftables</code>.</li>
+  <li>Используйте <code>conntrack</code> для отслеживания соединений.</li>
+</ul>
+
+<h4>Проблемы с сохранением правил</h4>
+<p>
+Правила <code>iptables</code> и <code>nftables</code> не сохраняются после перезагрузки. Для автоматического применения правил при загрузке:
+</p>
+<ul>
+  <li>Используйте <code>iptables-save</code> и <code>iptables-restore</code> для <code>iptables</code>.</li>
+  <li>Используйте <code>nft -f</code> для загрузки правил <code>nftables</code>.</li>
+  <li>Настройте автозагрузку правил через <code>cron</code> или сервисы systemd.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>Netfilter</strong> — это мощная подсистема ядра Linux для фильтрации и обработки сетевого трафика.
+<code>iptables</code> и <code>nftables</code> предоставляют инструменты для управления правилами фильтрации, NAT и модификации пакетов.
+</p>
+
+<table>
+  <tr>
+    <th>Инструмент</th>
+    <th>Назначение</th>
+    <th>Преимущества</th>
+    <th>Недостатки</th>
+  </tr>
+  <tr>
+    <td><code>iptables</code></td>
+    <td>Управление Netfilter</td>
+    <td>Широко поддерживается, много документации</td>
+    <td>Сложный синтаксис, устаревает</td>
+  </tr>
+  <tr>
+    <td><code>nftables</code></td>
+    <td>Современная замена <code>iptables</code></td>
+    <td>Простой синтаксис, высокая производительность</td>
+    <td>Меньше документации, требует Linux 3.13+</td>
+  </tr>
+  <tr>
+    <td><code>libiptc</code></td>
+    <td>Программное управление <code>iptables</code></td>
+    <td>Гибкость, интеграция с C</td>
+    <td>Сложность использования</td>
+  </tr>
+  <tr>
+    <td><code>libnftnl</code></td>
+    <td>Программное управление <code>nftables</code></td>
+    <td>Современный API, высокая производительность</td>
+    <td>Сложность использования</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.netfilter.org/">Официальный сайт Netfilter</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/iptables.8.html">iptables(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/nft.8.html">nft(8) — Linux man page</a></li>
+  <li><a href="https://wiki.nftables.org/wiki-nftables/index.php/Maining_nftables">nftables Wiki</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-iptables-on-ubuntu-20-04">How To Set Up a Firewall Using iptables on Ubuntu</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Simple_stateful_firewall">Simple Stateful Firewall (Arch Wiki)</a></li>
+</ul>

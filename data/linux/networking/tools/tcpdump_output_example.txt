@@ -1,0 +1,5 @@
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+14:30:25.123456 IP 192.168.1.100.54321 > 172.217.16.206.443: Flags [S], seq 123456789, win 64240, options [mss 1460,sackOK,TS val 123456789 ecr 0,nop,wscale 7], length 0
+14:30:25.123789 IP 172.217.16.206.443 > 192.168.1.100.54321: Flags [S.], seq 987654321, ack 123456790, win 64240, options [mss 1460,sackOK,TS val 987654321 ecr 123456789,nop,wscale 7], length 0
+14:30:25.124123 IP 192.168.1.100.54321 > 172.217.16.206.443: Flags [.], ack 1, win 64240, length 0

@@ -1,0 +1,2 @@
+epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+close(fd);

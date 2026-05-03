@@ -1,0 +1,16 @@
+#include <systemd/sd-daemon.h>
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    // Уведомляем systemd о том, что сервис готов
+    sd_notify(0, "READY=1");
+
+    // Основная логика сервиса
+    while (1) {
+        printf("Service is running...\n");
+        sleep(1);
+    }
+
+    return 0;
+}

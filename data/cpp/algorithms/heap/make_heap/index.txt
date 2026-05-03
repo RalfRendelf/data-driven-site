@@ -1,3 +1,58 @@
-<h2>std::make_heap</h2>
+<h2>std::make_heap: Построение кучи из диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::make_heap`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который преобразует диапазон в <strong>кучу</strong> (heap).
+Куча — это структура данных, в которой для любого элемента <code>i</code> выполняется условие:
+<code>comp(element[i], element[parent(i)]) == false</code> (по умолчанию: <code>element[i] <= element[parent(i)]</code>).
+Работает за время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+make_heap_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов для преобразования в кучу</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально, по умолчанию используется <code>std::less</code>)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Преобразование вектора в кучу</h4>
+<pre><code>
+make_heap_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного компаратора</h4>
+<pre><code>
+make_heap_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::make_heap`</strong> — алгоритм для преобразования диапазона в кучу.
+Куча позволяет эффективно извлекать максимальный (или минимальный) элемент, а также добавлять и удалять элементы.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/make_heap">std::make_heap на cppreference.com</a></li>
+</ul>

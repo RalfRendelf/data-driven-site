@@ -1,3 +1,57 @@
-<h2>std::partition_point</h2>
+<h2>std::partition_point: Поиск точки разделения в уже разделённом диапазоне</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::partition_point`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который находит первую позицию в диапазоне, где элемент не удовлетворяет предикату.
+Работает за время <strong>O(log N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+Требует, чтобы диапазон был предварительно разделён с помощью <code>std::partition</code> или <code>std::stable_partition</code>.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+partition_point_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов (должен быть разделён)</td>
+  </tr>
+  <tr>
+    <td><code>pred</code></td>
+    <td>Унарный предикат, использованный для разделения</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на первый элемент, который не удовлетворяет предикату.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Поиск точки разделения в векторе</h4>
+<pre><code>
+partition_point_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::partition_point`</strong> — алгоритм для поиска точки разделения в уже разделённом диапазоне.
+Полезен для работы с результатами <code>std::partition</code> или <code>std::stable_partition</code>.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/partition_point">std::partition_point на cppreference.com</a></li>
+</ul>

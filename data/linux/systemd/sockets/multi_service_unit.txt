@@ -1,0 +1,8 @@
+[Unit]
+Description=Multi-Socket Service
+Requires=multi-socket.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/myapp
+StandardInput=socket

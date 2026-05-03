@@ -1,3 +1,65 @@
-<h2>std::ranges::sort</h2>
+<h2>std::ranges::sort: Сортировка диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::sort`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который сортирует элементы в диапазоне.
+Работает за время <strong>O(N log N)</strong> и использует <strong>O(log N)</strong> дополнительной памяти.
+Отличается от <code>std::sort</code> поддержкой концепции <code>Range</code> и проекций.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_sort_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Итераторы начала и конца диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range</code></td>
+    <td>Диапазон (range)</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+  <tr>
+    <td><code>proj</code></td>
+    <td>Функция проекции (опционально)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Сортировка вектора</h4>
+<pre><code>
+ranges_sort_example.cpp
+</code></pre>
+
+<h4>Пример 2: Сортировка с проекцией</h4>
+<pre><code>
+ranges_sort_projection_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::sort`</strong> — современный алгоритм для сортировки диапазонов с поддержкой проекций.
+Удобен для работы с кастомными типами данных.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/sort">std::ranges::sort на cppreference.com</a></li>
+</ul>

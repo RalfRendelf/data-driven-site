@@ -1,3 +1,52 @@
-<h2>std::push_heap</h2>
+<h2>std::push_heap: Добавление элемента в кучу</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::push_heap`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который добавляет элемент в существующую кучу.
+Элемент должен находиться в конце диапазона (после последнего элемента кучи).
+Работает за время <strong>O(log N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+push_heap_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон кучи. Элемент для добавления должен находиться на позиции <code>last - 1</code></td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Добавление элемента в кучу</h4>
+<pre><code>
+push_heap_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::push_heap`</strong> — алгоритм для добавления элемента в существующую кучу.
+Элемент должен быть добавлен в конец диапазона перед вызовом <code>push_heap</code>.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/push_heap">std::push_heap на cppreference.com</a></li>
+</ul>

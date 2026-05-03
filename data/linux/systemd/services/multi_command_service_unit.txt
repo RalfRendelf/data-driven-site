@@ -1,0 +1,16 @@
+[Unit]
+Description=My Application with Multiple Commands
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+Group=mygroup
+ExecStartPre=/usr/bin/myapp --setup
+ExecStart=/usr/bin/myapp
+ExecStartPost=/usr/bin/myapp --post-setup
+ExecStop=/usr/bin/myapp --stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

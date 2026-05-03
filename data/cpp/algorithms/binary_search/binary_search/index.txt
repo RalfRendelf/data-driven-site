@@ -1,3 +1,66 @@
-<h2>std::binary_search</h2>
+<h2>std::binary_search: Проверка наличия элемента в отсортированном диапазоне</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::binary_search`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который проверяет, содержится ли элемент в отсортированном диапазоне.
+Работает за логарифмическое время <strong>O(log N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+Требует, чтобы диапазон был отсортирован по тому же критерию, что и значение сравнения.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+binary_search_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Итераторы начала и конца отсортированного диапазона</td>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>Значение для поиска</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально, по умолчанию используется <code>operator&lt;</code>)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает <code>true</code>, если элемент найден в диапазоне, и <code>false</code> в противном случае.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Проверка наличия элемента в отсортированном векторе</h4>
+<pre><code>
+binary_search_example.cpp
+</code></pre>
+
+<h4>Пример: Использование кастомного компаратора</h4>
+<pre><code>
+binary_search_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::binary_search`</strong> — алгоритм для проверки наличия элемента в отсортированном диапазоне.
+Эффективен для быстрого поиска в больших отсортированных массивах.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/binary_search">std::binary_search на cppreference.com</a></li>
+</ul>

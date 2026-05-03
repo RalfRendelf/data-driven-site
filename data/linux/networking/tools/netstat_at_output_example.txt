@@ -1,0 +1,5 @@
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      PID/Program name
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     1234/sshd
+tcp        0      0 192.168.1.100:54320    172.217.16.206:443     ESTABLISHED 5678/chrome
+tcp        0      0 192.168.1.100:22       10.0.0.5:54321         ESTABLISHED 1234/sshd

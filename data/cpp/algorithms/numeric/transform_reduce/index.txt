@@ -1,3 +1,60 @@
-<h2>std::transform_reduce</h2>
+<h2>std::transform_reduce: Комбинация transform + reduce</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::transform_reduce`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code> (доступен с C++17), который объединяет <code>std::transform</code> и <code>std::reduce</code>.
+Сначала применяет унарную операцию к каждому элементу диапазона, затем выполняет свёртку результатов.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+transform_reduce_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>init</code></td>
+    <td>Начальное значение аккумулятора</td>
+  </tr>
+  <tr>
+    <td><code>binary_op</code></td>
+    <td>Бинарная операция для свёртки</td>
+  </tr>
+  <tr>
+    <td><code>unary_op</code></td>
+    <td>Унарная операция для преобразования элементов</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Сумма квадратов элементов</h4>
+<pre><code>
+transform_reduce_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::transform_reduce`</strong> — алгоритм для комбинированного преобразования и свёртки диапазона.
+Полезен для задач, где нужно сначала преобразовать элементы, а затем получить одно значение (например, сумма квадратов).
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/transform_reduce">std::transform_reduce на cppreference.com</a></li>
+</ul>

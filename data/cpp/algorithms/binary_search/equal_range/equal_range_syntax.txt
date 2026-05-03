@@ -1,0 +1,7 @@
+template <class ForwardIterator, class T>
+std::pair<ForwardIterator, ForwardIterator>
+equal_range(ForwardIterator first, ForwardIterator last, const T& value);
+
+template <class ForwardIterator, class T, class Compare>
+std::pair<ForwardIterator, ForwardIterator>
+equal_range(ForwardIterator first, ForwardIterator last, const T& value, Compare comp);

@@ -1,3 +1,57 @@
-<h2>std::sort</h2>
+<h2>std::sort: Быстрая сортировка диапазона</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::sort`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code>, который сортирует элементы в диапазоне.
+Обычно реализуется как <strong>introsort</strong> (гибрид быстрой сортировки, сортировки кучей и сортировки вставками).
+Работает за время <strong>O(N log N)</strong> в среднем и худшем случае и использует <strong>O(log N)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+sort_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов для сортировки</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально, по умолчанию используется <code>operator&lt;</code>)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Сортировка вектора по возрастанию</h4>
+<pre><code>
+sort_example.cpp
+</code></pre>
+
+<h4>Пример 2: Сортировка с кастомным компаратором</h4>
+<pre><code>
+sort_comparator_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::sort`</strong> — основной алгоритм для сортировки диапазонов в C++.
+Эффективен для большинства задач сортировки благодаря оптимизированной реализации (introsort).
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/sort">std::sort на cppreference.com</a></li>
+</ul>

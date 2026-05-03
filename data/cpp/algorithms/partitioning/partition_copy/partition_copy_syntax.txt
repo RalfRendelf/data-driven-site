@@ -1,0 +1,5 @@
+template <class InputIterator, class OutputIterator1, class OutputIterator2, class UnaryPredicate>
+std::pair<OutputIterator1, OutputIterator2>
+partition_copy(InputIterator first, InputIterator last,
+               OutputIterator1 out_true, OutputIterator2 out_false,
+               UnaryPredicate pred);

@@ -1,0 +1,764 @@
+<h2>Сетевые утилиты в Linux: netstat, ss, tcpdump, Wireshark, traceroute, ping</h2>
+
+<p>
+Сетевые утилиты в Linux — это набор инструментов для диагностики, мониторинга и анализа сетевого трафика.
+Они позволяют администраторам и разработчикам проверять состояние сети, отслеживать соединения, анализировать пакеты и устранять неполадки.
+В этой статье рассмотрены основные сетевые утилиты: <code>netstat</code>, <code>ss</code>, <code>tcpdump</code>, <code>Wireshark</code>, <code>traceroute</code> и <code>ping</code>, а также их практические применения.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Зачем нужны сетевые утилиты?</h4>
+<p>
+Сетевые утилиты помогают решать следующие задачи:
+</p>
+<ul>
+  <li><strong>Диагностика сети</strong>: Проверка доступности хостов и маршрутов.</li>
+  <li><strong>Мониторинг соединений</strong>: Просмотр активных соединений и портов.</li>
+  <li><strong>Анализ трафика</strong>: Перехват и анализ сетевых пакетов.</li>
+  <li><strong>Устранение неполадок</strong>: Поиск и устранение проблем в сети.</li>
+</ul>
+
+<h4>Классификация сетевых утилит</h4>
+<table>
+  <tr>
+    <th>Утилита</th>
+    <th>Назначение</th>
+    <th>Уровень модели OSI</th>
+  </tr>
+  <tr>
+    <td><code>ping</code></td>
+    <td>Проверка доступности хоста</td>
+    <td>Сетевой (ICMP)</td>
+  </tr>
+  <tr>
+    <td><code>traceroute</code></td>
+    <td>Определение маршрута до хоста</td>
+    <td>Сетевой (ICMP/UDP)</td>
+  </tr>
+  <tr>
+    <td><code>netstat</code></td>
+    <td>Просмотр сетевых соединений и статистики</td>
+    <td>Транспортный</td>
+  </tr>
+  <tr>
+    <td><code>ss</code></td>
+    <td>Современная замена <code>netstat</code></td>
+    <td>Транспортный</td>
+  </tr>
+  <tr>
+    <td><code>tcpdump</code></td>
+    <td>Перехват и анализ сетевых пакетов</td>
+    <td>Сетевой и транспортный</td>
+  </tr>
+  <tr>
+    <td><code>Wireshark</code></td>
+    <td>Графический анализатор трафика</td>
+    <td>Все уровни</td>
+  </tr>
+</table>
+
+---
+<h3>ping: Проверка доступности хоста</h3>
+
+<h4>Что такое ping?</h4>
+<p>
+<code>ping</code> — это утилита для проверки доступности хоста в сети с использованием протокола <strong>ICMP (Internet Control Message Protocol)</strong>.
+Она отправляет ICMP Echo Request пакеты на целевой хост и ожидает ICMP Echo Reply в ответ.
+</p>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ping_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+ping_examples.sh
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-c &lt;count&gt;</code></td>
+    <td>Количество отправляемых пакетов.</td>
+  </tr>
+  <tr>
+    <td><code>-i &lt;interval&gt;</code></td>
+    <td>Интервал между отправкой пакетов (в секундах).</td>
+  </tr>
+  <tr>
+    <td><code>-s &lt;size&gt;</code></td>
+    <td>Размер пакета (в байтах).</td>
+  </tr>
+  <tr>
+    <td><code>-f</code></td>
+    <td>Отправка пакетов максимального размера без фрагментации.</td>
+  </tr>
+  <tr>
+    <td><code>-W &lt;timeout&gt;</code></td>
+    <td>Таймаут ожидания ответа (в секундах).</td>
+  </tr>
+</table>
+
+<h4>Анализ вывода ping</h4>
+<p>
+Пример вывода команды <code>ping</code>:
+</p>
+<pre><code>
+ping_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>icmp_seq</code></td>
+    <td>Номер пакета в последовательности.</td>
+  </tr>
+  <tr>
+    <td><code>ttl</code></td>
+    <td>Время жизни пакета (Time To Live).</td>
+  </tr>
+  <tr>
+    <td><code>time</code></td>
+    <td>Время отклика (Round-Trip Time, RTT).</td>
+  </tr>
+  <tr>
+    <td><code>packet loss</code></td>
+    <td>Процент потерянных пакетов.</td>
+  </tr>
+  <tr>
+    <td><code>rtt</code></td>
+    <td>Статистика времени отклика (min/avg/max/mdev).</td>
+  </tr>
+</table>
+
+---
+<h3>traceroute: Определение маршрута до хоста</h3>
+
+<h4>Что такое traceroute?</h4>
+<p>
+<code>traceroute</code> — это утилита для определения маршрута, по которому пакеты проходят от вашего хоста до целевого хоста.
+Она использует протокол <strong>ICMP</strong> или <strong>UDP</strong> для отправки пакетов с увеличивающимся значением <code>TTL</code> (Time To Live).
+</p>
+
+<h4>Синтаксис</h4>
+<pre><code>
+traceroute_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+traceroute_examples.sh
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-m &lt;max_hops&gt;</code></td>
+    <td>Максимальное количество хопов (по умолчанию 30).</td>
+  </tr>
+  <tr>
+    <td><code>-I</code></td>
+    <td>Использовать ICMP вместо UDP.</td>
+  </tr>
+  <tr>
+    <td><code>-p &lt;port&gt;</code></td>
+    <td>Порт для UDP-пакетов (по умолчанию 33434).</td>
+  </tr>
+  <tr>
+    <td><code>-w &lt;timeout&gt;</code></td>
+    <td>Таймаут ожидания ответа (в секундах).</td>
+  </tr>
+</table>
+
+<h4>Анализ вывода traceroute</h4>
+<p>
+Пример вывода команды <code>traceroute</code>:
+</p>
+<pre><code>
+traceroute_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>1, 2, 3...</code></td>
+    <td>Номер хопа (промежуточного узла).</td>
+  </tr>
+  <tr>
+    <td><code>IP-адрес</code></td>
+    <td>IP-адрес промежуточного узла.</td>
+  </tr>
+  <tr>
+    <td><code>Время (ms)</code></td>
+    <td>Время отклика для каждого из трёх пакетов.</td>
+  </tr>
+  <tr>
+    <td><code>*</code></td>
+    <td>Таймаут или блокировка ICMP.</td>
+  </tr>
+</table>
+
+---
+<h3>netstat: Просмотр сетевых соединений и статистики</h3>
+
+<h4>Что такое netstat?</h4>
+<p>
+<code>netstat</code> — это утилита для просмотра сетевых соединений, таблиц маршрутизации, статистики интерфейсов и других сетевых параметров.
+Она предоставляет информацию о:
+</p>
+<ul>
+  <li>Активных TCP- и UDP-соединениях.</li>
+  <li>Таблицах маршрутизации.</li>
+  <li>Статистике сетевых интерфейсов.</li>
+  <li>Масках подсети.</li>
+</ul>
+
+<h4>Синтаксис</h4>
+<pre><code>
+netstat_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+netstat_examples.sh
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-a</code></td>
+    <td>Показать все соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-t</code></td>
+    <td>Показать TCP-соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-u</code></td>
+    <td>Показать UDP-соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-p</code></td>
+    <td>Показать PID и имя процесса.</td>
+  </tr>
+  <tr>
+    <td><code>-n</code></td>
+    <td>Показывать IP-адреса вместо имён хостов.</td>
+  </tr>
+  <tr>
+    <td><code>-s</code></td>
+    <td>Показать статистику по протоколам.</td>
+  </tr>
+  <tr>
+    <td><code>-r</code></td>
+    <td>Показать таблицу маршрутизации.</td>
+  </tr>
+  <tr>
+    <td><code>-i</code></td>
+    <td>Показать статистику сетевых интерфейсов.</td>
+  </tr>
+</table>
+
+<h4>Анализ вывода netstat</h4>
+<p>
+Пример вывода команды <code>netstat -at</code>:
+</p>
+<pre><code>
+netstat_at_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>Proto</code></td>
+    <td>Протокол (TCP или UDP).</td>
+  </tr>
+  <tr>
+    <td><code>Recv-Q</code></td>
+    <td>Количество байт в очереди на чтение.</td>
+  </tr>
+  <tr>
+    <td><code>Send-Q</code></td>
+    <td>Количество байт в очереди на отправку.</td>
+  </tr>
+  <tr>
+    <td><code>Local Address</code></td>
+    <td>Локальный IP-адрес и порт.</td>
+  </tr>
+  <tr>
+    <td><code>Foreign Address</code></td>
+    <td>Удалённый IP-адрес и порт.</td>
+  </tr>
+  <tr>
+    <td><code>State</code></td>
+    <td>Состояние соединения (LISTEN, ESTABLISHED и др.).</td>
+  </tr>
+  <tr>
+    <td><code>PID/Program name</code></td>
+    <td>Идентификатор процесса и его имя.</td>
+  </tr>
+</table>
+
+---
+<h3>ss: Современная замена netstat</h3>
+
+<h4>Что такое ss?</h4>
+<p>
+<code>ss</code> (Socket Statistics) — это современная замена утилиты <code>netstat</code>, которая предоставляет более быстрый и детализированный вывод информации о сокетах.
+Она показывает:
+</p>
+<ul>
+  <li>Активные TCP-, UDP- и UNIX-сокеты.</li>
+  <li>Статистику по сокетам.</li>
+  <li>Информацию о процессах, использующих сокеты.</li>
+</ul>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ss_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+ss_examples.sh
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-a</code></td>
+    <td>Показать все соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-t</code></td>
+    <td>Показать TCP-соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-u</code></td>
+    <td>Показать UDP-соединения.</td>
+  </tr>
+  <tr>
+    <td><code>-p</code></td>
+    <td>Показать PID и имя процесса.</td>
+  </tr>
+  <tr>
+    <td><code>-n</code></td>
+    <td>Показывать IP-адреса вместо имён хостов.</td>
+  </tr>
+  <tr>
+    <td><code>-s</code></td>
+    <td>Показать статистику по сокетам.</td>
+  </tr>
+</table>
+
+<h4>Сравнение ss и netstat</h4>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>ss</th>
+    <th>netstat</th>
+  </tr>
+  <tr>
+    <td><strong>Скорость</strong></td>
+    <td>Быстрее (использует информацию из ядра)</td>
+    <td>Медленнее (сканирует /proc)</td>
+  </tr>
+  <tr>
+    <td><strong>Детализация</strong></td>
+    <td>Более детализированный вывод</td>
+    <td>Менее детализированный вывод</td>
+  </tr>
+  <tr>
+    <td><strong>Фильтрация</strong></td>
+    <td>Поддержка сложных фильтров</td>
+    <td>Ограниченная фильтрация</td>
+  </tr>
+  <tr>
+    <td><strong>Современность</strong></td>
+    <td>Современная утилита</td>
+    <td>Устаревшая утилита</td>
+  </tr>
+</table>
+
+---
+<h3>tcpdump: Перехват и анализ сетевых пакетов</h3>
+
+<h4>Что такое tcpdump?</h4>
+<p>
+<code>tcpdump</code> — это утилита для перехвата и анализа сетевых пакетов в реальном времени.
+Она позволяет:
+</p>
+<ul>
+  <li>Перехватывать пакеты с сетевых интерфейсов.</li>
+  <li>Фильтровать пакеты по различным критериям.</li>
+  <li>Сохранять перехваченные пакеты в файл для последующего анализа.</li>
+  <li>Читать пакеты из файлов.</li>
+</ul>
+
+<h4>Синтаксис</h4>
+<pre><code>
+tcpdump_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+tcpdump_examples.sh
+</code></pre>
+
+<table>
+  <tr>
+    <th>Опция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-i &lt;interface&gt;</code></td>
+    <td>Интерфейс для перехвата пакетов.</td>
+  </tr>
+  <tr>
+    <td><code>-w &lt;file&gt;</code></td>
+    <td>Сохранить пакеты в файл.</td>
+  </tr>
+  <tr>
+    <td><code>-r &lt;file&gt;</code></td>
+    <td>Читать пакеты из файла.</td>
+  </tr>
+  <tr>
+    <td><code>-c &lt;count&gt;</code></td>
+    <td>Перехватить только N пакетов.</td>
+  </tr>
+  <tr>
+    <td><code>-A</code></td>
+    <td>Отображать содержимое пакетов в ASCII.</td>
+  </tr>
+  <tr>
+    <td><code>-XX</code></td>
+    <td>Отображать содержимое пакетов в HEX и ASCII.</td>
+  </tr>
+  <tr>
+    <td><code>-n</code></td>
+    <td>Не разрешать имена хостов.</td>
+  </tr>
+</table>
+
+<h4>Фильтры tcpdump</h4>
+<p>
+<code>tcpdump</code> поддерживает мощные фильтры для выбора пакетов. Некоторые примеры:
+</p>
+<table>
+  <tr>
+    <th>Фильтр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>host 192.168.1.100</code></td>
+    <td>Пакеты с IP-адресом 192.168.1.100 (как отправитель, так и получатель).</td>
+  </tr>
+  <tr>
+    <td><code>src 192.168.1.100</code></td>
+    <td>Пакеты от IP-адреса 192.168.1.100.</td>
+  </tr>
+  <tr>
+    <td><code>dst 192.168.1.100</code></td>
+    <td>Пакеты для IP-адреса 192.168.1.100.</td>
+  </tr>
+  <tr>
+    <td><code>port 80</code></td>
+    <td>Пакеты на порту 80.</td>
+  </tr>
+  <tr>
+    <td><code>portrange 80-443</code></td>
+    <td>Пакеты на портах от 80 до 443.</td>
+  </tr>
+  <tr>
+    <td><code>tcp</code></td>
+    <td>Только TCP-пакеты.</td>
+  </tr>
+  <tr>
+    <td><code>udp</code></td>
+    <td>Только UDP-пакеты.</td>
+  </tr>
+  <tr>
+    <td><code>icmp</code></td>
+    <td>Только ICMP-пакеты.</td>
+  </tr>
+  <tr>
+    <td><code>tcp and port 80</code></td>
+    <td>TCP-пакеты на порту 80.</td>
+  </tr>
+  <tr>
+    <td><code>not port 22</code></td>
+    <td>Все пакеты, кроме тех, что на порту 22.</td>
+  </tr>
+</table>
+
+<h4>Анализ вывода tcpdump</h4>
+<p>
+Пример вывода команды <code>tcpdump</code>:
+</p>
+<pre><code>
+tcpdump_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>14:30:25.123456</code></td>
+    <td>Время перехвата пакета.</td>
+  </tr>
+  <tr>
+    <td><code>IP</code></td>
+    <td>Протокол (IPv4).</td>
+  </tr>
+  <tr>
+    <td><code>192.168.1.100.54321</code></td>
+    <td>IP-адрес и порт отправителя.</td>
+  </tr>
+  <tr>
+    <td><code>172.217.16.206.443</code></td>
+    <td>IP-адрес и порт получателя.</td>
+  </tr>
+  <tr>
+    <td><code>Flags [S]</code></td>
+    <td>Флаги TCP (S — SYN, . — ACK и др.).</td>
+  </tr>
+  <tr>
+    <td><code>seq 123456789</code></td>
+    <td>Номер последовательности TCP.</td>
+  </tr>
+  <tr>
+    <td><code>ack 123456790</code></td>
+    <td>Номер подтверждения TCP.</td>
+  </tr>
+  <tr>
+    <td><code>win 64240</code></td>
+    <td>Размер окна TCP.</td>
+  </tr>
+  <tr>
+    <td><code>length 0</code></td>
+    <td>Длина данных в пакете.</td>
+  </tr>
+</table>
+
+---
+<h3>Wireshark: Графический анализатор трафика</h3>
+
+<h4>Что такое Wireshark?</h4>
+<p>
+<code>Wireshark</code> — это графическая утилита для анализа сетевого трафика.
+Она предоставляет мощные возможности для:
+</p>
+<ul>
+  <li>Перехвата и анализа пакетов в реальном времени.</li>
+  <li>Фильтрации пакетов по различным критериям.</li>
+  <li>Анализа протоколов (TCP, UDP, HTTP, DNS и др.).</li>
+  <li>Сохранения и чтения пакетов из файлов.</li>
+  <li>Визуализации сетевого трафика.</li>
+</ul>
+
+<h4>Установка Wireshark</h4>
+<p>
+Для установки Wireshark в Ubuntu/Debian:
+</p>
+<pre><code>
+install_wireshark.sh
+</code></pre>
+
+<p>
+Для установки Wireshark в CentOS/RHEL:
+</p>
+<pre><code>
+install_wireshark_rhel.sh
+</code></pre>
+
+<h4>Запуск Wireshark</h4>
+<p>
+Запустите Wireshark из командной строки или меню приложений:
+</p>
+<pre><code>
+run_wireshark.sh
+</code></pre>
+<p>
+<strong>Примечание:</strong> Для перехвата пакетов требуются права root. В Ubuntu вы можете добавить своего пользователя в группу <code>wireshark</code>:
+</p>
+<pre><code>
+add_to_wireshark_group.sh
+</code></pre>
+
+<h4>Основные функции Wireshark</h4>
+<ul>
+  <li><strong>Перехват пакетов</strong>: Начните перехват, выбрав сетевой интерфейс.</li>
+  <li><strong>Фильтрация пакетов</strong>: Используйте фильтры для отображения только нужных пакетов.</li>
+  <li><strong>Анализ протоколов</strong>: Wireshark автоматически анализирует протоколы и отображает их структуру.</li>
+  <li><strong>Сохранение и чтение файлов</strong>: Сохраняйте перехваченные пакеты в файлы формата <code>.pcap</code>.</li>
+  <li><strong>Статистика</strong>: Просматривайте статистику по протоколам, хостам и т. д.</li>
+</ul>
+
+<h4>Примеры фильтров Wireshark</h4>
+<table>
+  <tr>
+    <th>Фильтр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>ip.addr == 192.168.1.100</code></td>
+    <td>Пакеты с IP-адресом 192.168.1.100.</td>
+  </tr>
+  <tr>
+    <td><code>tcp.port == 80</code></td>
+    <td>TCP-пакеты на порту 80.</td>
+  </tr>
+  <tr>
+    <td><code>http</code></td>
+    <td>Только HTTP-трафик.</td>
+  </tr>
+  <tr>
+    <td><code>dns</code></td>
+    <td>Только DNS-трафик.</td>
+  </tr>
+  <tr>
+    <td><code>tcp.flags.syn == 1</code></td>
+    <td>TCP-пакеты с флагом SYN.</td>
+  </tr>
+  <tr>
+    <td><code>ip.src == 192.168.1.100 && ip.dst == 192.168.1.200</code></td>
+    <td>Пакеты от 192.168.1.100 к 192.168.1.200.</td>
+  </tr>
+</table>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>ping</code></strong> для проверки доступности хостов.</li>
+  <li><strong>Используйте <code>traceroute</code></strong> для определения маршрута до хоста.</li>
+  <li><strong>Используйте <code>ss</code></strong> вместо <code>netstat</code> для просмотра соединений.</li>
+  <li><strong>Используйте <code>tcpdump</code></strong> для перехвата и анализа пакетов в командной строке.</li>
+  <li><strong>Используйте <code>Wireshark</code></strong> для детального анализа трафика.</li>
+  <li><strong>Фильтруйте пакеты</strong> для уменьшения объёма данных.</li>
+  <li><strong>Сохраняйте перехваченные пакеты</strong> для последующего анализа.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с ping</h4>
+<p>
+Если <code>ping</code> не работает, проверьте:
+</p>
+<ul>
+  <li>Наличие сетевого соединения.</li>
+  <li>Настройки брандмауэра (ICMP может быть заблокирован).</li>
+  <li>Права доступа (требуются права root для некоторых опций).</li>
+</ul>
+
+<h4>Проблемы с traceroute</h4>
+<p>
+Если <code>traceroute</code> не работает, проверьте:
+</p>
+<ul>
+  <li>Наличие сетевого соединения.</li>
+  <li>Настройки брандмауэра (UDP/ICMP может быть заблокирован).</li>
+  <li>Права доступа (требуются права root).</li>
+</ul>
+
+<h4>Проблемы с tcpdump</h4>
+<p>
+Если <code>tcpdump</code> не работает, проверьте:
+</p>
+<ul>
+  <li>Наличие прав root.</li>
+  <li>Правильность имени интерфейса (<code>ip a</code>).</li>
+  <li>Настройки брандмауэра.</li>
+</ul>
+
+<h4>Проблемы с Wireshark</h4>
+<p>
+Если <code>Wireshark</code> не работает, проверьте:
+</p>
+<ul>
+  <li>Наличие прав root или членства в группе <code>wireshark</code>.</li>
+  <li>Правильность установки.</li>
+  <li>Наличие необходимых библиотек.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Сетевые утилиты в Linux — это мощные инструменты для диагностики, мониторинга и анализа сетевого трафика.
+Каждая утилита имеет свои особенности и области применения:
+</p>
+
+<table>
+  <tr>
+    <th>Утилита</th>
+    <th>Назначение</th>
+    <th>Когда использовать</th>
+  </tr>
+  <tr>
+    <td><code>ping</code></td>
+    <td>Проверка доступности хоста</td>
+    <td>Для проверки соединения с хостом</td>
+  </tr>
+  <tr>
+    <td><code>traceroute</code></td>
+    <td>Определение маршрута до хоста</td>
+    <td>Для диагностики маршрутизации</td>
+  </tr>
+  <tr>
+    <td><code>ss</code></td>
+    <td>Просмотр сетевых соединений</td>
+    <td>Для мониторинга активных соединений</td>
+  </tr>
+  <tr>
+    <td><code>tcpdump</code></td>
+    <td>Перехват и анализ пакетов</td>
+    <td>Для анализа трафика в командной строке</td>
+  </tr>
+  <tr>
+    <td><code>Wireshark</code></td>
+    <td>Графический анализ трафика</td>
+    <td>Для детального анализа протоколов</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://man7.org/linux/man-pages/man8/ping.8.html">ping(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/traceroute.8.html">traceroute(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/netstat.8.html">netstat(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/ss.8.html">ss(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/tcpdump.8.html">tcpdump(8) — Linux man page</a></li>
+  <li><a href="https://www.wireshark.org/">Официальный сайт Wireshark</a></li>
+  <li><a href="https://www.wireshark.org/docs/wsug_html/">Wireshark User's Guide</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-networking-terminology-interfaces-and-protocols">Networking Terminology (DigitalOcean)</a></li>
+</ul>

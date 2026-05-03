@@ -1,0 +1,9 @@
+BSS 00:11:22:33:44:55(on wlan0)
+	primary channel: 6
+	SSID: MyNetwork
+	signal: -40.00 dBm
+
+BSS 00:11:22:33:44:56(on wlan0)
+	primary channel: 11
+	SSID: GuestNetwork
+	signal: -70.00 dBm

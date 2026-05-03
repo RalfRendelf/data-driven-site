@@ -1,0 +1,330 @@
+<h2>Sockets API: Сетевое программирование в Linux</h2>
+
+<p>
+Sockets API — это стандартный интерфейс для работы с сетевыми соединениями в Unix-подобных системах, включая Linux.
+Он предоставляет функции для создания, настройки и использования сокетов — конечных точек связи, которые позволяют процессам обмениваться данными через сеть.
+Этот механизм лежит в основе большинства сетевых приложений, от простых клиент-серверных программ до сложных распределённых систем.
+</p>
+
+<p>
+В этой статье рассмотрены основные функции Sockets API: <code>socket()</code>, <code>bind()</code>, <code>listen()</code>, <code>accept()</code>, <code>connect()</code>, а также практические примеры их использования.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<p>
+Сокет (socket) — это конечная точка связи, которая позволяет процессам обмениваться данными через сеть.
+В Linux сокеты реализованы как файловые дескрипторы, что позволяет использовать стандартные функции ввода-вывода, такие как <code>read()</code> и <code>write()</code>.
+</p>
+
+<h4>Домены сокетов</h4>
+<p>
+Домен сокета определяет тип адресации, используемой для связи:
+</p>
+<table>
+  <tr>
+    <th>Домен</th>
+    <th>Описание</th>
+    <th>Пример использования</th>
+  </tr>
+  <tr>
+    <td><code>AF_INET</code></td>
+    <td>IPv4-сокеты для работы с протоколом IPv4</td>
+    <td>TCP/UDP в Интернете</td>
+  </tr>
+  <tr>
+    <td><code>AF_INET6</code></td>
+    <td>IPv6-сокеты для работы с протоколом IPv6</td>
+    <td>Современные сети</td>
+  </tr>
+  <tr>
+    <td><code>AF_UNIX</code></td>
+    <td>Локальные сокеты для обмена данными между процессами на одной машине</td>
+    <td>Межпроцессовое взаимодействие (IPC)</td>
+  </tr>
+</table>
+
+<h4>Типы сокетов</h4>
+<p>
+Тип сокета определяет способ передачи данных:
+</p>
+<table>
+  <tr>
+    <th>Тип</th>
+    <th>Описание</th>
+    <th>Протокол</th>
+    <th>Пример использования</th>
+  </tr>
+  <tr>
+    <td><code>SOCK_STREAM</code></td>
+    <td>Потоковый сокет (надежная передача данных с гарантией порядка)</td>
+    <td>TCP</td>
+    <td>HTTP, FTP, SSH</td>
+  </tr>
+  <tr>
+    <td><code>SOCK_DGRAM</code></td>
+    <td>Датаграммный сокет (ненадежная передача данных без гарантии порядка)</td>
+    <td>UDP</td>
+    <td>DNS, VoIP, онлайн-игры</td>
+  </tr>
+  <tr>
+    <td><code>SOCK_RAW</code></td>
+    <td>Сырые сокеты (работа с сырыми пакетами)</td>
+    <td>IP, ICMP</td>
+    <td>Анализ сетевого трафика</td>
+  </tr>
+</table>
+
+<h4>Протоколы</h4>
+<p>
+Протокол определяет правила обмена данными:
+</p>
+<table>
+  <tr>
+    <th>Протокол</th>
+    <th>Описание</th>
+    <th>Тип сокета</th>
+  </tr>
+  <tr>
+    <td><code>IPPROTO_TCP</code></td>
+    <td>Transmission Control Protocol (надежная передача данных)</td>
+    <td><code>SOCK_STREAM</code></td>
+  </tr>
+  <tr>
+    <td><code>IPPROTO_UDP</code></td>
+    <td>User Datagram Protocol (ненадежная передача данных)</td>
+    <td><code>SOCK_DGRAM</code></td>
+  </tr>
+</table>
+
+---
+
+<h3>Основные функции Sockets API</h3>
+
+<h4>socket() — Создание сокета</h4>
+<p>
+Функция <code>socket()</code> создает новый сокет и возвращает его файловый дескриптор.
+</p>
+<pre><code>
+socket_c.txt
+</code></pre>
+<p>
+<strong>Аргументы:</strong>
+</p>
+<ul>
+  <li><code>domain</code> — домен сокета (<code>AF_INET</code>, <code>AF_INET6</code>, <code>AF_UNIX</code>).</li>
+  <li><code>type</code> — тип сокета (<code>SOCK_STREAM</code>, <code>SOCK_DGRAM</code>).</li>
+  <li><code>protocol</code> — протокол (обычно 0 для автоматического выбора).</li>
+</ul>
+
+<h4>bind() — Связывание сокета с адресом</h4>
+<p>
+Функция <code>bind()</code> связывает сокет с локальным адресом (IP-адрес и порт).
+</p>
+<pre><code>
+bind_c.txt
+</code></pre>
+<p>
+<strong>Структура <code>sockaddr_in</code>:</strong>
+</p>
+<pre><code>
+sockaddr_in_struct_c.txt
+</code></pre>
+
+<h4>listen() — Перевод сокета в режим прослушивания</h4>
+<p>
+Функция <code>listen()</code> переводит сокет в режим прослушивания входящих соединений.
+</p>
+<pre><code>
+listen_c.txt
+</code></pre>
+
+<h4>accept() — Принятие входящего соединения</h4>
+<p>
+Функция <code>accept()</code> принимает входящее соединение от клиента и возвращает новый сокет для обмена данными.
+</p>
+<pre><code>
+accept_c.txt
+</code></pre>
+
+<h4>connect() — Подключение к серверу</h4>
+<p>
+Функция <code>connect()</code> устанавливает соединение с сервером.
+</p>
+<pre><code>
+connect_c.txt
+</code></pre>
+
+<h4>send() и recv() — Отправка и получение данных (TCP)</h4>
+<p>
+Функции <code>send()</code> и <code>recv()</code> используются для передачи данных через потоковые сокеты (<code>SOCK_STREAM</code>).
+</p>
+<pre><code>
+send_recv_c.txt
+</code></pre>
+
+<h4>sendto() и recvfrom() — Отправка и получение данных (UDP)</h4>
+<p>
+Функции <code>sendto()</code> и <code>recvfrom()</code> используются для передачи датаграмм через датаграммные сокеты (<code>SOCK_DGRAM</code>).
+</p>
+<pre><code>
+sendto_recvfrom_c.txt
+</code></pre>
+
+<h4>close() — Закрытие сокета</h4>
+<p>
+Функция <code>close()</code> закрывает сокет и освобождает связанные с ним ресурсы.
+</p>
+<pre><code>
+close_c.txt
+</code></pre>
+
+---
+<h3>Практические примеры</h3>
+
+<h4>TCP-сервер</h4>
+<p>
+Простой TCP-сервер, который принимает соединения от клиентов и отсылает эхо-ответ.
+</p>
+<pre><code>
+tcp_server_c.txt
+</code></pre>
+
+<h4>TCP-клиент</h4>
+<p>
+Простой TCP-клиент, который подключается к серверу и отправляет сообщение.
+</p>
+<pre><code>
+tcp_client_c.txt
+</code></pre>
+
+<h4>UDP-сервер</h4>
+<p>
+Простой UDP-сервер, который принимает датаграммы от клиентов и отсылает эхо-ответ.
+</p>
+<pre><code>
+udp_server_c.txt
+</code></pre>
+
+<h4>UDP-клиент</h4>
+<p>
+Простой UDP-клиент, который отправляет датаграмму серверу и получает эхо-ответ.
+</p>
+<pre><code>
+udp_client_c.txt
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Проверяйте ошибки</strong> при работе с сокетами.</li>
+  <li><strong>Используйте неблокирующий режим</strong> для высокопроизводительных приложений.</li>
+  <li><strong>Устанавливайте таймауты</strong> для операций <code>recv()</code> и <code>send()</code>.</li>
+  <li><strong>Закрывайте сокеты</strong> после использования.</li>
+  <li><strong>Используйте <code>SO_REUSEADDR</code></strong> для повторного использования адреса.</li>
+  <li><strong>Проверяйте размеры данных</strong> при чтении и записи.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Ошибка: "Address already in use"</h4>
+<p>
+Эта ошибка возникает, если порт уже используется другим процессом. Решение:
+</p>
+<ul>
+  <li>Используйте опцию <code>SO_REUSEADDR</code>:</li>
+</ul>
+<pre><code>
+reuseaddr_c.txt
+</code></pre>
+<ul>
+  <li>Проверьте, какой процесс использует порт:</li>
+</ul>
+<pre><code>
+check_port.sh
+</code></pre>
+
+<h4>Ошибка: "Connection refused"</h4>
+<p>
+Эта ошибка возникает, если сервер не запущен или не прослушивает указанный порт. Решение:
+</p>
+<ul>
+  <li>Убедитесь, что сервер запущен и прослушивает правильный порт.</li>
+  <li>Проверьте настройки брандмауэра.</li>
+</ul>
+
+<h4>Ошибка: "Broken pipe"</h4>
+<p>
+Эта ошибка возникает, если клиент закрыл соединение, а сервер пытается отправить данные. Решение:
+</p>
+<ul>
+  <li>Обрабатывайте ошибку <code>EPIPE</code>:</li>
+</ul>
+<pre><code>
+handle_epipe_c.txt
+</code></pre>
+
+<h4>Зависание на <code>accept()</code> или <code>recv()</code></h4>
+<p>
+Если программа зависает на <code>accept()</code> или <code>recv()</code>, используйте неблокирующий режим или <code>select()</code>:
+</p>
+<pre><code>
+nonblocking_c.txt
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Sockets API — это мощный и гибкий интерфейс для сетевого программирования в Linux. Он позволяет реализовывать клиент-серверные приложения для работы с протоколами TCP и UDP, обеспечивая низкоуровневый контроль над сетевыми соединениями.
+</p>
+
+<table>
+  <tr>
+    <th>Функция</th>
+    <th>Назначение</th>
+  </tr>
+  <tr>
+    <td><code>socket()</code></td>
+    <td>Создание сокета.</td>
+  </tr>
+  <tr>
+    <td><code>bind()</code></td>
+    <td>Связывание сокета с адресом.</td>
+  </tr>
+  <tr>
+    <td><code>listen()</code></td>
+    <td>Перевод сокета в режим прослушивания.</td>
+  </tr>
+  <tr>
+    <td><code>accept()</code></td>
+    <td>Принятие входящего соединения.</td>
+  </tr>
+  <tr>
+    <td><code>connect()</code></td>
+    <td>Подключение к серверу.</td>
+  </tr>
+  <tr>
+    <td><code>send()</code>/<code>recv()</code></td>
+    <td>Отправка и получение данных (TCP).</td>
+  </tr>
+  <tr>
+    <td><code>sendto()</code>/<code>recvfrom()</code></td>
+    <td>Отправка и получение датаграмм (UDP).</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://man7.org/linux/man-pages/man2/socket.2.html">socket(2) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man2/bind.2.html">bind(2) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man2/listen.2.html">listen(2) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man2/accept.2.html">accept(2) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man2/connect.2.html">connect(2) — Linux man page</a></li>
+  <li><a href="https://www.geeksforgeeks.org/socket-programming-cc/">Socket Programming in C</a></li>
+</ul>

@@ -1,0 +1,5 @@
+struct pollfd {
+    int fd;         // Файловый дескриптор
+    short events;   // События для мониторинга (POLLIN, POLLOUT, POLLERR)
+    short revents;  // События, которые произошли
+};

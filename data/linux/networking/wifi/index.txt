@@ -1,0 +1,494 @@
+<h2>Управление беспроводными сетями в Linux: iw, iwconfig, wpa_supplicant</h2>
+
+<p>
+Беспроводные сети (Wi-Fi) стали неотъемлемой частью современных вычислений. В Linux управление беспроводными интерфейсами осуществляется с помощью специализированных утилит, таких как <code>iw</code>, <code>iwconfig</code>, <code>wpa_supplicant</code> и других.
+В этой статье рассмотрены основные инструменты для настройки и управления Wi-Fi в Linux, а также их практические применения.
+</p>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое беспроводной интерфейс?</h4>
+<p>
+<strong>Беспроводной интерфейс</strong> — это сетевой интерфейс, который позволяет устройству подключаться к беспроводным сетям (например, Wi-Fi).
+В Linux беспроводные интерфейсы обычно обозначаются как <code>wlan0</code>, <code>wlp3s0</code> и т. д.
+</p>
+
+<h4>Ключевые понятия</h4>
+<ul>
+  <li><strong>SSID (Service Set Identifier)</strong>: Имя беспроводной сети.</li>
+  <li><strong>BSSID (Basic Service Set Identifier)</strong>: MAC-адрес точки доступа.</li>
+  <li><strong>Канал (Channel)</strong>: Частотный канал, на котором работает сеть.</li>
+  <li><strong>Тип безопасности</strong>: Метод аутентификации (Open, WEP, WPA, WPA2, WPA3).</li>
+  <li><strong>Скорость передачи данных</strong>: Скорость соединения (например, 54 Мбит/с, 300 Мбит/с).</li>
+  <li><strong>Сила сигнала</strong>: Уровень сигнала от точки доступа.</li>
+</ul>
+
+<h4>Стандарты Wi-Fi</h4>
+<table>
+  <tr>
+    <th>Стандарт</th>
+    <th>Частота</th>
+    <th>Максимальная скорость</th>
+    <th>Год выпуска</th>
+  </tr>
+  <tr>
+    <td>802.11a</td>
+    <td>5 GHz</td>
+    <td>54 Мбит/с</td>
+    <td>1999</td>
+  </tr>
+  <tr>
+    <td>802.11b</td>
+    <td>2.4 GHz</td>
+    <td>11 Мбит/с</td>
+    <td>1999</td>
+  </tr>
+  <tr>
+    <td>802.11g</td>
+    <td>2.4 GHz</td>
+    <td>54 Мбит/с</td>
+    <td>2003</td>
+  </tr>
+  <tr>
+    <td>802.11n (Wi-Fi 4)</td>
+    <td>2.4 GHz / 5 GHz</td>
+    <td>600 Мбит/с</td>
+    <td>2009</td>
+  </tr>
+  <tr>
+    <td>802.11ac (Wi-Fi 5)</td>
+    <td>5 GHz</td>
+    <td>3.5 Гбит/с</td>
+    <td>2013</td>
+  </tr>
+  <tr>
+    <td>802.11ax (Wi-Fi 6)</td>
+    <td>2.4 GHz / 5 GHz</td>
+    <td>9.6 Гбит/с</td>
+    <td>2019</td>
+  </tr>
+</table>
+
+---
+<h3>Утилиты для управления беспроводными сетями</h3>
+
+<h4>Сравнение утилит</h4>
+<table>
+  <tr>
+    <th>Утилита</th>
+    <th>Описание</th>
+    <th>Современность</th>
+    <th>Рекомендация</th>
+  </tr>
+  <tr>
+    <td><code>iwconfig</code></td>
+    <td>Устаревшая утилита для настройки беспроводных интерфейсов</td>
+    <td>Устарела</td>
+    <td>❌ Не рекомендуется</td>
+  </tr>
+  <tr>
+    <td><code>iw</code></td>
+    <td>Современная утилита для настройки беспроводных интерфейсов</td>
+    <td>Современная</td>
+    <td>✅ Рекомендуется</td>
+  </tr>
+  <tr>
+    <td><code>wpa_supplicant</code></td>
+    <td>Утилита для подключения к защищённым Wi-Fi сетям</td>
+    <td>Современная</td>
+    <td>✅ Рекомендуется</td>
+  </tr>
+  <tr>
+    <td><code>nmcli</code></td>
+    <td>Утилита для управления сетью через NetworkManager</td>
+    <td>Современная</td>
+    <td>✅ Рекомендуется</td>
+  </tr>
+</table>
+
+---
+<h3>iwconfig: Устаревшая утилита для управления Wi-Fi</h3>
+
+<h4>Что такое iwconfig?</h4>
+<p>
+<code>iwconfig</code> — это устаревшая утилита для настройки беспроводных интерфейсов в Linux.
+Она позволяет:
+</p>
+<ul>
+  <li>Просматривать информацию о беспроводных интерфейсах.</li>
+  <li>Настраивать параметры беспроводной сети (SSID, канал, ключ и т. д.).</li>
+  <li>Управлять режимом работы интерфейса (ad-hoc, managed и т. д.).</li>
+</ul>
+
+<h4>Синтаксис</h4>
+<pre><code>
+iwconfig_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+iwconfig_examples.sh
+</code></pre>
+
+<h4>Анализ вывода iwconfig</h4>
+<p>
+Пример вывода команды <code>iwconfig wlan0</code>:
+</p>
+<pre><code>
+iwconfig_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>ESSID</code></td>
+    <td>Имя беспроводной сети.</td>
+  </tr>
+  <tr>
+    <td><code>Mode</code></td>
+    <td>Режим работы (Managed, Ad-Hoc, Master и др.).</td>
+  </tr>
+  <tr>
+    <td><code>Frequency</code></td>
+    <td>Частота канала.</td>
+  </tr>
+  <tr>
+    <td><code>Access Point</code></td>
+    <td>MAC-адрес точки доступа (BSSID).</td>
+  </tr>
+  <tr>
+    <td><code>Bit Rate</code></td>
+    <td>Скорость передачи данных.</td>
+  </tr>
+  <tr>
+    <td><code>Encryption key</code></td>
+    <td>Статус шифрования.</td>
+  </tr>
+  <tr>
+    <td><code>Link Quality</code></td>
+    <td>Качество соединения.</td>
+  </tr>
+  <tr>
+    <td><code>Signal level</code></td>
+    <td>Уровень сигнала.</td>
+  </tr>
+</table>
+
+---
+<h3>iw: Современная утилита для управления Wi-Fi</h3>
+
+<h4>Что такое iw?</h4>
+<p>
+<code>iw</code> — это современная утилита для настройки беспроводных интерфейсов в Linux, заменяющая устаревшую <code>iwconfig</code>.
+Она предоставляет более мощные и удобные средства для работы с беспроводными сетями.
+</p>
+
+<h4>Синтаксис</h4>
+<pre><code>
+iw_syntax.txt
+</code></pre>
+
+<h4>Примеры использования</h4>
+<pre><code>
+iw_examples.sh
+</code></pre>
+
+<h4>Анализ вывода iw dev</h4>
+<p>
+Пример вывода команды <code>iw dev</code>:
+</p>
+<pre><code>
+iw_dev_output_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Поле</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>phy#0</code></td>
+    <td>Физическое устройство.</td>
+  </tr>
+  <tr>
+    <td><code>Interface wlan0</code></td>
+    <td>Имя беспроводного интерфейса.</td>
+  </tr>
+  <tr>
+    <td><code>ifindex</code></td>
+    <td>Индекс интерфейса.</td>
+  </tr>
+  <tr>
+    <td><code>addr</code></td>
+    <td>MAC-адрес интерфейса.</td>
+  </tr>
+  <tr>
+    <td><code>ssid</code></td>
+    <td>Имя беспроводной сети.</td>
+  </tr>
+  <tr>
+    <td><code>type</code></td>
+    <td>Тип интерфейса (managed, ad-hoc, AP).</td>
+  </tr>
+  <tr>
+    <td><code>channel</code></td>
+    <td>Канал и частота.</td>
+  </tr>
+  <tr>
+    <td><code>txpower</code></td>
+    <td>Мощность передачи.</td>
+  </tr>
+</table>
+
+<h4>Скан сети с помощью iw</h4>
+<p>
+Команда <code>iw dev wlan0 scan</code> позволяет получить список доступных беспроводных сетей.
+</p>
+<pre><code>
+iw_scan_example.sh
+</code></pre>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+iw_scan_output_example.txt
+</code></pre>
+
+---
+<h3>wpa_supplicant: Подключение к защищённым Wi-Fi сетям</h3>
+
+<h4>Что такое wpa_supplicant?</h4>
+<p>
+<code>wpa_supplicant</code> — это утилита для подключения к беспроводным сетям с поддержкой различных методов аутентификации, включая:
+</p>
+<ul>
+  <li><strong>WPA-Personal</strong> (WPA-PSK).</li>
+  <li><strong>WPA-Enterprise</strong> (WPA-EAP).</li>
+  <li><strong>WPA2-Personal</strong> (WPA2-PSK).</li>
+  <li><strong>WPA2-Enterprise</strong> (WPA2-EAP).</li>
+  <li><strong>WPA3</strong>.</li>
+</ul>
+
+<h4>Конфигурация wpa_supplicant</h4>
+<p>
+Конфигурация <code>wpa_supplicant</code> хранится в файле <code>/etc/wpa_supplicant/wpa_supplicant.conf</code>.
+</p>
+
+<h5>Пример файла конфигурации</h5>
+<pre><code>
+wpa_supplicant_conf_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>ctrl_interface</code></td>
+    <td>Интерфейс управления (используется для взаимодействия с <code>wpa_cli</code>).</td>
+  </tr>
+  <tr>
+    <td><code>update_config</code></td>
+    <td>Разрешает <code>wpa_supplicant</code> обновлять конфигурацию.</td>
+  </tr>
+  <tr>
+    <td><code>country</code></td>
+    <td>Страна (для соблюдения локальных регуляторных требований).</td>
+  </tr>
+  <tr>
+    <td><code>ssid</code></td>
+    <td>Имя беспроводной сети.</td>
+  </tr>
+  <tr>
+    <td><code>psk</code></td>
+    <td>Пароль для WPA-PSK.</td>
+  </tr>
+  <tr>
+    <td><code>key_mgmt</code></td>
+    <td>Тип управления ключами (NONE, WPA-PSK, WPA-EAP).</td>
+  </tr>
+  <tr>
+    <td><code>eap</code></td>
+    <td>Протокол EAP (PEAP, TLS, TTLS).</td>
+  </tr>
+  <tr>
+    <td><code>identity</code></td>
+    <td>Имя пользователя для EAP.</td>
+  </tr>
+  <tr>
+    <td><code>password</code></td>
+    <td>Пароль для EAP.</td>
+  </tr>
+</table>
+
+<h4>Запуск wpa_supplicant</h4>
+<p>
+Для подключения к беспроводной сети с помощью <code>wpa_supplicant</code> выполните:
+</p>
+<pre><code>
+wpa_supplicant_run.sh
+</code></pre>
+<p>
+<strong>Опции:</strong>
+</p>
+<ul>
+  <li><code>-B</code> — запуск в фоновом режиме.</li>
+  <li><code>-i wlan0</code> — интерфейс для подключения.</li>
+  <li><code>-c</code> — файл конфигурации.</li>
+</ul>
+
+<h4>Просмотр статуса подключения</h4>
+<p>
+Для просмотра статуса подключения используйте <code>wpa_cli</code>:
+</p>
+<pre><code>
+wpa_cli_examples.sh
+</code></pre>
+
+---
+<h3>NetworkManager: Управление сетями через GUI и CLI</h3>
+
+<h4>Что такое NetworkManager?</h4>
+<p>
+<code>NetworkManager</code> — это сервис для управления сетевыми подключениями в Linux.
+Он поддерживает как проводные, так и беспроводные сети, а также предоставляет удобный интерфейс для настройки подключений.
+</p>
+
+<h4>Управление беспроводными сетями с помощью nmcli</h4>
+<p>
+<code>nmcli</code> — это командный интерфейс для <code>NetworkManager</code>.
+</p>
+
+<h5>Примеры использования nmcli</h5>
+<pre><code>
+nmcli_examples.sh
+</code></pre>
+
+---
+<h3>Практические примеры</h3>
+
+<h4>Пример: Подключение к Wi-Fi через iw и wpa_supplicant</h4>
+<p>
+Этот пример демонстрирует, как подключиться к беспроводной сети с использованием <code>iw</code> и <code>wpa_supplicant</code>.
+</p>
+<pre><code>
+connect_wifi_iw_wpa.sh
+</code></pre>
+
+<h4>Пример: Создание точки доступа</h4>
+<p>
+Этот пример демонстрирует, как создать точку доступа с использованием <code>hostapd</code> и <code>dnsmasq</code>.
+</p>
+<pre><code>
+create_ap.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>iw</code></strong> вместо <code>iwconfig</code> для управления беспроводными интерфейсами.</li>
+  <li><strong>Используйте <code>wpa_supplicant</code></strong> для подключения к защищённым сетям.</li>
+  <li><strong>Настраивайте конфигурацию в <code>/etc/wpa_supplicant/wpa_supplicant.conf</code></strong>.</li>
+  <li><strong>Используйте <code>NetworkManager</code></strong> для удобного управления сетями.</li>
+  <li><strong>Проверяйте доступные сети</strong> с помощью <code>iw dev wlan0 scan</code>.</li>
+  <li><strong>Устанавливайте правильные драйверы</strong> для вашего беспроводного адаптера.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с подключением к Wi-Fi</h4>
+<p>
+Если подключение к Wi-Fi не работает, проверьте:
+</p>
+<ul>
+  <li>Правильность имени сети (SSID) и пароля.</li>
+  <li>Тип безопасности (WPA-PSK, WPA2-PSK и т. д.).</li>
+  <li>Наличие драйверов для беспроводного адаптера.</li>
+  <li>Статус интерфейса (<code>ip link show wlan0</code>).</li>
+</ul>
+<pre><code>
+check_wifi.sh
+</code></pre>
+
+<h4>Проблемы с драйверами</h4>
+<p>
+Если беспроводной адаптер не определяется, проверьте:
+</p>
+<ul>
+  <li>Наличие драйвера для адаптера.</li>
+  <li>Загружен ли драйвер в ядро.</li>
+</ul>
+<pre><code>
+check_driver.sh
+</code></pre>
+
+<h4>Проблемы с точкой доступа</h4>
+<p>
+Если точка доступа не работает, проверьте:
+</p>
+<ul>
+  <li>Наличие поддержки режима AP в драйвере.</li>
+  <li>Конфигурацию <code>hostapd</code>.</li>
+  <li>Конфигурацию <code>dnsmasq</code>.</li>
+  <li>Настройки маршрутизации и NAT.</li>
+</ul>
+<pre><code>
+check_ap.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+Управление беспроводными сетями в Linux осуществляется с помощью различных утилит, таких как <code>iw</code>, <code>iwconfig</code>, <code>wpa_supplicant</code> и <code>NetworkManager</code>.
+Каждая утилита имеет свои особенности и области применения:
+</p>
+
+<table>
+  <tr>
+    <th>Утилита</th>
+    <th>Назначение</th>
+    <th>Когда использовать</th>
+  </tr>
+  <tr>
+    <td><code>iwconfig</code></td>
+    <td>Устаревшая утилита для управления Wi-Fi</td>
+    <td>Для совместимости со старыми системами</td>
+  </tr>
+  <tr>
+    <td><code>iw</code></td>
+    <td>Современная утилита для управления Wi-Fi</td>
+    <td>Для настройки беспроводных интерфейсов</td>
+  </tr>
+  <tr>
+    <td><code>wpa_supplicant</code></td>
+    <td>Подключение к защищённым сетям</td>
+    <td>Для подключения к WPA/WPA2 сетям</td>
+  </tr>
+  <tr>
+    <td><code>NetworkManager</code></td>
+    <td>Управление сетями через GUI и CLI</td>
+    <td>Для удобного управления сетями</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://man7.org/linux/man-pages/man8/iwconfig.8.html">iwconfig(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/iw.8.html">iw(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man8/wpa_supplicant.8.html">wpa_supplicant(8) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/wpa_cli.1.html">wpa_cli(1) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/nmcli.1.html">nmcli(1) — Linux man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Network_configuration/Wireless">Wireless Network Configuration (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-a-wi-fi-hotspot-using-hostapd-on-debian-9">How To Set Up a Wi-Fi Hotspot Using hostapd</a></li>
+  <li><a href="https://wireless.wiki.kernel.org/en/users/documentation/iw">iw Documentation</a></li>
+</ul>

@@ -1,0 +1,15 @@
+[Unit]
+Description=My Forking Application
+After=network.target
+
+[Service]
+Type=forking
+User=root
+Group=root
+ExecStart=/usr/bin/myapp
+ExecStop=/usr/bin/myapp --stop
+PIDFile=/var/run/myapp.pid
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

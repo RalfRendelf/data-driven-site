@@ -1,0 +1,9 @@
+PING google.com (172.217.16.206) 56(84) bytes of data.
+64 bytes from fra24s01-in-f14.1e100.net (172.217.16.206): icmp_seq=1 ttl=117 time=12.3 ms
+64 bytes from fra24s01-in-f14.1e100.net (172.217.16.206): icmp_seq=2 ttl=117 time=11.8 ms
+64 bytes from fra24s01-in-f14.1e100.net (172.217.16.206): icmp_seq=3 ttl=117 time=12.1 ms
+64 bytes from fra24s01-in-f14.1e100.net (172.217.16.206): icmp_seq=4 ttl=117 time=11.9 ms
+
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 11.823/12.045/12.345/0.212 ms

@@ -1,0 +1,6 @@
+[Unit]
+Description=User Backup Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backup.sh

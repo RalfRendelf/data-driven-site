@@ -1,0 +1,8 @@
+[Unit]
+Description=My UDP Service
+Requires=udp-socket.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/myapp
+StandardInput=socket

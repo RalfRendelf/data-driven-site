@@ -1,0 +1,7 @@
+[Unit]
+Description=My Backup Script
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/backup.sh

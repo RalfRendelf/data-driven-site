@@ -1,0 +1,4 @@
+template <class BidirectionalIterator, class UnaryPredicate>
+BidirectionalIterator stable_partition(BidirectionalIterator first,
+                                         BidirectionalIterator last,
+                                         UnaryPredicate pred);

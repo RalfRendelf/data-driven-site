@@ -1,0 +1,13 @@
+[Unit]
+Description=Syncthing
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/syncthing -home=/home/$USER/.config/syncthing
+Restart=on-failure
+Environment=STNORESTART=1
+
+[Install]
+WantedBy=default.target

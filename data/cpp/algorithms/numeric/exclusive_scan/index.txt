@@ -1,3 +1,60 @@
-<h2>std::exclusive_scan</h2>
+<h2>std::exclusive_scan: Эксклюзивный префиксный скан</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::exclusive_scan`</strong> — алгоритм из библиотеки <code>&lt;numeric&gt;</code> (доступен с C++17), который вычисляет эксклюзивные префиксные суммы.
+В отличие от <code>std::inclusive_scan</code>, эксклюзивный скан не включает текущий элемент в сумму.
+Работает за линейное время <strong>O(N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+exclusive_scan_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Диапазон элементов</td>
+  </tr>
+  <tr>
+    <td><code>result</code></td>
+    <td>Итератор на начало целевого диапазона для записи результатов</td>
+  </tr>
+  <tr>
+    <td><code>init</code></td>
+    <td>Начальное значение для скана</td>
+  </tr>
+  <tr>
+    <td><code>op</code></td>
+    <td>Бинарная операция (опционально, по умолчанию <code>operator+</code>)</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Эксклюзивный префиксный скан</h4>
+<pre><code>
+exclusive_scan_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::exclusive_scan`</strong> — алгоритм для вычисления эксклюзивных префиксных сумм.
+Полезен для задач, где нужно получить накопленные значения без включения текущего элемента.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/exclusive_scan">std::exclusive_scan на cppreference.com</a></li>
+</ul>

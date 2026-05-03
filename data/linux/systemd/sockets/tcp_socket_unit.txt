@@ -1,0 +1,12 @@
+[Unit]
+Description=My TCP Socket
+After=network.target
+
+[Socket]
+ListenStream=8080
+BindIPv6Only=both
+Backlog=100
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

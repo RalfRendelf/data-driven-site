@@ -1,0 +1,442 @@
+<h2>DNS и разрешение имён в Linux: /etc/resolv.conf, systemd-resolved, dig, nslookup</h2>
+
+<p>
+<strong>DNS (Domain Name System)</strong> — это система, которая преобразует символьные имена доменов (например, <code>google.com</code>) в IP-адреса (например, <code>172.217.16.206</code>).
+В Linux разрешение имён может осуществляться разными способами: через файл <code>/etc/resolv.conf</code>, сервис <code>systemd-resolved</code>, утилиты <code>dig</code>, <code>nslookup</code> и другие.
+</p>
+
+<p>
+В этой статье рассмотрены:
+</p>
+<ul>
+  <li>Основы работы DNS.</li>
+  <li>Конфигурация разрешения имён в Linux.</li>
+  <li>Использование утилит <code>dig</code>, <code>nslookup</code>, <code>host</code>.</li>
+  <li>Настройка <code>systemd-resolved</code>.</li>
+  <li>Практические примеры на C и C++ для работы с DNS.</li>
+</ul>
+
+---
+
+<h3>Теоретические основы</h3>
+
+<h4>Что такое DNS?</h4>
+<p>
+<strong>DNS (Domain Name System)</strong> — это распределённая система, которая обеспечивает:
+</p>
+<ul>
+  <li><strong>Разрешение имён</strong>: Преобразование имён доменов в IP-адреса.</li>
+  <li><strong>Обратное разрешение</strong>: Преобразование IP-адресов в имена доменов.</li>
+  <li><strong>Распределённое хранение</strong>: Данные о доменах хранятся на множестве DNS-серверов.</li>
+  <li><strong>Иерархическая структура</strong>: Домены организованы в дерево (например, <code>example.com</code>).</li>
+</ul>
+
+<h4>Типы DNS-записей</h4>
+<p>
+DNS-записи определяют различные типы информации о доменах:
+</p>
+<table>
+  <tr>
+    <th>Тип записи</th>
+    <th>Описание</th>
+    <th>Пример</th>
+  </tr>
+  <tr>
+    <td><code>A</code></td>
+    <td>Сопоставляет имя домена с IPv4-адресом</td>
+    <td><code>example.com. IN A 192.0.2.1</code></td>
+  </tr>
+  <tr>
+    <td><code>AAAA</code></td>
+    <td>Сопоставляет имя домена с IPv6-адресом</td>
+    <td><code>example.com. IN AAAA 2001:db8::1</code></td>
+  </tr>
+  <tr>
+    <td><code>CNAME</code></td>
+    <td>Создаёт псевдоним для домена</td>
+    <td><code>www.example.com. IN CNAME example.com.</code></td>
+  </tr>
+  <tr>
+    <td><code>MX</code></td>
+    <td>Указывает почтовые серверы для домена</td>
+    <td><code>example.com. IN MX 10 mail.example.com.</code></td>
+  </tr>
+  <tr>
+    <td><code>NS</code></td>
+    <td>Указывает DNS-серверы для домена</td>
+    <td><code>example.com. IN NS ns1.example.com.</code></td>
+  </tr>
+  <tr>
+    <td><code>TXT</code></td>
+    <td>Хранит текстовые данные (например, для SPF, DKIM)</td>
+    <td><code>example.com. IN TXT "v=spf1 include:_spf.example.com ~all"</code></td>
+  </tr>
+  <tr>
+    <td><code>SOA</code></td>
+    <td>Указывает начало зоны ответственности</td>
+    <td><code>example.com. IN SOA ns1.example.com. admin.example.com. 2023010101 3600 1800 604800 86400</code></td>
+  </tr>
+  <tr>
+    <td><code>PTR</code></td>
+    <td>Сопоставляет IP-адрес с именем домена (обратный DNS)</td>
+    <td><code>1.2.0.192.in-addr.arpa. IN PTR example.com.</code></td>
+  </tr>
+</table>
+
+<h4>Процесс разрешения имён</h4>
+<p>
+Процесс разрешения имён в Linux включает несколько этапов:
+</p>
+<ol>
+  <li><strong>Проверка кэша</strong>: Система проверяет локальный кэш (например, в <code>systemd-resolved</code>).</li>
+  <li><strong>Проверка /etc/hosts</strong>: Система проверяет файл <code>/etc/hosts</code> для статических сопоставлений.</li>
+  <li><strong>Обращение к DNS-серверам</strong>: Система отправляет запрос на настроенные DNS-серверы.</li>
+  <li><strong>Рекурсивное разрешение</strong>: DNS-серверы рекурсивно разрешают имя, обращаясь к другим серверам.</li>
+</ol>
+
+<h4>Файл /etc/resolv.conf</h4>
+<p>
+Файл <code>/etc/resolv.conf</code> содержит конфигурацию DNS-клиента. Он определяет:
+</p>
+<ul>
+  <li>Адреса DNS-серверов.</li>
+  <li>Домен поиска.</li>
+  <li>Параметры разрешения.</li>
+</ul>
+<p>
+Пример файла <code>/etc/resolv.conf</code>:
+</p>
+<pre><code>
+resolv_conf_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>nameserver</code></td>
+    <td>IP-адрес DNS-сервера.</td>
+  </tr>
+  <tr>
+    <td><code>search</code></td>
+    <td>Домен поиска для неполных имён.</td>
+  </tr>
+  <tr>
+    <td><code>options</code></td>
+    <td>Параметры разрешения (например, таймаут, количество попыток).</td>
+  </tr>
+</table>
+
+---
+<h3>Утилиты для работы с DNS</h3>
+
+<h4>dig</h4>
+<p>
+<code>dig</code> (Domain Information Groper) — это мощная утилита для запросов к DNS-серверам. Она позволяет получать подробную информацию о DNS-записях.
+</p>
+
+<h5>Примеры использования dig</h5>
+<pre><code>
+dig_examples.sh
+</code></pre>
+
+<h4>nslookup</h4>
+<p>
+<code>nslookup</code> — это утилита для запросов к DNS-серверам в интерактивном и неинтерактивном режимах.
+</p>
+
+<h5>Примеры использования nslookup</h5>
+<pre><code>
+nslookup_examples.sh
+</code></pre>
+
+<h4>host</h4>
+<p>
+<code>host</code> — это простая утилита для разрешения имён и IP-адресов.
+</p>
+
+<h5>Примеры использования host</h5>
+<pre><code>
+host_examples.sh
+</code></pre>
+
+---
+<h3>systemd-resolved: Современный DNS-резолвер</h3>
+
+<h4>Что такое systemd-resolved?</h4>
+<p>
+<code>systemd-resolved</code> — это сервис в системах с <code>systemd</code>, который предоставляет:
+</p>
+<ul>
+  <li><strong>Кэширование DNS-запросов</strong>.</li>
+  <li><strong>Поддержку нескольких DNS-серверов</strong>.</li>
+  <li><strong>Поддержку DNS-over-TLS (DoT)</strong>.</li>
+  <li><strong>Интеграцию с NetworkManager</strong>.</li>
+</ul>
+
+<h4>Просмотр текущей конфигурации</h4>
+<p>
+Для просмотра текущей конфигурации <code>systemd-resolved</code> используйте:
+</p>
+<pre><code>
+systemd_resolved_status.sh
+</code></pre>
+
+<h4>Настройка systemd-resolved</h4>
+<p>
+Для настройки <code>systemd-resolved</code> отредактируйте файл <code>/etc/systemd/resolved.conf</code>:
+</p>
+<pre><code>
+resolved_conf_example.txt
+</code></pre>
+
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>DNS</code></td>
+    <td>Список DNS-серверов.</td>
+  </tr>
+  <tr>
+    <td><code>FallbackDNS</code></td>
+    <td>Резервные DNS-серверы.</td>
+  </tr>
+  <tr>
+    <td><code>Domains</code></td>
+    <td>Домены поиска.</td>
+  </tr>
+  <tr>
+    <td><code>DNSSEC</code></td>
+    <td>Включение/отключение DNSSEC.</td>
+  </tr>
+  <tr>
+    <td><code>Cache</code></td>
+    <td>Включение/отключение кэширования.</td>
+  </tr>
+</table>
+
+<h4>Проверка работы systemd-resolved</h4>
+<p>
+Для проверки работы <code>systemd-resolved</code> используйте команду <code>resolvectl</code>:
+</p>
+<pre><code>
+resolvectl_examples.sh
+</code></pre>
+
+---
+<h3>Программное разрешение имён на C</h3>
+
+<h4>Использование getaddrinfo()</h4>
+<p>
+Функция <code>getaddrinfo()</code> предоставляет удобный способ разрешения имён в IP-адреса и обратно. Она поддерживает как IPv4, так и IPv6.
+</p>
+
+<h5>Пример: Разрешение имени домена в IP-адрес</h5>
+<p>
+Этот пример демонстрирует, как использовать <code>getaddrinfo()</code> для разрешения имени домена в IP-адрес.
+</p>
+<pre><code>
+getaddrinfo_example_c.txt
+</code></pre>
+
+<h5>Компиляция программы</h5>
+<pre><code>
+compile_getaddrinfo.sh
+</code></pre>
+
+<h4>Использование gethostbyname()</h4>
+<p>
+Функция <code>gethostbyname()</code> — это устаревшая функция для разрешения имён в IPv4-адреса. Она проще в использовании, но не поддерживает IPv6.
+</p>
+
+<h5>Пример: Использование gethostbyname()</h5>
+<pre><code>
+gethostbyname_example_c.txt
+</code></pre>
+
+<h5>Компиляция программы</h5>
+<pre><code>
+compile_gethostbyname.sh
+</code></pre>
+
+---
+<h3>Программное разрешение имён на C++</h3>
+
+<h4>Использование Boost.Asio для разрешения имён</h4>
+<p>
+Библиотека <code>Boost.Asio</code> предоставляет удобные средства для работы с сетью, включая разрешение имён.
+</p>
+
+<h5>Пример: Разрешение имени домена с использованием Boost.Asio</h5>
+<pre><code>
+boost_asio_resolve_cpp.txt
+</code></pre>
+
+<h5>Компиляция программы</h5>
+<pre><code>
+compile_boost_asio.sh
+</code></pre>
+
+<h4>Использование cpp-httplib для DNS-запросов</h4>
+<p>
+Библиотека <code>cpp-httplib</code> предоставляет простой способ выполнения HTTP-запросов, но для DNS-запросов можно использовать <code>getaddrinfo</code> или <code>Boost.Asio</code>.
+Однако, если вам нужно выполнить DNS-запрос через HTTP (например, к API DNS-сервера), вы можете использовать <code>cpp-httplib</code>.
+</p>
+
+<h5>Пример: Выполнение DNS-запроса через HTTP API</h5>
+<p>
+Этот пример демонстрирует, как выполнить DNS-запрос через HTTP API (например, к сервису <code>https://dns.google/resolve</code>).
+</p>
+<pre><code>
+cpp_httplib_dns_cpp.txt
+</code></pre>
+
+<h5>Компиляция программы</h5>
+<p>
+Для компиляции программы с <code>cpp-httplib</code> скачайте библиотеку и подключите её:
+</p>
+<pre><code>
+compile_cpp_httplib.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li><strong>Используйте <code>dig</code> или <code>nslookup</code></strong> для диагностики DNS-проблем.</li>
+  <li><strong>Настраивайте несколько DNS-серверов</strong> в <code>/etc/resolv.conf</code> для отказоустойчивости.</li>
+  <li><strong>Используйте <code>systemd-resolved</code></strong> для кэширования и управления DNS.</li>
+  <li><strong>Проверяйте файлы <code>/etc/hosts</code> и <code>/etc/nsswitch.conf</code></strong> для статических сопоставлений.</li>
+  <li><strong>Используйте DNS-over-TLS (DoT)</strong> для защиты конфиденциальности.</li>
+  <li><strong>Тестируйте изменения</strong> в конфигурации DNS перед применением в продакшене.</li>
+</ul>
+
+---
+<h3>Особенности и подводные камни</h3>
+
+<h4>Проблемы с кэшированием DNS</h4>
+<p>
+Кэширование DNS может привести к тому, что изменения в DNS-записях не будут сразу видны. Для решения:
+</p>
+<ul>
+  <li>Очищайте кэш DNS:</li>
+</ul>
+<pre><code>
+clear_dns_cache.sh
+</code></pre>
+<ul>
+  <li>Уменьшайте время жизни (TTL) DNS-записей.</li>
+</ul>
+
+<h4>Проблемы с /etc/resolv.conf</h4>
+<p>
+Если изменения в <code>/etc/resolv.conf</code> не применяются, проверьте:
+</p>
+<ul>
+  <li>Права доступа к файлу.</li>
+  <li>Наличие символических ссылок (например, <code>/etc/resolv.conf</code> может быть ссылкой на <code>/run/systemd/resolve/resolv.conf</code>).</li>
+  <li>Настройки <code>systemd-resolved</code>.</li>
+</ul>
+
+<h4>Проблемы с разрешением имён</h4>
+<p>
+Если имена доменов не разрешаются, проверьте:
+</p>
+<ul>
+  <li>Настройки в <code>/etc/resolv.conf</code>.</li>
+  <li>Работу DNS-серверов:</li>
+</ul>
+<pre><code>
+test_dns.sh
+</code></pre>
+<ul>
+  <li>Файл <code>/etc/nsswitch.conf</code>:</li>
+</ul>
+<pre><code>
+nsswitch_conf_example.txt
+</code></pre>
+<p>
+Если в строке <code>hosts</code> сначала указано <code>files</code>, система сначала проверит <code>/etc/hosts</code>, а затем обратится к DNS.
+</p>
+
+<h4>Проблемы с IPv6</h4>
+<p>
+Если IPv6-адреса не разрешаются, проверьте:
+</p>
+<ul>
+  <li>Наличие IPv6-соединения.</li>
+  <li>Настройки DNS-серверов для IPv6.</li>
+</ul>
+<pre><code>
+test_ipv6_dns.sh
+</code></pre>
+
+---
+<h3>Заключение</h3>
+
+<p>
+<strong>DNS</strong> — это ключевой компонент сетевой инфраструктуры, обеспечивающий разрешение имён доменов в IP-адреса.
+В Linux существует несколько способов настройки и использования DNS: через файл <code>/etc/resolv.conf</code>, сервис <code>systemd-resolved</code>, утилиты <code>dig</code>, <code>nslookup</code> и программные интерфейсы на C и C++.
+</p>
+
+<table>
+  <tr>
+    <th>Способ</th>
+    <th>Описание</th>
+    <th>Преимущества</th>
+    <th>Недостатки</th>
+  </tr>
+  <tr>
+    <td><code>/etc/resolv.conf</code></td>
+    <td>Конфигурация DNS-клиента</td>
+    <td>Простота настройки</td>
+    <td>Нет кэширования, устаревает</td>
+  </tr>
+  <tr>
+    <td><code>systemd-resolved</code></td>
+    <td>Современный DNS-резолвер</td>
+    <td>Кэширование, поддержка DoT</td>
+    <td>Сложность настройки</td>
+  </tr>
+  <tr>
+    <td><code>dig</code></td>
+    <td>Утилита для DNS-запросов</td>
+    <td>Гибкость, подробный вывод</td>
+    <td>Сложный синтаксис</td>
+  </tr>
+  <tr>
+    <td><code>nslookup</code></td>
+    <td>Утилита для DNS-запросов</td>
+    <td>Простота использования</td>
+    <td>Меньше возможностей</td>
+  </tr>
+  <tr>
+    <td><code>getaddrinfo()</code></td>
+    <td>Функция для разрешения имён в C</td>
+    <td>Поддержка IPv4 и IPv6</td>
+    <td>Сложность использования</td>
+  </tr>
+  <tr>
+    <td><code>Boost.Asio</code></td>
+    <td>Библиотека для работы с сетью в C++</td>
+    <td>Удобный API, поддержка асинхронных операций</td>
+    <td>Требует установки Boost</td>
+  </tr>
+</table>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.ietf.org/rfc/rfc1034.txt">RFC 1034: Domain Names - Concepts and Facilities</a></li>
+  <li><a href="https://www.ietf.org/rfc/rfc1035.txt">RFC 1035: Domain Names - Implementation and Specification</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html">resolv.conf(5) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/dig.1.html">dig(1) — Linux man page</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/nslookup.1.html">nslookup(1) — Linux man page</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html">systemd-resolved(8) — man page</a></li>
+  <li><a href="https://wiki.archlinux.org/title/Domain_name_resolution">Domain Name Resolution (Arch Wiki)</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-dns-terminology-components-and-concepts">An Introduction to DNS Terminology, Components, and Concepts</a></li>
+</ul>

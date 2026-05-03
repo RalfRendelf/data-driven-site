@@ -1,3 +1,69 @@
-<h2>std::ranges::lower_bound</h2>
+<h2>std::ranges::lower_bound: Поиск первого элемента, не меньшего заданного</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::ranges::lower_bound`</strong> — алгоритм из библиотеки <code>&lt;algorithm&gt;</code> (C++20), который ищет первый элемент в отсортированном диапазоне, который не меньше заданного значения.
+Работает за логарифмическое время <strong>O(log N)</strong> и использует <strong>O(1)</strong> дополнительной памяти.
+Требует, чтобы диапазон был отсортирован по тому же критерию, что и значение сравнения.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Синтаксис</h4>
+<pre><code>
+ranges_lower_bound_syntax.txt
+</code></pre>
+
+<h4>Параметры</h4>
+<table>
+  <tr>
+    <th>Параметр</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>first, last</code></td>
+    <td>Итераторы начала и конца отсортированного диапазона</td>
+  </tr>
+  <tr>
+    <td><code>range</code></td>
+    <td>Отсортированный диапазон (range)</td>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>Значение для поиска</td>
+  </tr>
+  <tr>
+    <td><code>comp</code></td>
+    <td>Функция сравнения (опционально)</td>
+  </tr>
+  <tr>
+    <td><code>proj</code></td>
+    <td>Функция проекции (опционально)</td>
+  </tr>
+</table>
+
+<h4>Возвращаемое значение</h4>
+<p>
+Возвращает итератор на первый элемент, который не меньше <code>value</code>, или <code>last</code>, если такой элемент не найден.
+</p>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример: Поиск нижней границы в отсортированном векторе</h4>
+<pre><code>
+ranges_lower_bound_example.cpp
+</code></pre>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::ranges::lower_bound`</strong> — современный алгоритм для поиска нижней границы в отсортированном диапазоне.
+Эффективен для бинарного поиска в отсортированных данных.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/algorithm/ranges/lower_bound">std::ranges::lower_bound на cppreference.com</a></li>
+</ul>

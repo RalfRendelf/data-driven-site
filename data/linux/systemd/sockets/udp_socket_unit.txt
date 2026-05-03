@@ -1,0 +1,10 @@
+[Unit]
+Description=My UDP Socket
+After=network.target
+
+[Socket]
+ListenDatagram=8080
+BindIPv6Only=both
+
+[Install]
+WantedBy=sockets.target

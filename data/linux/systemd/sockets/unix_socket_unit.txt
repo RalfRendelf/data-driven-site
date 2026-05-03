@@ -1,0 +1,12 @@
+[Unit]
+Description=My Unix Socket
+After=network.target
+
+[Socket]
+ListenStream=/var/run/myapp.sock
+SocketMode=0666
+SocketUser=myuser
+SocketGroup=mygroup
+
+[Install]
+WantedBy=sockets.target

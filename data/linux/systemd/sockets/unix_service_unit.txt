@@ -1,0 +1,8 @@
+[Unit]
+Description=My Unix Service
+Requires=unix-socket.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/myapp
+StandardInput=socket

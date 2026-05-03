@@ -1,0 +1,5 @@
+if (listen(sockfd, 10) == -1) {  // Очередь из 10 ожидающих соединений
+    perror("listen");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}

@@ -1,0 +1,7 @@
+template <class InputIterator, class OutputIterator, class T>
+OutputIterator exclusive_scan(InputIterator first, InputIterator last,
+                             OutputIterator result, T init);
+
+template <class InputIterator, class OutputIterator, class T, class BinaryOperation>
+OutputIterator exclusive_scan(InputIterator first, InputIterator last,
+                             OutputIterator result, T init, BinaryOperation op);

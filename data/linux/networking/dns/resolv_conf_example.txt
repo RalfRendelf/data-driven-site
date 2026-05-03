@@ -1,0 +1,9 @@
+# DNS-серверы Google
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+# Домен поиска
+search example.com
+
+# Параметры
+options timeout:2 attempts:2
