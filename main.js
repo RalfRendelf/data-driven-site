@@ -8,14 +8,23 @@ const jsonRoot = {
   children: [],
   category: null
 };
-
+let searchMode = "full";
 let lastSearchText = "";
+
 
 document.addEventListener("DOMContentLoaded", () => {
   initCategorySidebar();
   startRenderLoop();
   initCategoryNavigation();
 });
+document.addEventListener("change", e => {
+  if (e.target.id === "search-mode") {
+    searchMode = e.target.value;
+    lastSearchText = "";
+    searchFrame();
+  }
+});
+
 
 function initCategorySidebar() {
   const navElement = document.getElementById("categories-nav");
@@ -86,6 +95,7 @@ export function displayTreeForCategory(categoryType) {
   jsonRoot.isLoaded = false;
   jsonRoot.needsDraw = true;
   jsonRoot.reDraw = true;
+ 
 
   loadJsonTree(category);
   // if(lastSearchText == "") return;
@@ -116,6 +126,7 @@ async function loadJsonTree(category, basePath = null, container = jsonRoot) {
       isLoaded: true,
       needsDraw: true,
       reDraw: true,
+      wasOpen: false,
       path: itemPath,
       children: []
     };
@@ -208,9 +219,9 @@ function renderFrame() {
   if (!jsonRoot.isLoaded) return;
   if (!jsonRoot.reDraw) return;
 
-  if (jsonRoot.reDraw) {
+  // if (jsonRoot.reDraw) {
     clearRenderedTree();
-  }
+  // }
 
   const dom = buildHtmlTree(jsonRoot, CATEGORIES[0]); 
   const contentArea = document.querySelector('.content-area');
@@ -286,7 +297,7 @@ function buildHtmlTree(node) {
     if (childNode.children && childNode.children.length > 0) {
       const detailRow = document.createElement('tr');
       detailRow.className = 'detail';
-      detailRow.style.display = 'none';
+      // detailRow.style.display = 'none';
       detailRow.innerHTML = '<td colspan="3"><div class="content"></div></td>';
       tbody.appendChild(detailRow);
     }
@@ -336,6 +347,7 @@ function attachRowHandlersForTree(row, node, item) {
     contentDiv.innerHTML = '';
     if (node.children && node.children.some(c => c.needsDraw)) {
       const childDom = buildHtmlTree(node);
+
       contentDiv.appendChild(childDom);
     }
   });
@@ -348,7 +360,7 @@ function attachRowHandlersForTree(row, node, item) {
 function createTable(category, isRoot) {
   const table = document.createElement('table');
   table.className = isRoot ? 'category-table' : 'category-table nested';
-  table.style.marginLeft = isRoot ? '0' : '20px';
+  // table.style.marginLeft = isRoot ? '0' : '20px';
   table.dataset.type = category.type;
   return table;
 }
@@ -396,7 +408,7 @@ function createRow(item) {
 
   return row;
 }
-
+/////////////////////////////////////////////////////////////////////////Блок с поиском
 function searchFrame() {
   const input = document.querySelector('#search-box');
   if (!input || !jsonRoot.isLoaded) return;
@@ -406,9 +418,41 @@ function searchFrame() {
 
   lastSearchText = text;
 
-  const found = searchTree(jsonRoot, text);
+  if (searchMode === "name") {
+    searchTreeName(jsonRoot, text);
+  }
+  else 
+    searchTree(jsonRoot, text);
+
   jsonRoot.reDraw = true;
 }
+function searchTreeName(node, text) {
+  if (text === "") {
+    markAllVisible(node);
+    return true;
+  }
+
+  const match = node.data && node.data.name.toLowerCase().includes(text);
+
+  if (node.children.length === 0) {
+    node.needsDraw = match;
+    return match;
+  }
+
+  let foundInChildren = false;
+  for (const child of node.children) {
+    if(match) {
+      //node.needsDraw = match;
+      markAllVisible(child);
+      //return match;
+    }
+    else if (searchTreeName(child, text)) foundInChildren = true;
+  }
+
+  node.needsDraw = match || foundInChildren;
+  return node.needsDraw;
+}
+
 function matches(node, text) {
   if (!node.data) return false;
   const { name, category, usage } = node.data;
@@ -450,7 +494,7 @@ function searchTree(node, text) {
   const selfMatch = matches(node, text);
 
   // Если совпал сам узел → раскрываем всех детей
-  if (selfMatch) {
+  if (selfMatch && searchMode === "smart") {
     node.needsDraw = true;
     for (const child of node.children) {
       markAllVisible(child);

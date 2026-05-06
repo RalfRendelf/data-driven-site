@@ -61,6 +61,14 @@ body {
   font-size: 1rem;
   margin-right: 0.5rem;
 }
+#search-mode {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
 
 /* Layout */
 .main-container {
