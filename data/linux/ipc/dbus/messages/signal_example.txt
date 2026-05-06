@@ -1,0 +1,5 @@
+Interface: org.example.MyService
+Signal: ValueChanged
+Object Path: /org/example/MyService
+Arguments: (new_value: i)
+Signature: (i)

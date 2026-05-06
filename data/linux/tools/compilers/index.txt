@@ -1,0 +1,144 @@
+<h2>Компиляторы C/C++: GCC и Clang</h2>
+
+<p>
+Компиляторы <strong>GCC</strong> (GNU Compiler Collection) и <strong>Clang</strong> — основные инструменты для компиляции программ на языках C и C++ в Linux.
+Они поддерживают различные стандарты языков, оптимизации и флаги компиляции.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое GCC и Clang?</h4>
+<ul>
+  <li><strong>GCC</strong> — исторически первый и наиболее распространённый компилятор для C/C++ в Unix-подобных системах. Включает в себя компиляторы для многих языков (C, C++, Fortran, Ada и др.).</li>
+  <li><strong>Clang</strong> — компилятор, разработанный в рамках проекта LLVM. Отличается более понятными сообщениями об ошибках, лучшей интеграцией с IDE и поддержкой современных стандартов.</li>
+</ul>
+
+<h4>Основные флаги компиляции</h4>
+<table>
+  <tr>
+    <th>Флаг</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-o &lt;file&gt;</code></td>
+    <td>Указывает имя выходного файла.</td>
+  </tr>
+  <tr>
+    <td><code>-c</code></td>
+    <td>Компилирует исходный файл в объектный файл (.o), но не линкует.</td>
+  </tr>
+  <tr>
+    <td><code>-Wall</code></td>
+    <td>Включает все основные предупреждения.</td>
+  </tr>
+  <tr>
+    <td><code>-Wextra</code></td>
+    <td>Включает дополнительные предупреждения.</td>
+  </tr>
+  <tr>
+    <td><code>-O0, -O1, -O2, -O3</code></td>
+    <td>Уровни оптимизации (от отсутствия до максимальной).</td>
+  </tr>
+  <tr>
+    <td><code>-g</code></td>
+    <td>Включает отладочную информацию для gdb.</td>
+  </tr>
+  <tr>
+    <td><code>-std=c++11/-std=c++14/-std=c++17/-std=c++20/-std=c++23</code></td>
+    <td>Указывает стандарт C++ для компиляции.</td>
+  </tr>
+  <tr>
+    <td><code>-I&lt;dir&gt;</code></td>
+    <td>Добавляет директорию в путь поиска заголовочных файлов.</td>
+  </tr>
+  <tr>
+    <td><code>-L&lt;dir&gt;</code></td>
+    <td>Добавляет директорию в путь поиска библиотек.</td>
+  </tr>
+  <tr>
+    <td><code>-l&lt;lib&gt;</code></td>
+    <td>Линкует библиотеку (например, <code>-lpthread</code>).</td>
+  </tr>
+  <tr>
+    <td><code>-D&lt;macro&gt;</code></td>
+    <td>Определяет макрос (например, <code>-DDEBUG=1</code>).</td>
+  </tr>
+</table>
+
+<h4>Стандарты C++</h4>
+<p>
+Современные компиляторы поддерживают следующие стандарты C++:
+</p>
+<ul>
+  <li><strong>C++98/03</strong> — первый стандарт C++.</li>
+  <li><strong>C++11</strong> — значительное обновление с поддержкой лямбда-выражений, smart pointers, <code>auto</code> и других современных возможностей.</li>
+  <li><strong>C++14</strong> — небольшие улучшения, такие как <code>constexpr</code> для функций.</li>
+  <li><strong>C++17</strong> — добавлены <code>std::optional</code>, <code>std::variant</code>, структурированные привязки и другие возможности.</li>
+  <li><strong>C++20</strong> — модули, концепты, корутины, <code>std::ranges</code> и многое другое.</li>
+  <li><strong>C++23</strong> — последние нововведения, такие как <code>std::print</code>, улучшенные лямбды и другие.</li>
+</ul>
+
+<h4>Примеры использования</h4>
+<pre><code>
+compile_example.sh
+</code></pre>
+
+<h4>Сравнение GCC и Clang</h4>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>GCC</th>
+    <th>Clang</th>
+  </tr>
+  <tr>
+    <td><strong>Скорость компиляции</strong></td>
+    <td>Медленнее</td>
+    <td>Быстрее</td>
+  </tr>
+  <tr>
+    <td><strong>Качество диагностики</strong></td>
+    <td>Хорошее</td>
+    <td>Отличное (более понятные сообщения)</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка стандартов</strong></td>
+    <td>Полная</td>
+    <td>Полная</td>
+  </tr>
+  <tr>
+    <td><strong>Интеграция с IDE</strong></td>
+    <td>Хорошая</td>
+    <td>Отличная (используется в Xcode, CLion)</td>
+  </tr>
+  <tr>
+    <td><strong>Линковщик</strong></td>
+    <td>Использует <code>ld</code> или <code>gold</code></td>
+    <td>Использует <code>lld</code> (LLVM linker)</td>
+  </tr>
+</table>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>-Wall -Wextra</code> для включения всех предупреждений.</li>
+  <li>Для отладочных сборок используйте <code>-g</code>.</li>
+  <li>Для релизных сборок используйте <code>-O2</code> или <code>-O3</code>.</li>
+  <li>Указывайте стандарт C++ явно (например, <code>-std=c++20</code>).</li>
+  <li>Используйте <code>clang-tidy</code> для статического анализа кода.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+Компиляторы <strong>GCC</strong> и <strong>Clang</strong> — мощные инструменты для разработки на C/C++.
+Выбор между ними зависит от ваших потребностей: <strong>GCC</strong> более зрелый и стабильный, а <strong>Clang</strong> предлагает лучшую диагностику и интеграцию с инструментами.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://gcc.gnu.org/">Официальный сайт GCC</a></li>
+  <li><a href="https://clang.llvm.org/">Официальный сайт Clang</a></li>
+  <li><a href="https://en.cppreference.com/w/cpp/compiler_support">Поддержка стандартов C++ компиляторами</a></li>
+</ul>

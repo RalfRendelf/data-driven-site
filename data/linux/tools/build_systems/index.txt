@@ -1,0 +1,194 @@
+<h2>Системы сборки: CMake, Make, Ninja</h2>
+
+<p>
+Системы сборки (<strong>build systems</strong>) автоматизируют процесс компиляции и линковки программ.
+Они управляют зависимостями между файлами, оптимизируют сборку и обеспечивают кросс-платформенность.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое системы сборки?</h4>
+<p>
+Системы сборки решают следующие задачи:
+</p>
+<ul>
+  <li>Автоматическая компиляция изменённых файлов.</li>
+  <li>Управление зависимостями между файлами.</li>
+  <li>Поддержка кросс-платформенной сборки.</li>
+  <li>Интеграция с другими инструментами (тесты, статический анализ).</li>
+</ul>
+
+---
+<h3>Make</h3>
+
+<h4>Что такое Make?</h4>
+<p>
+<strong>Make</strong> — классическая система сборки для Unix-подобных систем.
+Она использует <strong>Makefile</strong> — текстовый файл с правилами сборки.
+</p>
+
+<h4>Основные концепции Make</h4>
+<ul>
+  <li><strong>Цели (<code>targets</code>)</strong> — файлы, которые нужно сгенерировать (например, исполняемые файлы, библиотеки).</li>
+  <li><strong>Зависимости (<code>dependencies</code>)</strong> — файлы, от которых зависят цели.</li>
+  <li><strong>Правила (<code>rules</code>)</strong> — команды для генерации целей из зависимостей.</li>
+  <li><strong>Переменные</strong> — используются для хранения путей, флагов компилятора и других параметров.</li>
+</ul>
+
+<h4>Пример Makefile</h4>
+<pre><code>
+Makefile.txt
+</code></pre>
+
+<h4>Основные команды Make</h4>
+<table>
+  <tr>
+    <th>Команда</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>make</code></td>
+    <td>Собирает первую цель в Makefile.</td>
+  </tr>
+  <tr>
+    <td><code>make &lt;target&gt;</code></td>
+    <td>Собирает указанную цель.</td>
+  </tr>
+  <tr>
+    <td><code>make clean</code></td>
+    <td>Удаляет сгенерированные файлы.</td>
+  </tr>
+  <tr>
+    <td><code>make -j&lt;n&gt;</code></td>
+    <td>Собирает с использованием <code>n</code> потоков.</td>
+  </tr>
+</table>
+
+---
+<h3>CMake</h3>
+
+<h4>Что такое CMake?</h4>
+<p>
+<strong>CMake</strong> — кросс-платформенная система сборки, которая генерирует файлы для других систем сборки (например, Make, Ninja, Visual Studio).
+Она использует <strong>CMakeLists.txt</strong> — текстовые файлы с инструкциями для сборки.
+</p>
+
+<h4>Основные концепции CMake</h4>
+<ul>
+  <li><strong>Проекты (<code>project</code>)</strong> — определяют имя проекта и используемые языки.</li>
+  <li><strong>Цели (<code>targets</code>)</strong> — исполняемые файлы, библиотеки.</li>
+  <li><strong>Исходные файлы (<code>sources</code>)</strong> — файлы, которые нужно скомпилировать.</li>
+  <li><strong>Зависимости</strong> — библиотеки и другие проекты, от которых зависит текущий проект.</li>
+</ul>
+
+<h4>Пример CMakeLists.txt</h4>
+<pre><code>
+CMakeLists.txt
+</code></pre>
+
+<h4>Основные команды CMake</h4>
+<table>
+  <tr>
+    <th>Команда</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>cmake &lt;path&gt;</code></td>
+    <td>Генерирует файлы сборки в указанной директории.</td>
+  </tr>
+  <tr>
+    <td><code>cmake --build &lt;path&gt;</code></td>
+    <td>Собирает проект в указанной директории.</td>
+  </tr>
+  <tr>
+    <td><code>cmake --build &lt;path&gt; --target &lt;target&gt;</code></td>
+    <td>Собирает указанную цель.</td>
+  </tr>
+  <tr>
+    <td><code>cmake --build &lt;path&gt; -- -j&lt;n&gt;</code></td>
+    <td>Собирает с использованием <code>n</code> потоков.</td>
+  </tr>
+</table>
+
+---
+<h3>Ninja</h3>
+
+<h4>Что такое Ninja?</h4>
+<p>
+<strong>Ninja</strong> — система сборки, ориентированная на скорость.
+Она использует файлы <strong>build.ninja</strong>, которые генерируются другими инструментами (например, CMake).
+</p>
+
+<h4>Преимущества Ninja</h4>
+<ul>
+  <li><strong>Скорость</strong> — Ninja оптимизирована для быстрой сборки.</li>
+  <li><strong>Простота</strong> — Файлы сборки легко читаемы.</li>
+  <li><strong>Параллелизм</strong> — Автоматически использует все доступные ядра процессора.</li>
+</ul>
+
+<h4>Пример использования Ninja с CMake</h4>
+<pre><code>
+cmake_ninja_example.sh
+</code></pre>
+
+---
+<h3>Сравнение систем сборки</h3>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>Make</th>
+    <th>CMake</th>
+    <th>Ninja</th>
+  </tr>
+  <tr>
+    <td><strong>Кросс-платформенность</strong></td>
+    <td>Ограниченная (Unix-подобные системы)</td>
+    <td>Да</td>
+    <td>Да</td>
+  </tr>
+  <tr>
+    <td><strong>Скорость</strong></td>
+    <td>Средняя</td>
+    <td>Средняя (зависит от генератора)</td>
+    <td>Высокая</td>
+  </tr>
+  <tr>
+    <td><strong>Удобство использования</strong></td>
+    <td>Среднее (требует ручного написания Makefile)</td>
+    <td>Высокое (декларативный синтаксис)</td>
+    <td>Низкое (обычно используется с CMake)</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка IDE</strong></td>
+    <td>Ограниченная</td>
+    <td>Широко поддерживается (CLion, Visual Studio, Qt Creator)</td>
+    <td>Ограниченная</td>
+  </tr>
+</table>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <strong>CMake</strong> для кросс-платформенных проектов.</li>
+  <li>Используйте <strong>Ninja</strong> для ускорения сборки в CMake.</li>
+  <li>Используйте <strong>Make</strong> для простых проектов или если требуется точный контроль над процессом сборки.</li>
+  <li>Используйте <code>-j</code> для параллельной сборки.</li>
+  <li>Разделяйте проект на поддиректории для лучшей организации.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+Системы сборки <strong>Make</strong>, <strong>CMake</strong> и <strong>Ninja</strong> — мощные инструменты для автоматизации сборки программ.
+<strong>CMake</strong> — лучший выбор для кросс-платформенных проектов, <strong>Ninja</strong> — для ускорения сборки, а <strong>Make</strong> — для простых проектов или точного контроля.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.gnu.org/software/make/">Официальный сайт Make</a></li>
+  <li><a href="https://cmake.org/">Официальный сайт CMake</a></li>
+  <li><a href="https://ninja-build.org/">Официальный сайт Ninja</a></li>
+  <li><a href="https://cmake.org/cmake/help/latest/guide/tutorial/index.html">Учебник по CMake</a></li>
+</ul>

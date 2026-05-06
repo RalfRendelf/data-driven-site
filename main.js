@@ -399,62 +399,66 @@ function createRow(item) {
 
 function searchFrame() {
   const input = document.querySelector('#search-box');
-  if (!input) return;
-  if(jsonRoot.isLoaded === false) return;
+  if (!input || !jsonRoot.isLoaded) return;
+
   const text = input.value.trim().toLowerCase();
   if (text === lastSearchText) return;
 
   lastSearchText = text;
+
   const found = searchTree(jsonRoot, text);
   jsonRoot.reDraw = true;
 }
-function searchTree(node, text) {
-  if (text === "") {
-    markAllVisible(node);
-    return true;
-  }
-  if (node.data && node.children.length === 0) {
-    const { name, category, usage } = node.data;
-    const match =
-      name.toLowerCase().includes(text) ||
-      category.toLowerCase().includes(text) ||
-      usage.toLowerCase().includes(text);
-
-    node.needsDraw = match;
-    return match;
-  }
-
-  // если это папка
-  let foundInChildren = false;
-
-  for (const child of node.children) {
-    const childFound = searchTree(child, text);
-    if (childFound) foundInChildren = true;
-  }
-
-
-  if (foundInChildren) {
-    node.needsDraw = true;
-    return true;
-  }
-
-  if (node.data) {
-    const { name, category, usage } = node.data;
-    const match =
-      name.toLowerCase().includes(text) ||
-      category.toLowerCase().includes(text) ||
-      usage.toLowerCase().includes(text);
-
-    node.needsDraw = match;
-    return match;
-  }
-
-  node.needsDraw = foundInChildren;
-  return foundInChildren;
+function matches(node, text) {
+  if (!node.data) return false;
+  const { name, category, usage } = node.data;
+  return (
+    name.toLowerCase().includes(text) ||
+    category.toLowerCase().includes(text) ||
+    usage.toLowerCase().includes(text)
+  );
 }
 function markAllVisible(node) {
   node.needsDraw = true;
   for (const child of node.children) {
     markAllVisible(child);
   }
+}
+function searchTree(node, text) {
+  // Пустой текст → всё показываем
+  if (text === "") {
+    markAllVisible(node);
+    return true;
+  }
+
+  // Если лист
+  if (node.children.length === 0) {
+    const match = matches(node, text);
+    node.needsDraw = match;
+    return match;
+  }
+
+  // Если не лист — проверяем детей
+  let foundInChildren = false;
+  for (const child of node.children) {
+    if (searchTree(child, text)) {
+      foundInChildren = true;
+    }
+  }
+
+  // Если совпадение в самом узле
+  const selfMatch = matches(node, text);
+
+  // Если совпал сам узел → раскрываем всех детей
+  if (selfMatch) {
+    node.needsDraw = true;
+    for (const child of node.children) {
+      markAllVisible(child);
+    }
+    return true;
+  }
+
+  // Если совпали дети
+  node.needsDraw = foundInChildren;
+  return foundInChildren;
 }

@@ -1,0 +1,18 @@
+# Переменные
+CC = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -O2
+
+# Правило для сборки программы
+my_program: main.o utils.o
+	$(CC) $(CXXFLAGS) -o my_program main.o utils.o
+
+# Правила для компиляции объектных файлов
+main.o: main.cpp utils.h
+	$(CC) $(CXXFLAGS) -c main.cpp -o main.o
+
+utils.o: utils.cpp utils.h
+	$(CC) $(CXXFLAGS) -c utils.cpp -o utils.o
+
+# Правило для очистки
+clean:
+	rm -f my_program *.o

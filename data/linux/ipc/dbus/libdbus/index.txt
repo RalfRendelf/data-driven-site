@@ -1,0 +1,96 @@
+<h2>libdbus API: Низкоуровневый C API для D-Bus</h2>
+
+<p>
+<strong>libdbus</strong> — это низкоуровневая библиотека для работы с D-Bus на языке C.
+Она предоставляет API для подключения к шине, отправки и получения сообщений, а также управления соединениями.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое libdbus?</h4>
+<p>
+<strong>libdbus</strong> — это:
+</p>
+<ul>
+  <li>Низкоуровневая библиотека для работы с D-Bus.</li>
+  <li>Написана на языке C.</li>
+  <li>Предоставляет полный контроль над взаимодействием с D-Bus.</li>
+  <li>Используется другими библиотеками (например, GDBus, QtDBus) как основа.</li>
+</ul>
+
+<h4>Основные концепции libdbus</h4>
+<ul>
+  <li><strong>Соединение (<code>DBusConnection</code>)</strong> — представление соединения с шиной D-Bus.</li>
+  <li><strong>Сообщение (<code>DBusMessage</code>)</strong> — представление сообщения D-Bus.</li>
+  <li><strong>Цикл обработки (<code>DBusLoop</code>)</strong> — цикл для обработки входящих сообщений.</li>
+  <li><strong>Обработчики сообщений</strong> — функции, вызываемые при получении сообщений.</li>
+</ul>
+
+<h4>Установка libdbus</h4>
+<p>
+Библиотека <code>libdbus</code> обычно устанавливается вместе с пакетом <code>dbus</code>:
+</p>
+<pre><code>
+install_libdbus.sh
+</code></pre>
+
+---
+<h3>Основные функции libdbus</h3>
+
+<h4>Подключение к шине</h4>
+<p>
+Для подключения к шине D-Bus используются функции <code>dbus_bus_get</code> и <code>dbus_bus_get_private</code>:
+</p>
+<pre><code>
+dbus_connection_example.c
+</code></pre>
+
+<h4>Отправка сообщений</h4>
+<p>
+Для отправки сообщений используются функции <code>dbus_message_new_method_call</code>, <code>dbus_message_append_args</code> и <code>dbus_connection_send_with_reply_and_block</code>:
+</p>
+<pre><code>
+dbus_send_message_example.c
+</code></pre>
+
+<h4>Обработка входящих сообщений</h4>
+<p>
+Для обработки входящих сообщений используются функции <code>dbus_connection_add_filter</code> и цикл обработки сообщений:
+</p>
+<pre><code>
+dbus_handle_messages_example.c
+</code></pre>
+
+<h4>Цикл обработки сообщений</h4>
+<p>
+Для обработки входящих сообщений используется цикл <code>dbus_connection_read_write_dispatch</code>:
+</p>
+<ul>
+  <li><strong>dbus_connection_read_write_dispatch</strong> — обрабатывает входящие сообщения.</li>
+  <li><strong>dbus_connection_read_write</strong> — читает и записывает данные без обработки.</li>
+  <li><strong>dbus_connection_dispatch</strong> — обрабатывает ожидающие сообщения.</li>
+</ul>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>libdbus</code> для низкоуровневого контроля над взаимодействием с D-Bus.</li>
+  <li>Всегда проверяйте ошибки с помощью <code>dbus_error_is_set</code>.</li>
+  <li>Освобождайте ресурсы с помощью <code>dbus_message_unref</code> и <code>dbus_connection_unref</code>.</li>
+  <li>Используйте цикл обработки сообщений для асинхронной работы.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>libdbus</strong> — это низкоуровневая библиотека для работы с D-Bus на языке C.
+Она предоставляет полный контроль над взаимодействием с шиной, но требует ручного управления ресурсами и обработки ошибок.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://dbus.freedesktop.org/doc/api/html/">Документация libdbus API</a></li>
+  <li><a href="https://dbus.freedesktop.org/doc/dbus-tutorial.html">Учебник по D-Bus</a></li>
+</ul>

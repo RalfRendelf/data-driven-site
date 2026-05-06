@@ -1,0 +1,5 @@
+Interface: org.example.MyService
+Method: GetVersion
+Object Path: /org/example/MyService
+Arguments: (none)
+Signature: ()

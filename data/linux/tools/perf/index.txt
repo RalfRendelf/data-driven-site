@@ -1,0 +1,119 @@
+<h2>Профилирование с помощью perf</h2>
+
+<p>
+<strong>perf</strong> — инструмент для профилирования производительности в Linux.
+Позволяет анализировать использование CPU, памяти, системных вызовов и других событий ядра.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое perf?</h4>
+<p>
+<code>perf</code> — это инструмент для профилирования производительности, который использует подсистему <strong>Performance Counters</strong> в ядре Linux.
+Он позволяет:
+</p>
+<ul>
+  <li>Анализировать использование CPU.</li>
+  <li>Отслеживать системные вызовы и события ядра.</li>
+  <li>Изучать использование памяти и кэша.</li>
+  <li>Анализировать задержки и бутылочные места в программе.</li>
+</ul>
+
+<h4>Основные команды perf</h4>
+<table>
+  <tr>
+    <th>Команда</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>perf stat</code></td>
+    <td>Показывает общую статистику по использованию CPU, кэша, памяти и другим событиям.</td>
+  </tr>
+  <tr>
+    <td><code>perf record</code></td>
+    <td>Записывает данные профилирования в файл.</td>
+  </tr>
+  <tr>
+    <td><code>perf report</code></td>
+    <td>Анализирует записанные данные профилирования.</td>
+  </tr>
+  <tr>
+    <td><code>perf top</code></td>
+    <td>Показывает функции, потребляющие больше всего CPU, в реальном времени.</td>
+  </tr>
+  <tr>
+    <td><code>perf list</code></td>
+    <td>Показывает список доступных событий для профилирования.</td>
+  </tr>
+  <tr>
+    <td><code>perf probe</code></td>
+    <td>Управляет динамическими точками трассировки (dynamic tracing).</td>
+  </tr>
+</table>
+
+<h4>Основные события perf</h4>
+<p>
+<code>perf</code> поддерживает множество событий для профилирования. Некоторые из них:
+</p>
+<ul>
+  <li><strong>Аппаратные события:</strong> <code>cycles</code>, <code>instructions</code>, <code>cache-references</code>, <code>cache-misses</code>.</li>
+  <li><strong>События ядра:</strong> <code>syscalls:sys_enter_*</code>, <code>syscalls:sys_exit_*</code>.</li>
+  <li><strong>События памяти:</strong> <code>page-faults</code>, <code>minor-faults</code>, <code>major-faults</code>.</li>
+</ul>
+
+<h4>Примеры использования</h4>
+<pre><code>
+perf_example.sh
+</code></pre>
+
+<h4>Анализ данных perf report</h4>
+<p>
+Отчёт <code>perf report</code> содержит следующую информацию:
+</p>
+<ul>
+  <li><strong>Стек вызовов</strong> — показывает цепочку вызовов функций.</li>
+  <li><strong>Процент времени</strong> — доля времени, потраченного на каждую функцию.</li>
+  <li><strong>События</strong> — количество событий (например, кэш-промахов) для каждой функции.</li>
+</ul>
+
+<h4>Профилирование с флагом -g</h4>
+<p>
+Флаг <code>-g</code> включает запись стека вызовов, что позволяет анализировать, какие функции вызывали другие функции.
+</p>
+<pre><code>
+perf_record_with_callgraph.sh
+</code></pre>
+
+<h4>Профилирование системных вызовов</h4>
+<p>
+<code>perf</code> может отслеживать системные вызовы с помощью события <code>tracepoint</code>.
+</p>
+<pre><code>
+perf_tracepoint_example.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>perf stat</code> для быстрого анализа производительности.</li>
+  <li>Используйте <code>perf record -g</code> для записи стека вызовов.</li>
+  <li>Используйте <code>perf report</code> для анализа записанных данных.</li>
+  <li>Используйте <code>perf top</code> для анализа в реальном времени.</li>
+  <li>Экспериментируйте с различными событиями для профилирования.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>perf</strong> — мощный инструмент для профилирования производительности в Linux.
+Он позволяет анализировать использование CPU, памяти, системных вызовов и других событий ядра, что полезно для оптимизации программ.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://perf.wiki.kernel.org/">Официальная вики perf</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/perf.1.html">Man page perf</a></li>
+  <li><a href="https://www.brendangregg.com/perf.html">Руководство по perf от Brendan Gregg</a></li>
+</ul>

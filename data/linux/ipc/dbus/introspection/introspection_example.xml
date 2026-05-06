@@ -1,0 +1,16 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.example.MyService">
+    <method name="GetVersion">
+      <arg type="i" name="version" direction="out"/>
+    </method>
+    <method name="SetValue">
+      <arg type="i" name="new_value" direction="in"/>
+    </method>
+    <signal name="ValueChanged">
+      <arg type="i" name="new_value"/>
+    </signal>
+    <property name="Version" type="i" access="read"/>
+  </interface>
+</node>

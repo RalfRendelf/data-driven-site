@@ -1,0 +1,165 @@
+<h2>Статический анализ кода: clang-tidy и cppcheck</h2>
+
+<p>
+<strong>Статический анализ кода</strong> — это процесс анализа исходного кода без его выполнения с целью поиска ошибок, уязвимостей и стилистических проблем.
+<strong>clang-tidy</strong> и <strong>cppcheck</strong> — популярные инструменты для статического анализа C++ кода.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое статический анализ?</h4>
+<p>
+Статический анализ позволяет находить:
+</p>
+<ul>
+  <li>Ошибки в коде (например, использование неинициализированных переменных).</li>
+  <li>Уязвимости безопасности (например, переполнение буфера).</li>
+  <li>Проблемы с стилем кода (например, несоответствие стандартам).</li>
+  <li>Потенциальные баги (например, утечки памяти).</li>
+</ul>
+
+---
+<h3>clang-tidy</h3>
+
+<h4>Что такое clang-tidy?</h4>
+<p>
+<strong>clang-tidy</strong> — инструмент для статического анализа кода на C++, входящий в состав <strong>LLVM</strong>.
+Он использует <strong>Clang</strong> для парсинга кода и предоставляет широкий набор проверок.
+</p>
+
+<h4>Основные проверки clang-tidy</h4>
+<ul>
+  <li><strong>clang-analyzer-*</strong> — проверки на основе Clang Static Analyzer.</li>
+  <li><strong>bugprone-*</strong> — поиск потенциальных багов.</li>
+  <li><strong>modernize-*</strong> — проверки на соответствие современным стандартам C++.</li>
+  <li><strong>performance-*</strong> — поиск проблем с производительностью.</li>
+  <li><strong>readability-*</strong> — проверки читаемости кода.</li>
+  <li><strong>misc-*</strong> — разные проверки.</li>
+</ul>
+
+<h4>Примеры использования clang-tidy</h4>
+<pre><code>
+clang_tidy_example.sh
+</code></pre>
+
+<h4>Настройка clang-tidy</h4>
+<p>
+<code>clang-tidy</code> можно настроить с помощью файла <code>.clang-tidy</code>:
+</p>
+<pre><code>
+.clang-tidy
+</code></pre>
+
+---
+<h3>cppcheck</h3>
+
+<h4>Что такое cppcheck?</h4>
+<p>
+<strong>cppcheck</strong> — инструмент для статического анализа кода на C/C++.
+Он фокусируется на поиске ошибок и уязвимостей, таких как:
+</p>
+<ul>
+  <li>Утечки памяти.</li>
+  <li>Использование неинициализированных переменных.</li>
+  <li>Выход за границы массивов.</li>
+  <li>Ошибки управления памятью.</li>
+</ul>
+
+<h4>Основные флаги cppcheck</h4>
+<table>
+  <tr>
+    <th>Флаг</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>--enable=all</code></td>
+    <td>Включает все проверки.</td>
+  </tr>
+  <tr>
+    <td><code>--inconclusive</code></td>
+    <td>Показывает неопределённые результаты.</td>
+  </tr>
+  <tr>
+    <td><code>--std=&lt;standard&gt;</code></td>
+    <td>Указывает стандарт C++ (например, <code>--std=c++20</code>).</td>
+  </tr>
+  <tr>
+    <td><code>--addon=&lt;addon&gt;</code></td>
+    <td>Включает дополнительные проверки (например, <code>--addon=misra</code>).</td>
+  </tr>
+  <tr>
+    <td><code>--suppress=&lt;file&gt;</code></td>
+    <td>Подавляет предупреждения, указанные в файле.</td>
+  </tr>
+</table>
+
+<h4>Примеры использования cppcheck</h4>
+<pre><code>
+cppcheck_example.sh
+</code></pre>
+
+<h4>Пример файла подавления предупреждений</h4>
+<pre><code>
+suppressions.txt
+</code></pre>
+
+---
+<h3>Сравнение clang-tidy и cppcheck</h3>
+<table>
+  <tr>
+    <th>Критерий</th>
+    <th>clang-tidy</th>
+    <th>cppcheck</th>
+  </tr>
+  <tr>
+    <td><strong>Тип анализа</strong></td>
+    <td>Стиль, современность, потенциальные баги</td>
+    <td>Ошибки, уязвимости, баги</td>
+  </tr>
+  <tr>
+    <td><strong>Скорость</strong></td>
+    <td>Средняя</td>
+    <td>Высокая</td>
+  </tr>
+  <tr>
+    <td><strong>Интеграция с CMake</strong></td>
+    <td>Да</td>
+    <td>Да (через кастомные команды)</td>
+  </tr>
+  <tr>
+    <td><strong>Поддержка стандартов C++</strong></td>
+    <td>Полная</td>
+    <td>Полная</td>
+  </tr>
+  <tr>
+    <td><strong>Легкость настройки</strong></td>
+    <td>Средняя</td>
+    <td>Простая</td>
+  </tr>
+</table>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <strong>clang-tidy</strong> для проверки стиля кода и соответствия современным стандартам.</li>
+  <li>Используйте <strong>cppcheck</strong> для поиска ошибок и уязвимостей.</li>
+  <li>Интегрируйте статический анализ в процесс сборки (например, через CMake).</li>
+  <li>Настраивайте проверки в соответствии с требованиями вашего проекта.</li>
+  <li>Используйте файлы подавления для игнорирования ложноположительных срабатываний.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>clang-tidy</strong> и <strong>cppcheck</strong> — мощные инструменты для статического анализа кода на C++.
+Они позволяют находить ошибки, уязвимости и проблемы с стилем кода, что улучшает качество и надёжность программ.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://clang.llvm.org/extra/clang-tidy/">Официальный сайт clang-tidy</a></li>
+  <li><a href="https://cppcheck.sourceforge.io/">Официальный сайт cppcheck</a></li>
+  <li><a href="https://clang.llvm.org/extra/clang-tidy/checks/list.html">Список проверок clang-tidy</a></li>
+</ul>

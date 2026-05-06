@@ -1,0 +1,103 @@
+<h2>sd-bus API: Высокоуровневый API systemd для D-Bus</h2>
+
+<p>
+<strong>sd-bus</strong> — это высокоуровневый API для работы с D-Bus, входящий в состав <strong>systemd</strong>.
+Он предоставляет более удобный и современный интерфейс по сравнению с <code>libdbus</code>, а также интеграцию с event loop systemd.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое sd-bus?</h4>
+<p>
+<strong>sd-bus</strong> — это:
+</p>
+<ul>
+  <li>Высокоуровневый API для работы с D-Bus.</li>
+  <li>Часть проекта <strong>systemd</strong>.</li>
+  <li>Предоставляет удобные функции для работы с методами, сигналами и свойствами.</li>
+  <li>Интегрирован с event loop systemd (<code>sd-event</code>).</li>
+</ul>
+
+<h4>Преимущества sd-bus</h4>
+<ul>
+  <li><strong>Удобство использования</strong> — более простой и интуитивный API по сравнению с <code>libdbus</code>.</li>
+  <li><strong>Интеграция с systemd</strong> — работает вместе с другими компонентами systemd.</li>
+  <li><strong>Поддержка асинхронных операций</strong> — удобная работа с асинхронными вызовами.</li>
+  <li><strong>Автоматическое управление ресурсами</strong> — меньше ручной работы с освобождением памяти.</li>
+</ul>
+
+<h4>Установка sd-bus</h4>
+<p>
+<code>sd-bus</code> входит в состав <code>systemd</code> и устанавливается вместе с ним:
+</p>
+<pre><code>
+install_sd_bus.sh
+</code></pre>
+
+---
+<h3>Основные функции sd-bus</h3>
+
+<h4>Подключение к шине</h4>
+<p>
+Для подключения к шине D-Bus используются функции <code>sd_bus_open</code> и <code>sd_bus_open_system</code>:
+</p>
+<pre><code>
+sd_bus_connection_example.c
+</code></pre>
+
+<h4>Вызов методов</h4>
+<p>
+Для вызова методов используются функции <code>sd_bus_call_method</code> и <code>sd_bus_call_method_async</code>:
+</p>
+<pre><code>
+sd_bus_method_call_example.c
+</code></pre>
+
+<h4>Обработка сигналов</h4>
+<p>
+Для обработки сигналов используются функции <code>sd_bus_add_match</code> и <code>sd_bus_add_object_manager</code>:
+</p>
+<pre><code>
+sd_bus_signal_example.c
+</code></pre>
+
+<h4>Работа с свойствами</h4>
+<p>
+Для работы с свойствами используются функции <code>sd_bus_get_property</code> и <code>sd_bus_set_property</code>:
+</p>
+<pre><code>
+sd_bus_property_example.c
+</code></pre>
+
+<h4>Интеграция с event loop</h4>
+<p>
+<code>sd-bus</code> интегрирован с <code>sd-event</code> — event loop systemd.
+Это позволяет удобно обрабатывать асинхронные операции:
+</p>
+<pre><code>
+sd_bus_event_loop_example.c
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>sd-bus</code> для удобной работы с D-Bus на C.</li>
+  <li>Интегрируйте <code>sd-bus</code> с <code>sd-event</code> для асинхронной обработки сообщений.</li>
+  <li>Используйте функции <code>sd_bus_call_method</code> и <code>sd_bus_add_match</code> для работы с методами и сигналами.</li>
+  <li>Помните, что <code>sd-bus</code> автоматически управляет ресурсами.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>sd-bus</strong> — это высокоуровневый API для работы с D-Bus, входящий в состав systemd.
+Он предоставляет удобные функции для работы с методами, сигналами и свойствами, а также интеграцию с event loop systemd.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/sd-bus.html">Документация sd-bus</a></li>
+  <li><a href="https://www.freedesktop.org/software/systemd/man/systemd.html">Документация systemd</a></li>
+</ul>

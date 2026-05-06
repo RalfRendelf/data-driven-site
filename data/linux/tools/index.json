@@ -1,1 +1,66 @@
-[]
+[
+    {
+      "type": "linux",
+      "name": "Compilers (GCC & Clang)",
+      "fileName": "compilers",
+      "category": "linux/tools",
+      "usage": "Компиляторы C/C++: gcc, clang, флаги, оптимизации, стандарты",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Debugging (gdb)",
+      "fileName": "gdb",
+      "category": "linux/tools",
+      "usage": "Отладка программ: точки останова, стек, watchpoints, core dumps",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Tracing (strace & ltrace)",
+      "fileName": "tracing",
+      "category": "linux/tools",
+      "usage": "Трассировка системных вызовов и вызовов библиотек",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Profiling (perf)",
+      "fileName": "perf",
+      "category": "linux/tools",
+      "usage": "Профилирование CPU, памяти, событий ядра, perf record/report",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Memory Analysis (Valgrind)",
+      "fileName": "valgrind",
+      "category": "linux/tools",
+      "usage": "Поиск утечек, ошибок доступа, профилирование памяти",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Build Systems",
+      "fileName": "build_systems",
+      "category": "linux/tools",
+      "usage": "CMake, Make, Ninja — сборка проектов, генерация билдов",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Static Analysis",
+      "fileName": "static_analysis",
+      "category": "linux/tools",
+      "usage": "clang-tidy, cppcheck — статический анализ кода",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Disassembly & Binary Tools",
+      "fileName": "binary_tools",
+      "category": "linux/tools",
+      "usage": "objdump, readelf, nm, strings — анализ бинарников",
+      "isLeaf": true
+    }
+  ]

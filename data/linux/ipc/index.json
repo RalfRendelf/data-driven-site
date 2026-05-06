@@ -1,5 +1,14 @@
 [
   {
+      "type": "linux",
+      "name": "D-Bus",
+      "fileName": "dbus",
+      "category": "linux/ipc",
+      "usage": "D-Bus: системная и сеансовая шина, сообщения, интерфейсы, introspection",
+      "isLeaf": false
+    },
+    
+  {
     "type": "linux",
     "name": "Pipes",
     "fileName": "pipes",

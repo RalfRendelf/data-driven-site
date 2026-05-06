@@ -1,0 +1,141 @@
+<h2>Трассировка системных вызовов и вызовов библиотек</h2>
+
+<p>
+<strong>strace</strong> и <strong>ltrace</strong> — инструменты для трассировки системных вызовов и вызовов библиотек в Linux.
+Они позволяют анализировать, какие системные вызовы и вызовы библиотек выполняет программа во время работы.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое strace и ltrace?</h4>
+<ul>
+  <li><strong>strace</strong> — трассирует <strong>системные вызовы</strong> (например, <code>open</code>, <code>read</code>, <code>write</code>, <code>execve</code>), а также сигналы.</li>
+  <li><strong>ltrace</strong> — трассирует <strong>вызовы библиотек</strong> (например, <code>malloc</code>, <code>printf</code>, <code>fopen</code>).</li>
+</ul>
+
+<h4>Основные флаги strace</h4>
+<table>
+  <tr>
+    <th>Флаг</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-c</code></td>
+    <td>Показывает статистику по системным вызовам (количество, время, ошибки).</td>
+  </tr>
+  <tr>
+    <td><code>-f</code></td>
+    <td>Трассирует дочерние процессы (fork).</td>
+  </tr>
+  <tr>
+    <td><code>-e &lt;expr&gt;</code></td>
+    <td>Фильтрует системные вызовы по выражению (например, <code>-e trace=open,read</code>).</td>
+  </tr>
+  <tr>
+    <td><code>-o &lt;file&gt;</code></td>
+    <td>Записывает вывод в файл.</td>
+  </tr>
+  <tr>
+    <td><code>-p &lt;pid&gt;</code></td>
+    <td>Подключается к работающему процессу с указанным PID.</td>
+  </tr>
+  <tr>
+    <td><code>-t</code></td>
+    <td>Показывает время каждого системного вызова.</td>
+  </tr>
+  <tr>
+    <td><code>-v</code></td>
+    <td>Выводит подробную информацию о системных вызовах.</td>
+  </tr>
+</table>
+
+<h4>Основные флаги ltrace</h4>
+<table>
+  <tr>
+    <th>Флаг</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>-c</code></td>
+    <td>Показывает статистику по вызовам библиотек.</td>
+  </tr>
+  <tr>
+    <td><code>-f</code></td>
+    <td>Трассирует дочерние процессы (fork).</td>
+  </tr>
+  <tr>
+    <td><code>-e &lt;expr&gt;</code></td>
+    <td>Фильтрует вызовы библиотек по выражению (например, <code>-e malloc+free</code>).</td>
+  </tr>
+  <tr>
+    <td><code>-o &lt;file&gt;</code></td>
+    <td>Записывает вывод в файл.</td>
+  </tr>
+  <tr>
+    <td><code>-p &lt;pid&gt;</code></td>
+    <td>Подключается к работающему процессу с указанным PID.</td>
+  </tr>
+</table>
+
+<h4>Примеры использования</h4>
+<pre><code>
+strace_ltrace_example.sh
+</code></pre>
+
+<h4>Анализ вывода strace</h4>
+<p>
+Вывод <code>strace</code> содержит следующие компоненты:
+</p>
+<ul>
+  <li><strong>Номер системного вызова</strong> (например, <code>open</code>, <code>read</code>).</li>
+  <li><strong>Аргументы вызова</strong> (например, путь к файлу, дескрипторы).</li>
+  <li><strong>Возвращаемое значение</strong> (например, дескриптор файла или код ошибки).</li>
+</ul>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+strace_output.txt
+</code></pre>
+
+<h4>Анализ вывода ltrace</h4>
+<p>
+Вывод <code>ltrace</code> содержит следующие компоненты:
+</p>
+<ul>
+  <li><strong>Имя функции библиотеки</strong> (например, <code>malloc</code>, <code>printf</code>).</li>
+  <li><strong>Аргументы функции</strong>.</li>
+  <li><strong>Возвращаемое значение</strong>.</li>
+</ul>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+ltrace_output.txt
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>strace</code> для анализа системных вызовов (например, для отладки проблем с файлами или сетью).</li>
+  <li>Используйте <code>ltrace</code> для анализа вызовов библиотек (например, для отладки проблем с динамическими библиотеками).</li>
+  <li>Используйте флаг <code>-c</code> для получения статистики по вызовам.</li>
+  <li>Используйте флаг <code>-e</code> для фильтрации вызовов.</li>
+  <li>Записывайте вывод в файл для последующего анализа.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>strace</strong> и <strong>ltrace</strong> — мощные инструменты для трассировки системных вызовов и вызовов библиотек.
+Они позволяют анализировать поведение программы на низком уровне, что полезно для отладки и оптимизации.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://strace.io/">Официальный сайт strace</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/strace.1.html">Man page strace</a></li>
+  <li><a href="https://man7.org/linux/man-pages/man1/ltrace.1.html">Man page ltrace</a></li>
+</ul>

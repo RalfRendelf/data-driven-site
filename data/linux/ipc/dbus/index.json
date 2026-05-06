@@ -1,0 +1,66 @@
+[
+    {
+      "type": "linux",
+      "name": "Basics",
+      "fileName": "basics",
+      "category": "linux/ipc/dbus",
+      "usage": "Основы D-Bus: архитектура, system/session bus, адресация, демоны",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "System Bus",
+      "fileName": "system_bus",
+      "category": "linux/ipc/dbus",
+      "usage": "Системная шина: системные сервисы, права, политики, конфигурация",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Session Bus",
+      "fileName": "session_bus",
+      "category": "linux/ipc/dbus",
+      "usage": "Сеансовая шина: пользовательские сервисы, окружение, запуск",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Messages & Types",
+      "fileName": "messages",
+      "category": "linux/ipc/dbus",
+      "usage": "Типы сообщений: методы, сигналы, свойства, сериализация типов",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Introspection",
+      "fileName": "introspection",
+      "category": "linux/ipc/dbus",
+      "usage": "Интроспекция: XML-описания интерфейсов, методы, сигналы, свойства",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "Service Files",
+      "fileName": "service_files",
+      "category": "linux/ipc/dbus",
+      "usage": "Сервис-файлы D-Bus: автозапуск, имена, активация сервисов",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "libdbus API",
+      "fileName": "libdbus",
+      "category": "linux/ipc/dbus",
+      "usage": "Низкоуровневый C API: соединения, сообщения, циклы обработки",
+      "isLeaf": true
+    },
+    {
+      "type": "linux",
+      "name": "sd-bus API",
+      "fileName": "sd_bus",
+      "category": "linux/ipc/dbus",
+      "usage": "Высокоуровневый API systemd: методы, сигналы, объекты, event loop",
+      "isLeaf": true
+    }
+  ]

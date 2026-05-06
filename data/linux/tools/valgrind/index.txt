@@ -1,0 +1,129 @@
+<h2>Анализ памяти с помощью Valgrind</h2>
+
+<p>
+<strong>Valgrind</strong> — инструмент для анализа использования памяти, поиска утечек памяти, ошибок доступа и профилирования программ.
+Работает путём эмуляции CPU и отслеживания всех операций с памятью.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое Valgrind?</h4>
+<p>
+Valgrind — это framework для создания инструментов анализа программ. Наиболее популярные инструменты Valgrind:
+</p>
+<ul>
+  <li><strong>Memcheck</strong> — поиск утечек памяти и ошибок доступа.</li>
+  <li><strong>Callgrind</strong> — профилирование вызовов функций и использование кэша.</li>
+  <li><strong>Massif</strong> — профилирование использования кучи.</li>
+  <li><strong>Helgrind</strong> — поиск ошибок в многопоточных программах.</li>
+  <li><strong>DRD</strong> — поиск гонок данных в многопоточных программах.</li>
+</ul>
+
+<h4>Основные флаги Valgrind</h4>
+<table>
+  <tr>
+    <th>Флаг</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>--tool=&lt;tool&gt;</code></td>
+    <td>Указывает инструмент Valgrind (например, <code>--tool=memcheck</code>).</td>
+  </tr>
+  <tr>
+    <td><code>--leak-check=&lt;level&gt;</code></td>
+    <td>Уровень проверки утечек: <code>none</code>, <code>summary</code>, <code>full</code> (по умолчанию).</td>
+  </tr>
+  <tr>
+    <td><code>--show-leak-kinds=&lt;kinds&gt;</code></td>
+    <td>Типы утечек для отображения: <code>definite</code>, <code>indirect</code>, <code>possible</code>, <code>reachable</code>.</td>
+  </tr>
+  <tr>
+    <td><code>--track-origins=yes</code></td>
+    <td>Отслеживает происхождение неинициализированных значений.</td>
+  </tr>
+  <tr>
+    <td><code>--verbose</code></td>
+    <td>Выводит подробную информацию.</td>
+  </tr>
+  <tr>
+    <td><code>--log-file=&lt;file&gt;</code></td>
+    <td>Записывает вывод в файл.</td>
+  </tr>
+</table>
+
+<h4>Инструмент Memcheck</h4>
+<p>
+<strong>Memcheck</strong> — самый популярный инструмент Valgrind для поиска утечек памяти и ошибок доступа.
+Он отслеживает:
+</p>
+<ul>
+  <li>Утечки памяти (<code>definite leaks</code>, <code>indirect leaks</code>, <code>possible leaks</code>).</li>
+  <li>Ошибки доступа к памяти (<code>invalid reads/writes</code>).</li>
+  <li>Использование неинициализированных переменных.</li>
+  <li>Ошибки освобождения памяти (<code>double free</code>, <code>invalid free</code>).</li>
+</ul>
+
+<h4>Примеры использования</h4>
+<pre><code>
+valgrind_example.sh
+</code></pre>
+
+<h4>Анализ вывода Memcheck</h4>
+<p>
+Вывод <code>Memcheck</code> содержит следующую информацию:
+</p>
+<ul>
+  <li><strong>Ошибки доступа:</strong> Неправильные чтения/записи в память.</li>
+  <li><strong>Утечки памяти:</strong> Память, которая не была освобождена.</li>
+  <li><strong>Использование неинициализированных значений:</strong> Переменные, которые используются до инициализации.</li>
+</ul>
+<p>
+Пример вывода:
+</p>
+<pre><code>
+valgrind_output.txt
+</code></pre>
+
+<h4>Инструмент Callgrind</h4>
+<p>
+<strong>Callgrind</strong> — инструмент для профилирования вызовов функций и использования кэша.
+Он записывает данные в файл, который можно проанализировать с помощью <code>kcachegrind</code>.
+</p>
+<pre><code>
+callgrind_example.sh
+</code></pre>
+
+<h4>Инструмент Massif</h4>
+<p>
+<strong>Massif</strong> — инструмент для профилирования использования кучи.
+Он отслеживает, сколько памяти выделяется и освобождается в каждой точке программы.
+</p>
+<pre><code>
+massif_example.sh
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>Memcheck</code> для поиска утечек памяти и ошибок доступа.</li>
+  <li>Используйте <code>--leak-check=full</code> для подробного анализа утечек.</li>
+  <li>Используйте <code>--track-origins=yes</code> для отслеживания неинициализированных значений.</li>
+  <li>Используйте <code>Callgrind</code> для профилирования вызовов функций.</li>
+  <li>Используйте <code>Massif</code> для анализа использования кучи.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>Valgrind</strong> — мощный инструмент для анализа памяти и профилирования программ.
+Он позволяет находить утечки памяти, ошибки доступа и оптимизировать использование ресурсов.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://valgrind.org/">Официальный сайт Valgrind</a></li>
+  <li><a href="https://valgrind.org/docs/manual/manual.html">Документация Valgrind</a></li>
+  <li><a href="https://valgrind.org/docs/manual/mc-manual.html">Документация Memcheck</a></li>
+</ul>

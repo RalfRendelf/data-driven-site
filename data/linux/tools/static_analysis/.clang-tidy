@@ -1,0 +1,9 @@
+Checks: >
+  -*,  # Отключаем все проверки
+  bugprone-*,  # Включаем проверки на баги
+  modernize-*,  # Включаем проверки на современность кода
+  readability-*,  # Включаем проверки читаемости
+  performance-*  # Включаем проверки производительности
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none
