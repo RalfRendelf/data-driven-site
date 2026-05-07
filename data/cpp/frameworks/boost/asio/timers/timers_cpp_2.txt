@@ -1,0 +1,38 @@
+// Пример 2: Периодический таймер (loop)
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+class periodic_timer
+{
+public:
+    periodic_timer(boost::asio::io_context& io, std::chrono::seconds interval)
+        : timer_(io), interval_(interval)
+    {}
+
+    void start()
+    {
+        timer_.expires_after(interval_);
+        timer_.async_wait([this](auto ec){
+            if (!ec)
+            {
+                std::cout << "Tick\n";
+                start(); // перезапуск
+            }
+        });
+    }
+
+private:
+    boost::asio::steady_timer timer_;
+    std::chrono::seconds interval_;
+};
+
+int main()
+{
+    boost::asio::io_context io;
+
+    periodic_timer t(io, std::chrono::seconds(1));
+    t.start();
+
+    io.run();
+}

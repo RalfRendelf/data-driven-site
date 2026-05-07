@@ -1,0 +1,29 @@
+// Пример 1: Использование error_code в Boost.Asio
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::socket socket(io);
+    tcp::endpoint endpoint(boost::asio::ip::make_address("127.0.0.1"), 9000);
+
+    boost::system::error_code ec;
+
+    socket.connect(endpoint, ec);
+
+    if (ec)
+    {
+        std::cout << "Connect failed: " << ec.message() << "\n";
+    }
+    else
+    {
+        std::cout << "Connected successfully\n";
+    }
+
+    return 0;
+}

@@ -1,0 +1,115 @@
+// http_router_cpp_2.txt
+// Пример 2: Router с префиксами и простым middleware
+
+#include <boost/beast.hpp>
+#include <functional>
+#include <map>
+#include <string>
+#include <vector>
+#include <iostream>
+
+namespace beast = boost::beast;
+namespace http  = beast::http;
+
+using request_t  = http::request<http::string_body>;
+using response_t = http::response<http::string_body>;
+using handler_t  = std::function<void(const request_t&, response_t&)>;
+using middleware_t = std::function<void(const request_t&, response_t&, const handler_t&)>;
+
+class router_with_prefix
+{
+public:
+    void add_route(http::verb method,
+                   std::string path,
+                   handler_t handler)
+    {
+        std::string key = make_key(method, path);
+        routes_[key] = std::move(handler);
+    }
+
+    void add_middleware(middleware_t mw)
+    {
+        middlewares_.push_back(std::move(mw));
+    }
+
+    void set_prefix(std::string prefix)
+    {
+        prefix_ = std::move(prefix);
+    }
+
+    void route(const request_t& req, response_t& res) const
+    {
+        std::string path = std::string(req.target());
+
+        if (!prefix_.empty())
+        {
+            if (path.rfind(prefix_, 0) != 0)
+            {
+                res.result(http::status::not_found);
+                res.set(http::field::content_type, "text/plain");
+                res.body() = "Prefix not matched";
+                res.prepare_payload();
+                return;
+            }
+            path = path.substr(prefix_.size());
+            if (path.empty()) path = "/";
+        }
+
+        std::string key = make_key(req.method(), path);
+        auto it = routes_.find(key);
+        if (it == routes_.end())
+        {
+            res.result(http::status::not_found);
+            res.set(http::field::content_type, "text/plain");
+            res.body() = "Route not found";
+            res.prepare_payload();
+            return;
+        }
+
+        handler_t final_handler = it->second;
+
+        handler_t wrapped = final_handler;
+        for (auto it_mw = middlewares_.rbegin(); it_mw != middlewares_.rend(); ++it_mw)
+        {
+            middleware_t mw = *it_mw;
+            handler_t next = wrapped;
+            wrapped = [mw, next](const request_t& req, response_t& res)
+            {
+                mw(req, res, next);
+            };
+        }
+
+        wrapped(req, res);
+    }
+
+private:
+    static std::string make_key(http::verb method, const std::string& path)
+    {
+        return std::string(http::to_string(method)) + " " + path;
+    }
+
+    std::string prefix_;
+    std::map<std::string, handler_t> routes_;
+    std::vector<middleware_t> middlewares_;
+};
+
+// Пример middleware: логирование
+inline middleware_t make_logging_middleware()
+{
+    return [](const request_t& req, response_t& res, const handler_t& next)
+    {
+        std::cout << "Request: " << req.method_string()
+                  << " " << req.target() << "\n";
+        next(req, res);
+        std::cout << "Response: " << res.result_int() << "\n";
+    };
+}
+
+// Пример использования:
+// router_with_prefix r;
+// r.set_prefix("/api");
+// r.add_middleware(make_logging_middleware());
+// r.add_route(http::verb::get, "/hello", handle_hello);
+// r.add_route(http::verb::post, "/echo", handle_echo);
+// ...
+// r.route(req, res);

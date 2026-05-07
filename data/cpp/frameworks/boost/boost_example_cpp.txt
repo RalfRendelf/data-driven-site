@@ -1,0 +1,25 @@
+#include <boost/algorithm/string.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/format.hpp>
+#include <iostream>
+#include <vector>
+#include <string>
+
+int main() {
+    // Пример использования Boost.Algorithm.String
+    std::string text = "hello world";
+    boost::to_upper(text);
+    std::cout << "Преобразованная строка: " << text << std::endl;
+
+    // Пример использования Boost.SmartPtr
+    boost::shared_ptr<int> ptr1(new int(42));
+    boost::shared_ptr<int> ptr2 = ptr1; // Увеличиваем счетчик ссылок
+    std::cout << "Значение: " << *ptr1 << ", Счетчик ссылок: " << ptr1.use_count() << std::endl;
+
+    // Пример использования Boost.Format
+    int value = 123;
+    std::string formatted = boost::str(boost::format("Значение равно %1%") % value);
+    std::cout << formatted << std::endl;
+
+    return 0;
+}

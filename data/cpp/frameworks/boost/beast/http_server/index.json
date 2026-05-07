@@ -1,0 +1,50 @@
+[
+  {
+    "type": "boost",
+    "name": "HTTP Server Overview",
+    "fileName": "http_server_overview",
+    "category": "Boost.Beast",
+    "usage": "Общий обзор HTTP сервера Beast, архитектура, компоненты",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Listener",
+    "fileName": "http_listener",
+    "category": "Boost.Beast",
+    "usage": "Приём входящих TCP соединений, создание сессий",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Session",
+    "fileName": "http_session",
+    "category": "Boost.Beast",
+    "usage": "Обработка одного HTTP соединения, чтение/запись",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Router",
+    "fileName": "http_router",
+    "category": "Boost.Beast",
+    "usage": "Маршрутизация HTTP запросов по методам и путям",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Handlers",
+    "fileName": "http_handlers",
+    "category": "Boost.Beast",
+    "usage": "Реализация обработчиков API, логика эндпоинтов",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "HTTP Server Architecture",
+    "fileName": "http_server_arch",
+    "category": "Boost.Beast",
+    "usage": "Полная архитектура HTTP сервера: listener, session, router, thread pool",
+    "isLeaf": true
+  }
+]

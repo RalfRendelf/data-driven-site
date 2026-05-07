@@ -78,5 +78,12 @@
     "category": "cpp",
     "usage": "Инструменты разработки: CMake, компиляторы, анализаторы",
     "isLeaf": false
-  }
+  },
+  {"type": "cpp",
+  "name": "Frameworks & Libraries",
+  "fileName": "frameworks",
+  "category": "cpp",
+  "usage": "Фреймворки и сторонние библиотеки для C++",
+  "isLeaf": false
+}
 ]

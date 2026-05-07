@@ -1,0 +1,40 @@
+// Пример 1: Чтение из pipe через posix::stream_descriptor
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <unistd.h> // pipe()
+
+using boost::asio::posix::stream_descriptor;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    int fds[2];
+    pipe(fds); // fds[0] = read, fds[1] = write
+
+    stream_descriptor reader(io, fds[0]);
+
+    // Пишем в pipe из другого потока
+    std::thread writer([=]{
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        write(fds[1], "Hello pipe!", 11);
+        close(fds[1]);
+    });
+
+    std::array<char, 128> buf;
+
+    reader.async_read_some(
+        boost::asio::buffer(buf),
+        [&](auto ec, std::size_t n)
+        {
+            if (!ec)
+                std::cout << "Received: " << std::string(buf.data(), n) << "\n";
+            else
+                std::cout << "Error: " << ec.message() << "\n";
+        }
+    );
+
+    io.run();
+    writer.join();
+}

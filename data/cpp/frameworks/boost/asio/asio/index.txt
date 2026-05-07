@@ -1,0 +1,178 @@
+<h2>Boost.Asio — Общий обзор</h2>
+
+<p><strong>Boost.Asio</strong> — это асинхронный фреймворк для работы с сетевыми протоколами, таймерами, потоками, файловыми дескрипторами и системными ресурсами. Он предоставляет единый event loop (<strong>io_context</strong>) и набор модулей, которые позволяют строить высокопроизводительные, неблокирующие, масштабируемые приложения.</p>
+
+<p>Ниже приведён обзор всех ключевых модулей Boost.Asio и их применяемости в реальных проектах.</p>
+
+<hr>
+
+<h3>1. Core</h3>
+<p><strong>Применение:</strong> фундамент Asio — event loop, executors, work_guard.</p>
+<ul>
+  <li>io_context — сердце приложения;</li>
+  <li>executors — управление выполнением задач;</li>
+  <li>work_guard — предотвращает остановку event loop;</li>
+  <li>основа для TCP, UDP, таймеров, потоков и всего остального.</li>
+</ul>
+
+<hr>
+
+<h3>2. TCP</h3>
+<p><strong>Применение:</strong> создание TCP-серверов и клиентов.</p>
+<ul>
+  <li>tcp::socket — чтение/запись;</li>
+  <li>tcp::acceptor — приём соединений;</li>
+  <li>session — обработка одного клиента;</li>
+  <li>connection_manager — управление множеством сессий.</li>
+</ul>
+
+<hr>
+
+<h3>3. UDP</h3>
+<p><strong>Применение:</strong> быстрые, лёгкие, безнадёжные datagram-протоколы.</p>
+<ul>
+  <li>телеметрия, датчики, real-time;</li>
+  <li>игровые движки;</li>
+  <li>протоколы discovery;</li>
+  <li>низкая задержка, отсутствие соединения.</li>
+</ul>
+
+<hr>
+
+<h3>4. Timers</h3>
+<p><strong>Применение:</strong> отложенные и периодические операции.</p>
+<ul>
+  <li>heartbeat;</li>
+  <li>планировщики задач;</li>
+  <li>таймауты протоколов;</li>
+  <li>повторяющиеся операции.</li>
+</ul>
+
+<hr>
+
+<h3>5. Strand</h3>
+<p><strong>Применение:</strong> потокобезопасность в многопоточных серверах.</p>
+<ul>
+  <li>гарантия последовательного выполнения обработчиков;</li>
+  <li>защита session от гонок;</li>
+  <li>альтернатива mutex в асинхронной архитектуре.</li>
+</ul>
+
+<hr>
+
+<h3>6. SSL/TLS</h3>
+<p><strong>Применение:</strong> шифрованные TCP-соединения.</p>
+<ul>
+  <li>HTTPS, WSS, защищённые API;</li>
+  <li>OpenSSL + Asio;</li>
+  <li>сертификаты, контексты, handshake.</li>
+</ul>
+
+<hr>
+
+<h3>7. Coroutines</h3>
+<p><strong>Применение:</strong> асинхронный код в стиле синхронного (co_await).</p>
+<ul>
+  <li>awaitable TCP/UDP серверы;</li>
+  <li>упрощение сложных цепочек async операций;</li>
+  <li>компактный и читаемый код.</li>
+</ul>
+
+<hr>
+
+<h3>8. Buffers & Streams</h3>
+<p><strong>Применение:</strong> работа с буферами и потоками.</p>
+<ul>
+  <li>buffer, mutable_buffer, const_buffer;</li>
+  <li>streambuf — удобный буфер для протоколов;</li>
+  <li>async_read/async_write с разными источниками.</li>
+</ul>
+
+<hr>
+
+<h3>9. Concepts</h3>
+<p><strong>Применение:</strong> фундаментальные понятия Asio.</p>
+<ul>
+  <li>error_code — обработка ошибок;</li>
+  <li>completion tokens — модель async операций;</li>
+  <li>executors — управление выполнением.</li>
+</ul>
+
+<hr>
+
+<h3>10. Signals</h3>
+<p><strong>Применение:</strong> graceful shutdown и обработка системных сигналов.</p>
+<ul>
+  <li>SIGINT, SIGTERM;</li>
+  <li>корректное завершение сервера;</li>
+  <li>перезагрузка конфигурации.</li>
+</ul>
+
+<hr>
+
+<h3>11. Timeouts</h3>
+<p><strong>Применение:</strong> защита от зависших клиентов и долгих операций.</p>
+<ul>
+  <li>таймауты чтения/записи;</li>
+  <li>idle timeout;</li>
+  <li>connect timeout;</li>
+  <li>протокольные таймауты.</li>
+</ul>
+
+<hr>
+
+<h3>12. Allocators</h3>
+<p><strong>Применение:</strong> оптимизация производительности при большом количестве async операций.</p>
+<ul>
+  <li>уменьшение количества new/delete;</li>
+  <li>small-object allocator;</li>
+  <li>ускорение TCP/UDP серверов.</li>
+</ul>
+
+<hr>
+
+<h3>13. Thread Pool</h3>
+<p><strong>Применение:</strong> offload CPU-bound задач.</p>
+<ul>
+  <li>парсинг JSON/XML;</li>
+  <li>шифрование;</li>
+  <li>тяжёлые вычисления;</li>
+  <li>разгрузка io_context.</li>
+</ul>
+
+<hr>
+
+<h3>14. Multicast</h3>
+<p><strong>Применение:</strong> доставка UDP-пакетов группе подписчиков.</p>
+<ul>
+  <li>discovery протоколы;</li>
+  <li>телеметрия;</li>
+  <li>real-time broadcast.</li>
+</ul>
+
+<hr>
+
+<h3>15. POSIX Descriptors</h3>
+<p><strong>Применение:</strong> интеграция любых файловых дескрипторов в Asio.</p>
+<ul>
+  <li>pipe, FIFO;</li>
+  <li>eventfd, signalfd;</li>
+  <li>устройства и драйверы;</li>
+  <li>встраиваемые системы.</li>
+</ul>
+
+<hr>
+
+<h3>16. Serial Port</h3>
+<p><strong>Применение:</strong> работа с UART/COM портами.</p>
+<ul>
+  <li>embedded/QNX;</li>
+  <li>датчики, контроллеры;</li>
+  <li>Modbus RTU, бинарные протоколы.</li>
+</ul>
+
+<hr>
+
+<h3>Итог</h3>
+
+<p>Boost.Asio — это универсальный асинхронный фреймворк, который объединяет сеть, таймеры, потоки, дескрипторы и системные ресурсы в единую архитектуру. Каждый модуль решает свою задачу, а вместе они позволяют строить быстрые, надёжные и масштабируемые приложения.</p>

@@ -1,0 +1,118 @@
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/beast.hpp&gt;
+#include &lt;memory&gt;
+#include &lt;set&gt;
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+// Менеджер соединений
+class connection_manager {
+public:
+    void join(std::shared_ptr&lt;ws::stream&lt;tcp::socket&gt;&gt; s) {
+        sessions_.insert(s);
+    }
+
+    void leave(std::shared_ptr&lt;ws::stream&lt;tcp::socket&gt;&gt; s) {
+        sessions_.erase(s);
+    }
+
+private:
+    std::set&lt;std::shared_ptr&lt;ws::stream&lt;tcp::socket&gt;&gt;&gt; sessions_;
+};
+
+// WebSocket-сессия
+class ws_session : public std::enable_shared_from_this&lt;ws_session&gt; {
+public:
+    ws_session(tcp::socket socket, connection_manager&amp; cm)
+        : ws_(std::move(socket)), cm_(cm) {}
+
+    void run() {
+        cm_.join(shared_from_this());
+        ws_.async_accept(
+            std::bind(&ws_session::on_accept, shared_from_this(),
+                      std::placeholders::_1));
+    }
+
+private:
+    void on_accept(beast::error_code ec) {
+        if (!ec)
+            do_read();
+    }
+
+    void do_read() {
+        ws_.async_read(
+            buffer_,
+            std::bind(&ws_session::on_read, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_read(beast::error_code ec, std::size_t) {
+        if (ec) {
+            cm_.leave(shared_from_this());
+            return;
+        }
+
+        ws_.text(ws_.got_text());
+        ws_.async_write(
+            buffer_.data(),
+            std::bind(&ws_session::on_write, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_write(beast::error_code ec, std::size_t) {
+        if (ec) {
+            cm_.leave(shared_from_this());
+            return;
+        }
+
+        buffer_.consume(buffer_.size());
+        do_read();
+    }
+
+    ws::stream&lt;tcp::socket&gt; ws_;
+    beast::flat_buffer buffer_;
+    connection_manager&amp; cm_;
+};
+
+// Listener
+class ws_listener : public std::enable_shared_from_this&lt;ws_listener&gt; {
+public:
+    ws_listener(asio::io_context&amp; ioc, tcp::endpoint ep, connection_manager&amp; cm)
+        : acceptor_(ioc), cm_(cm) {
+        acceptor_.open(ep.protocol());
+        acceptor_.set_option(asio::socket_base::reuse_address(true));
+        acceptor_.bind(ep);
+        acceptor_.listen();
+    }
+
+    void run() { do_accept(); }
+
+private:
+    void do_accept() {
+        acceptor_.async_accept(
+            std::bind(&ws_listener::on_accept, shared_from_this(),
+                      std::placeholders::_1, std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket) {
+        if (!ec)
+            std::make_shared&lt;ws_session&gt;(std::move(socket), cm_)->run();
+        do_accept();
+    }
+
+    tcp::acceptor acceptor_;
+    connection_manager&amp; cm_;
+};
+
+int main() {
+    asio::io_context ioc;
+    connection_manager cm;
+
+    auto ep = tcp::endpoint(tcp::v4(), 9003);
+    std::make_shared&lt;ws_listener&gt;(ioc, ep, cm)->run();
+
+    ioc.run();
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "type": "boost",
+    "name": "Value Types",
+    "fileName": "value_types.txt",
+    "category": "Core",
+    "usage": "Базовые типы для представления JSON значений",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Parsing",
+    "fileName": "parsing.txt",
+    "category": "Core",
+    "usage": "Парсинг JSON строк",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Serialization",
+    "fileName": "serialization.txt",
+    "category": "Core",
+    "usage": "Преобразование JSON в строки и обратно",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "DOM Manipulation",
+    "fileName": "dom_manipulation.txt",
+    "category": "Core",
+    "usage": "Работа с JSON как с DOM структурой",
+    "isLeaf": true
+  }
+]

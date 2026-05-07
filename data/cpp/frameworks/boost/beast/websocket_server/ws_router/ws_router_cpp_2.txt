@@ -1,0 +1,64 @@
+#include &lt;boost/beast.hpp&gt;
+#include &lt;nlohmann/json.hpp&gt;
+#include &lt;unordered_map&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+using json = nlohmann::json;
+
+using ws_handler_t = std::function&lt;void(const json&amp; payload)&gt;;
+using ws_middleware_t = std::function&lt;void(const json&amp; msg, const ws_handler_t&amp; next)&gt;;
+
+class ws_router {
+public:
+    void add_handler(const std::string&amp; type, ws_handler_t handler) {
+        handlers_[type] = std::move(handler);
+    }
+
+    void add_middleware(ws_middleware_t mw) {
+        middleware_.push_back(std::move(mw));
+    }
+
+    bool route(const std::string&amp; message) const {
+        json j;
+
+        try {
+            j = json::parse(message);
+        } catch (...) {
+            std::cerr &lt;&lt; "Invalid JSON\n";
+            return false;
+        }
+
+        if (!j.contains("type")) {
+            std::cerr &lt;&lt; "Missing type field\n";
+            return false;
+        }
+
+        auto type = j["type"].get&lt;std::string&gt;();
+        auto it = handlers_.find(type);
+        if (it == handlers_.end()) {
+            std::cerr &lt;&lt; "Unknown message type: " &lt;&lt; type &lt;&lt; "\n";
+            return false;
+        }
+
+        ws_handler_t final_handler = it->second;
+
+        // Оборачиваем обработчики в middleware
+        for (auto it_mw = middleware_.rbegin(); it_mw != middleware_.rend(); ++it_mw) {
+            ws_middleware_t mw = *it_mw;
+            ws_handler_t next = final_handler;
+
+            final_handler = [mw, next](const json&amp; payload) {
+                mw(payload, next);
+            };
+        }
+
+        final_handler(j.value("payload", json::object()));
+        return true;
+    }
+
+private:
+    std::unordered_map&lt;std::string, ws_handler_t&gt; handlers_;
+    std::vector&lt;ws_middleware_t&gt; middleware_;
+};

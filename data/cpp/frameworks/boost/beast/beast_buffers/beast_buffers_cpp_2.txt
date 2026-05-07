@@ -1,0 +1,40 @@
+// Пример 2: multi_buffer + адаптеры буферов
+
+#include <boost/beast.hpp>
+#include <boost/asio.hpp>
+#include <iostream>
+
+namespace beast = boost::beast;
+namespace http = beast::http;
+using tcp = boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::socket socket(io);
+    socket.connect({boost::asio::ip::make_address("93.184.216.34"), 80}); // example.org
+
+    http::request<http::empty_body> req{http::verb::get, "/", 11};
+    req.set(http::field::host, "example.org");
+
+    http::write(socket, req);
+
+    // multi_buffer для больших данных
+    beast::multi_buffer buffer;
+
+    http::response_parser<http::string_body> parser;
+    parser.body_limit(1024 * 1024 * 16); // 16 MB
+
+    http::read(socket, buffer, parser);
+
+    auto& res = parser.get();
+
+    // Используем адаптер buffers_prefix
+    auto prefix = beast::buffers_prefix(64, buffer.data());
+
+    std::cout << "First 64 bytes of raw buffer:\n";
+    std::cout << beast::buffers_to_string(prefix) << "\n";
+
+    std::cout << "\nParsed response:\n" << res << "\n";
+}

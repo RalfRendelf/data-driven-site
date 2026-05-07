@@ -46,11 +46,11 @@ export const CATEGORIES = [
     //   type: "android",
     //   columns: ["Название", "Категория", "Описание"]
     // },
-    {
-      title: "🚀 Boost C++",
-      type: "boost",
-      columns: ["Название", "Категория", "Описание"]
-    },
+    // {
+    //   title: "🚀 Boost C++",
+    //   type: "boost",
+    //   columns: ["Название", "Категория", "Описание"]
+    // },
     {
       "title": "🐧 Linux",
       "type": "linux",

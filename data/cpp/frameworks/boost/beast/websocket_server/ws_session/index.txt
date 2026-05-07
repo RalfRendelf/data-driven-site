@@ -1,0 +1,80 @@
+<h2>WebSocket Session</h2>
+
+<p><strong>WebSocket Session</strong> — это ключевой компонент WebSocket‑сервера, отвечающий за обработку одного активного WebSocket‑соединения. Session управляет чтением и записью сообщений, поддерживает состояние соединения, обеспечивает потокобезопасность и взаимодействует с Router и Broadcast Manager. Каждая Session живёт столько, сколько клиент остаётся подключённым.</p>
+
+<p>В отличие от HTTP Session, WebSocket Session работает в режиме постоянного соединения, что требует особого внимания к очередям сообщений, обработке ошибок, корректному закрытию соединения и синхронизации потоков.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>WebSocket Session обычно включает следующие элементы:</p>
+
+<ul>
+  <li><strong>websocket::stream&lt;tcp::socket&gt;</strong> — основной объект WebSocket;</li>
+  <li><strong>flat_buffer</strong> — буфер для чтения входящих сообщений;</li>
+  <li><strong>strand</strong> — последовательность операций для потокобезопасности;</li>
+  <li><strong>message queue</strong> — очередь исходящих сообщений;</li>
+  <li><strong>router</strong> — маршрутизация входящих сообщений;</li>
+  <li><strong>broadcast manager</strong> — отправка сообщений другим клиентам;</li>
+  <li><strong>async_read / async_write</strong> — асинхронные операции ввода‑вывода.</li>
+</ul>
+
+<p>Типичный цикл WebSocket Session:</p>
+
+<ol>
+  <li>async_accept() — завершение WebSocket‑handshake;</li>
+  <li>async_read() — чтение сообщения;</li>
+  <li>router.route() — обработка сообщения;</li>
+  <li>async_write() — отправка ответа или broadcast;</li>
+  <li>повторение цикла до закрытия соединения.</li>
+</ol>
+
+<p>Session должна быть <strong>self‑owned</strong> (через <code>std::enable_shared_from_this</code>) и управлять своим временем жизни.</p>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два примера: базовая Session и продвинутая Session с очередью сообщений и strand.</p>
+
+<h4>Пример 1: Базовая WebSocket Session</h4>
+<pre><code>
+ws_session_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: Session с очередью сообщений и strand</h4>
+<pre><code>
+ws_session_cpp_2.txt
+</code></pre>
+
+<h3>Практические применения</h3>
+
+<ul>
+  <li>чат‑сервисы;</li>
+  <li>игровые серверы;</li>
+  <li>биржевые терминалы;</li>
+  <li>IoT‑телеметрия;</li>
+  <li>системы мониторинга;</li>
+  <li>push‑уведомления;</li>
+  <li>streaming‑данные.</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>Нельзя писать в WebSocket из разных потоков — используйте strand.</li>
+  <li>Очередь сообщений обязательна при высокой нагрузке.</li>
+  <li>Нужно удалять отключившихся клиентов.</li>
+  <li>При ошибке записи нужно корректно закрывать соединение.</li>
+  <li>Нельзя выполнять тяжёлые операции внутри Session — используйте thread pool.</li>
+  <li>Буфер чтения должен очищаться после каждого сообщения.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>WebSocket Session — центральный элемент WebSocket‑сервера. Она управляет жизненным циклом соединения, чтением и записью сообщений, взаимодействием с Router и Broadcast Manager. Грамотно реализованная Session обеспечивает стабильность, производительность и масштабируемость real‑time систем.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — WebSocket</li>
+  <li>Boost.Asio — Strand</li>
+  <li>Boost.Beast — Advanced WebSocket Examples</li>
+</ul>

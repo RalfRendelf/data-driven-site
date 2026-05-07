@@ -1,0 +1,264 @@
+// beast_server_arch_cpp_2.txt
+// Пример 2: Продвинутая архитектура: Router + Thread Pool + Graceful Shutdown
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+#include <functional>
+#include <thread>
+#include <csignal>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+// Глобальный пул потоков для CPU-bound задач
+asio::thread_pool g_cpu_pool(std::thread::hardware_concurrency());
+
+using request_t  = http::request<http::string_body>;
+using response_t = http::response<http::string_body>;
+using handler_t  = std::function<void(const request_t&, response_t&)>;
+
+class router
+{
+public:
+    void add(http::verb method, std::string path, handler_t h)
+    {
+        routes_[key(method, std::move(path))] = std::move(h);
+    }
+
+    bool route(const request_t& req, response_t& res) const
+    {
+        auto it = routes_.find(key(req.method(), std::string(req.target())));
+        if (it == routes_.end())
+            return false;
+
+        it->second(req, res);
+        return true;
+    }
+
+private:
+    static std::string key(http::verb m, std::string path)
+    {
+        return std::to_string(static_cast<unsigned>(m)) + ":" + path;
+    }
+
+    std::unordered_map<std::string, handler_t> routes_;
+};
+
+class http_session : public std::enable_shared_from_this<http_session>
+{
+public:
+    http_session(tcp::socket socket, const router& r)
+        : socket_(std::move(socket))
+        , strand_(socket_.get_executor())
+        , router_(r)
+    {}
+
+    void run()
+    {
+        do_read();
+    }
+
+private:
+    void do_read()
+    {
+        req_ = {};
+
+        http::async_read(
+            socket_,
+            buffer_,
+            req_,
+            asio::bind_executor(
+                strand_,
+                std::bind(
+                    &http_session::on_read,
+                    shared_from_this(),
+                    std::placeholders::_1,
+                    std::placeholders::_2)));
+    }
+
+    void on_read(beast::error_code ec, std::size_t)
+    {
+        if (ec == http::error::end_of_stream)
+            return do_close();
+
+        if (ec)
+        {
+            std::cerr << "read: " << ec.message() << "\n";
+            return;
+        }
+
+        auto self = shared_from_this();
+
+        // Offload тяжёлой логики в thread_pool
+        asio::post(
+            g_cpu_pool,
+            [this, self, req = req_]()
+            {
+                response_t res{http::status::ok, req.version()};
+                res.set(http::field::server, "beast-advanced");
+                res.keep_alive(req.keep_alive());
+
+                if (!router_.route(req, res))
+                {
+                    res.result(http::status::not_found);
+                    res.body() = "Not found";
+                    res.prepare_payload();
+                }
+
+                asio::post(
+                    strand_,
+                    [this, self, res = std::move(res)]() mutable
+                    {
+                        do_write(std::move(res));
+                    });
+            });
+    }
+
+    void do_write(response_t res)
+    {
+        auto self = shared_from_this();
+
+        auto sp = std::make_shared<response_t>(std::move(res));
+
+        http::async_write(
+            socket_,
+            *sp,
+            asio::bind_executor(
+                strand_,
+                [this, self, sp](beast::error_code ec, std::size_t)
+                {
+                    if (ec)
+                    {
+                        std::cerr << "write: " << ec.message() << "\n";
+                        return;
+                    }
+
+                    if (!sp->keep_alive())
+                        do_close();
+                    else
+                        do_read();
+                }));
+    }
+
+    void do_close()
+    {
+        beast::error_code ec;
+        socket_.shutdown(tcp::socket::shutdown_send, ec);
+    }
+
+    tcp::socket                         socket_;
+    asio::strand<asio::any_io_executor> strand_;
+    beast::flat_buffer                  buffer_;
+    request_t                           req_;
+    const router&                       router_;
+};
+
+class listener : public std::enable_shared_from_this<listener>
+{
+public:
+    listener(asio::io_context& ioc, tcp::endpoint ep, const router& r)
+        : ioc_(ioc)
+        , acceptor_(ioc)
+        , router_(r)
+    {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.bind(ep, ec);
+        if (ec) throw beast::system_error(ec);
+
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+        if (ec) throw beast::system_error(ec);
+    }
+
+    void run()
+    {
+        do_accept();
+    }
+
+    void stop()
+    {
+        beast::error_code ec;
+        acceptor_.close(ec);
+    }
+
+private:
+    void do_accept()
+    {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(
+                &listener::on_accept,
+                shared_from_this(),
+                std::placeholders::_1,
+                std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket)
+    {
+        if (!ec)
+            std::make_shared<http_session>(std::move(socket), router_)->run();
+        else
+            std::cerr << "accept: " << ec.message() << "\n";
+
+        if (acceptor_.is_open())
+            do_accept();
+    }
+
+    asio::io_context& ioc_;
+    tcp::acceptor     acceptor_;
+    const router&     router_;
+};
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+
+        router r;
+        r.add(http::verb::get, "/", [](const request_t&, response_t& res)
+        {
+            res.body() = "Hello from /";
+            res.prepare_payload();
+        });
+
+        r.add(http::verb::get, "/heavy", [](const request_t&, response_t& res)
+        {
+            // Имитация тяжёлой работы
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            res.body() = "Heavy work done";
+            res.prepare_payload();
+        });
+
+        auto ep = tcp::endpoint(tcp::v4(), 8081);
+        auto lst = std::make_shared<listener>(ioc, ep, r);
+        lst->run();
+
+        asio::signal_set signals(ioc, SIGINT, SIGTERM);
+        signals.async_wait(
+            [&](auto, int sig)
+            {
+                std::cout << "Signal " << sig << ", stopping...\n";
+                lst->stop();
+                ioc.stop();
+            });
+
+        ioc.run();
+        g_cpu_pool.join();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

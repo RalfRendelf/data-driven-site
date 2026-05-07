@@ -1,0 +1,127 @@
+// Пример 1: Базовая HTTP Session (один запрос за раз, keep-alive поддерживается)
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+#include <unordered_map>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+using request_t  = http::request<http::string_body>;
+using response_t = http::response<http::string_body>;
+using handler_t  = std::function<void(const request_t&, response_t&)>;
+
+class simple_router
+{
+public:
+    void add(http::verb m, std::string path, handler_t h)
+    {
+        routes_[key(m, path)] = std::move(h);
+    }
+
+    bool route(const request_t& req, response_t& res) const
+    {
+        auto it = routes_.find(key(req.method(), std::string(req.target())));
+        if (it == routes_.end())
+            return false;
+
+        it->second(req, res);
+        return true;
+    }
+
+private:
+    static std::string key(http::verb m, const std::string& p)
+    {
+        return std::to_string((int)m) + ":" + p;
+    }
+
+    std::unordered_map<std::string, handler_t> routes_;
+};
+
+class http_session : public std::enable_shared_from_this<http_session>
+{
+public:
+    http_session(tcp::socket socket, const simple_router& r)
+        : socket_(std::move(socket))
+        , strand_(socket_.get_executor())
+        , router_(r)
+    {}
+
+    void run()
+    {
+        do_read();
+    }
+
+private:
+    void do_read()
+    {
+        req_ = {};
+
+        http::async_read(
+            socket_, buffer_, req_,
+            asio::bind_executor(
+                strand_,
+                std::bind(&http_session::on_read,
+                          shared_from_this(),
+                          std::placeholders::_1,
+                          std::placeholders::_2)));
+    }
+
+    void on_read(beast::error_code ec, std::size_t)
+    {
+        if (ec == http::error::end_of_stream)
+            return do_close();
+
+        if (ec)
+        {
+            std::cerr << "read: " << ec.message() << "\n";
+            return;
+        }
+
+        response_t res{http::status::ok, req_.version()};
+        res.set(http::field::server, "beast-http-session-basic");
+
+        if (!router_.route(req_, res))
+        {
+            res.result(http::status::not_found);
+            res.set(http::field::content_type, "text/plain");
+            res.body() = "Not found";
+            res.prepare_payload();
+        }
+
+        auto self = shared_from_this();
+        http::async_write(
+            socket_, res,
+            asio::bind_executor(
+                strand_,
+                [self, keep_alive = res.keep_alive()](beast::error_code ec, std::size_t)
+                {
+                    if (ec)
+                    {
+                        std::cerr << "write: " << ec.message() << "\n";
+                        return;
+                    }
+
+                    if (!keep_alive)
+                        self->do_close();
+                    else
+                        self->do_read();
+                }));
+    }
+
+    void do_close()
+    {
+        beast::error_code ec;
+        socket_.shutdown(tcp::socket::shutdown_send, ec);
+    }
+
+    tcp::socket                         socket_;
+    asio::strand<asio::any_io_executor> strand_;
+    beast::flat_buffer                  buffer_;
+    request_t                           req_;
+    const simple_router&                router_;
+};

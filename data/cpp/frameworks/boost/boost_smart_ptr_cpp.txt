@@ -1,0 +1,50 @@
+#include &lt;boost/shared_ptr.hpp&gt;
+#include &lt;boost/scoped_ptr.hpp&gt;
+#include &lt;boost/make_shared.hpp&gt;
+#include &lt;iostream&gt;
+
+class ExampleClass {
+public:
+    ExampleClass(const std::string& name) : name_(name) {
+        std::cout << "Создан объект: " << name_ << std::endl;
+    }
+    
+    ~ExampleClass() {
+        std::cout << "Удален объект: " << name_ << std::endl;
+    }
+    
+    void doSomething() {
+        std::cout << name_ << " выполняет действие" << std::endl;
+    }
+    
+private:
+    std::string name_;
+};
+
+int main() {
+    std::cout << "=== Использование scoped_ptr ===" << std::endl;
+    {
+        boost::scoped_ptr&lt;ExampleClass&gt; scopedPtr(new ExampleClass("Scoped"));
+        scopedPtr->doSomething();
+        // Объект автоматически удаляется при выходе из области видимости
+    }
+    
+    std::cout << "\n=== Использование shared_ptr ===" << std::endl;
+    boost::shared_ptr&lt;ExampleClass&gt; sharedPtr1 = 
+        boost::make_shared&lt;ExampleClass&gt;("Shared1");
+    
+    {
+        boost::shared_ptr&lt;ExampleClass&gt; sharedPtr2 = sharedPtr1; // Увеличиваем счетчик
+        std::cout << "Счетчик ссылок: " << sharedPtr1.use_count() << std::endl;
+        sharedPtr2->doSomething();
+        // Объект не удаляется при выходе из этой области видимости
+    }
+    
+    std::cout << "Счетчик ссылок: " << sharedPtr1.use_count() << std::endl;
+    sharedPtr1->doSomething();
+    
+    // Объект удаляется при выходе из области видимости sharedPtr1
+    std::cout << "\n=== Конец программы ===" << std::endl;
+    
+    return 0;
+}

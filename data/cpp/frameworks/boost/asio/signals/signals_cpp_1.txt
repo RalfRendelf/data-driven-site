@@ -1,0 +1,24 @@
+// Пример 1: Обработка SIGINT/SIGTERM
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    boost::asio::signal_set signals(io, SIGINT, SIGTERM);
+
+    signals.async_wait(
+        [&](auto, int signal)
+        {
+            std::cout << "Received signal: " << signal << "\n";
+            io.stop();
+        }
+    );
+
+    std::cout << "Running... Press Ctrl+C to exit\n";
+    io.run();
+
+    std::cout << "Stopped\n";
+}

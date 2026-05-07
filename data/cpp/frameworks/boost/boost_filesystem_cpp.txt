@@ -1,0 +1,52 @@
+#include &lt;boost/filesystem.hpp&gt;
+#include &lt;iostream&gt;
+
+using namespace boost::filesystem;
+
+int main(int argc, char* argv[]) {
+    try {
+        if (argc != 2) {
+            std::cout << "Использование: " << argv[0] << " <path>\n";
+            return 1;
+        }
+
+        path p(argv[1]);   // создаем путь к директории
+
+        if (exists(p)) {   // проверяем существование
+            std::cout << p << (is_regular_file(p) ? " файл\n" : 
+                      is_directory(p) ? " директория\n" : " другое\n");
+
+            if (is_directory(p)) {
+                std::cout << p << " содержимое:\n";
+
+                for (directory_iterator itr(p); itr != directory_iterator(); ++itr) {
+                    std::cout << itr->path().filename() << '\n';  // выводим имена файлов
+                    
+                    // Показываем размер для файлов
+                    if (is_regular_file(itr->status())) {
+                        std::cout << "  Размер: " << file_size(itr->path()) << " байт\n";
+                    }
+                    // Показываем время модификации
+                    std::time_t mod_time = last_write_time(itr->path());
+                    std::cout << "  Последняя модификация: " 
+                              << std::ctime(&mod_time) << '\n';
+                }
+            }
+        } else {
+            std::cout << p << " не существует\n";
+            
+            // Создаем директорию
+            if (create_directory(p)) {
+                std::cout << "Директория " << p << " создана\n";
+            } else {
+                std::cout << "Не удалось создать директорию " << p << "\n";
+            }
+        }
+    }
+    catch (const filesystem_error& ex) {
+        std::cout << ex.what() << '\n';
+        return 1;
+    }
+
+    return 0;
+}

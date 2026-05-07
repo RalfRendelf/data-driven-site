@@ -1,0 +1,34 @@
+[
+    {
+      "type": "cpp",
+      "name": "Boost",
+      "fileName": "boost",
+      "category": "cpp/frameworks",
+      "usage": "Библиотеки Boost: расширения стандартной библиотеки C++",
+      "isLeaf": false
+    },
+    {
+      "type": "cpp",
+      "name": "Qt",
+      "fileName": "qt",
+      "category": "cpp/frameworks",
+      "usage": "Qt: кроссплатформенный GUI и инструменты",
+      "isLeaf": false
+    },
+    {
+      "type": "cpp",
+      "name": "POCO",
+      "fileName": "poco",
+      "category": "cpp/frameworks",
+      "usage": "POCO C++ Libraries: сетевые и системные компоненты",
+      "isLeaf": false
+    },
+    {
+      "type": "cpp",
+      "name": "gRPC",
+      "fileName": "grpc",
+      "category": "cpp/frameworks",
+      "usage": "gRPC: RPC‑фреймворк для распределённых систем",
+      "isLeaf": false
+    }
+  ]

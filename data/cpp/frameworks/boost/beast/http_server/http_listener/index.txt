@@ -1,0 +1,86 @@
+<h2>HTTP Listener</h2>
+
+<p><strong>HTTP Listener</strong> — это компонент HTTP‑сервера Boost.Beast, отвечающий за приём входящих TCP‑соединений и создание новых HTTP‑сессий. Listener работает поверх Boost.Asio и использует асинхронную модель ввода/вывода, обеспечивая высокую производительность и масштабируемость.</p>
+
+<p>Listener — это первый элемент в цепочке обработки HTTP‑запросов. Он не занимается чтением HTTP‑данных, не парсит запросы и не формирует ответы. Его единственная задача — принимать соединения и передавать сокет объекту <strong>HTTP Session</strong>.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>Listener обычно реализуется как класс, содержащий:</p>
+
+<ul>
+  <li><strong>tcp::acceptor</strong> — объект, принимающий входящие соединения;</li>
+  <li><strong>io_context</strong> — контекст выполнения;</li>
+  <li><strong>async_accept()</strong> — асинхронный вызов для приёма соединений;</li>
+  <li><strong>strand</strong> — для потокобезопасности в многопоточной среде;</li>
+  <li>создание нового объекта <strong>http_session</strong> для каждого клиента.</li>
+</ul>
+
+<p>Типичный цикл Listener:</p>
+
+<ol>
+  <li>Открыть acceptor;</li>
+  <li>Привязать к адресу (bind);</li>
+  <li>Начать прослушивание (listen);</li>
+  <li>Вызвать <code>async_accept()</code>;</li>
+  <li>При успешном подключении — создать Session;</li>
+  <li>Снова вызвать <code>async_accept()</code> (бесконечный цикл).</li>
+</ol>
+
+<p>Listener должен быть максимально лёгким и не выполнять тяжёлых операций.</p>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два практических примера.</p>
+
+<h4>Пример 1: Минимальный Listener</h4>
+<pre><code>
+http_listener_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: Listener с расширенной обработкой ошибок и graceful shutdown</h4>
+<pre><code>
+http_listener_cpp_2.txt
+</code></pre>
+
+<h3>Практические применения</h3>
+
+<ul>
+  <li>HTTP‑серверы любого масштаба;</li>
+  <li>REST API;</li>
+  <li>Reverse‑proxy и шлюзы;</li>
+  <li>WebSocket‑серверы (Listener общий для HTTP и WS upgrade);</li>
+  <li>Многопоточные серверы с thread pool.</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>Listener должен всегда вызывать <code>async_accept()</code> повторно.</li>
+  <li>Нельзя блокировать поток внутри обработчика accept.</li>
+  <li>В многопоточной среде важно использовать <strong>strand</strong>.</li>
+  <li>При ошибке accept нужно логировать, но не завершать сервер.</li>
+  <li>При shutdown нужно корректно закрывать acceptor.</li>
+</ul>
+
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li>Используйте <strong>reuse_address</strong> для быстрого перезапуска сервера.</li>
+  <li>Создавайте Session через <code>std::make_shared</code>.</li>
+  <li>Передавайте executor в Session через <code>make_strand</code>.</li>
+  <li>Логируйте ошибки accept, но не прекращайте работу.</li>
+  <li>Используйте отдельный Listener для HTTP и HTTPS, если сервер гибридный.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>HTTP Listener — фундаментальный компонент Beast‑сервера. Он обеспечивает приём соединений, масштабируемость и стабильность работы. Правильная реализация Listener гарантирует, что сервер сможет обрабатывать большое количество клиентов и корректно завершать работу.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — HTTP Server Examples</li>
+  <li>Boost.Asio — tcp::acceptor</li>
+  <li>Boost.Asio — Strand</li>
+</ul>

@@ -1,0 +1,19 @@
+// Пример 1: Базовый таймер
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+int main()
+{
+    boost::asio::io_context io;
+
+    boost::asio::steady_timer timer(io);
+    timer.expires_after(std::chrono::seconds(2));
+
+    timer.async_wait([](auto ec){
+        if (!ec)
+            std::cout << "Timer fired after 2 seconds\n";
+    });
+
+    io.run();
+}

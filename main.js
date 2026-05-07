@@ -421,6 +421,10 @@ function searchFrame() {
   if (searchMode === "name") {
     searchTreeName(jsonRoot, text);
   }
+  else if(searchMode === "state")
+  {
+
+  }
   else 
     searchTree(jsonRoot, text);
 
@@ -452,7 +456,21 @@ function searchTreeName(node, text) {
   node.needsDraw = match || foundInChildren;
   return node.needsDraw;
 }
+function replaceTree(node, text)
+{
+  const jsonData = {
+  data: null,
+  isLoaded: false,
+  reDraw: true,
+  needsDraw: false,
+  children: [],
+  category: null
+};
 
+
+jsonRoot = jsonData;
+
+}
 function matches(node, text) {
   if (!node.data) return false;
   const { name, category, usage } = node.data;

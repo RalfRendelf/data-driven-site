@@ -1,0 +1,39 @@
+// Пример 2: Интеграция eventfd с Boost.Asio (Linux)
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <sys/eventfd.h>
+#include <unistd.h>
+
+using boost::asio::posix::stream_descriptor;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    int efd = eventfd(0, EFD_NONBLOCK);
+    stream_descriptor event(io, efd);
+
+    std::array<uint64_t, 1> buf;
+
+    event.async_read_some(
+        boost::asio::buffer(buf),
+        [&](auto ec, std::size_t)
+        {
+            if (!ec)
+                std::cout << "Eventfd triggered, value = " << buf[0] << "\n";
+            else
+                std::cout << "Error: " << ec.message() << "\n";
+        }
+    );
+
+    // Пишем в eventfd из другого потока
+    std::thread notifier([=]{
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        uint64_t value = 1;
+        write(efd, &value, sizeof(value));
+    });
+
+    io.run();
+    notifier.join();
+}

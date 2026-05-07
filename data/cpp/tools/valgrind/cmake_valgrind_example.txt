@@ -1,0 +1,9 @@
+# Включаем отладочную информацию и отключаем агрессивные оптимизации
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+
+# Добавляем цель для запуска Valgrind
+add_custom_target(run_valgrind
+    COMMAND valgrind --leak-check=full --track-origins=yes ./my_program
+    DEPENDS my_program
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)

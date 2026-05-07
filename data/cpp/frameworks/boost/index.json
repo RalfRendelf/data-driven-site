@@ -1,0 +1,114 @@
+[
+  {
+    "type": "boost",
+    "name": "Boost",
+    "fileName": "boost",
+    "category": "Boost",
+    "usage": "Набор высококачественных C++ библиотек: сети, многопоточность, контейнеры, алгоритмы, метапрограммирование",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Asio",
+    "fileName": "asio",
+    "category": "Boost",
+    "usage": "Асинхронный ввод-вывод, сокеты, таймеры, основа сетевых серверов",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Beast",
+    "fileName": "beast",
+    "category": "Boost",
+    "usage": "HTTP и WebSocket поверх Boost.Asio",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.JSON",
+    "fileName": "json",
+    "category": "Boost",
+    "usage": "Высокопроизводительная JSON-библиотека",
+    "isLeaf": false
+  },
+  {
+    "type": "boost",
+    "name": "Boost.ProgramOptions",
+    "fileName": "program_options",
+    "category": "Boost",
+    "usage": "Парсинг аргументов командной строки",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Filesystem",
+    "fileName": "filesystem",
+    "category": "Boost",
+    "usage": "Работа с файлами и путями",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.System",
+    "fileName": "system",
+    "category": "Boost",
+    "usage": "Коды ошибок и интеграция с Asio",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.SmartPtr",
+    "fileName": "smart_ptr",
+    "category": "Boost",
+    "usage": "Умные указатели: shared_ptr, weak_ptr, intrusive_ptr",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Thread",
+    "fileName": "thread",
+    "category": "Boost",
+    "usage": "Многопоточность, синхронизация, mutex, condition_variable",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Regex",
+    "fileName": "regex",
+    "category": "Boost",
+    "usage": "Регулярные выражения",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.DateTime",
+    "fileName": "datetime",
+    "category": "Boost",
+    "usage": "Дата и время, календарные вычисления",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Graph",
+    "fileName": "graph",
+    "category": "Boost",
+    "usage": "Алгоритмы и структуры данных для графов",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.Spirit",
+    "fileName": "spirit",
+    "category": "Boost",
+    "usage": "Парсинг и генерация текста на основе EBNF",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Boost.SIMD",
+    "fileName": "simd",
+    "category": "Boost",
+    "usage": "Векторизация и оптимизация вычислений",
+    "isLeaf": true
+  }
+]

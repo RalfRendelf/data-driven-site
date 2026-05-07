@@ -1,0 +1,134 @@
+// Пример 2: Асинхронный TCP-клиент с reconnect-логикой
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <memory>
+
+using boost::asio::ip::tcp;
+
+class tcp_client : public std::enable_shared_from_this<tpc_client>
+{
+public:
+    tcp_client(boost::asio::io_context& io, std::string host, std::string port)
+        : io_(io),
+          resolver_(io),
+          socket_(io),
+          host_(std::move(host)),
+          port_(std::move(port)),
+          strand_(io.get_executor())
+    {}
+
+    void start()
+    {
+        do_resolve();
+    }
+
+private:
+    void do_resolve()
+    {
+        auto self = shared_from_this();
+
+        resolver_.async_resolve(
+            host_, port_,
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, auto results)
+                {
+                    if (!ec)
+                        do_connect(results);
+                    else
+                        retry();
+                }
+            )
+        );
+    }
+
+    void do_connect(const tcp::resolver::results_type& endpoints)
+    {
+        auto self = shared_from_this();
+
+        boost::asio::async_connect(
+            socket_, endpoints,
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, auto)
+                {
+                    if (!ec)
+                    {
+                        std::cout << "Connected\n";
+                        do_write();
+                        do_read();
+                    }
+                    else
+                        retry();
+                }
+            )
+        );
+    }
+
+    void do_write()
+    {
+        auto self = shared_from_this();
+
+        std::string msg = "ping\n";
+
+        boost::asio::async_write(
+            socket_,
+            boost::asio::buffer(msg),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t)
+                {
+                    if (ec)
+                        retry();
+                }
+            )
+        );
+    }
+
+    void do_read()
+    {
+        auto self = shared_from_this();
+
+        socket_.async_read_some(
+            boost::asio::buffer(buf_),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t n)
+                {
+                    if (!ec)
+                    {
+                        std::cout << "Server: " << std::string(buf_.data(), n);
+                        do_write();
+                        do_read();
+                    }
+                    else
+                        retry();
+                }
+            )
+        );
+    }
+
+    void retry()
+    {
+        std::cout << "Reconnecting...\n";
+        socket_.close();
+
+        auto self = shared_from_this();
+        boost::asio::steady_timer timer(io_, std::chrono::seconds(1));
+
+        timer.async_wait(
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto){ do_resolve(); }
+            )
+        );
+    }
+
+    boost::asio::io_context& io_;
+    tcp::resolver resolver_;
+    tcp::socket socket_;
+    std::string host_, port_;
+    boost::asio::strand<boost::asio::any_io_executor> strand_;
+    std::array<char, 1024> buf_;
+};

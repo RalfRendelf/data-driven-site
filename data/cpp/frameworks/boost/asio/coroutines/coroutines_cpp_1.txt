@@ -1,0 +1,38 @@
+// Пример 1: Чтение данных с помощью co_await
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+using namespace boost::asio;
+
+awaitable<void> session(tcp::socket socket)
+{
+    try
+    {
+        std::array<char, 1024> buf;
+
+        std::size_t n = co_await socket.async_read_some(
+            buffer(buf),
+            use_awaitable
+        );
+
+        std::cout << "Received: " << std::string(buf.data(), n) << "\n";
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "Error: " << e.what() << "\n";
+    }
+}
+
+int main()
+{
+    io_context io;
+
+    co_spawn(io, []() -> awaitable<void> {
+        tcp::socket socket(co_await this_coro::executor);
+        co_return;
+    }(), detached);
+
+    io.run();
+}

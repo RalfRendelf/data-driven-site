@@ -1,0 +1,73 @@
+// http_parser_serializer_cpp_1.txt
+// Пример 1: Инкрементальный парсинг HTTP-ответа
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+
+        std::string host   = "example.org";
+        std::string port   = "80";
+        std::string target = "/";
+
+        tcp::resolver resolver{ioc};
+        auto results = resolver.resolve(host, port);
+
+        beast::tcp_stream stream{ioc};
+        stream.connect(results);
+
+        http::request<http::empty_body> req{http::verb::get, target, 11};
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, "parser-demo");
+
+        http::write(stream, req);
+
+        beast::flat_buffer buffer;
+
+        // Парсер для string_body
+        http::response_parser<http::string_body> parser;
+        parser.body_limit(1024 * 1024 * 16); // 16 MB
+
+        // Читаем по частям, пока сообщение не будет полностью разобрано
+        while (!parser.is_done())
+        {
+            std::size_t bytes = stream.read_some(buffer.prepare(1024));
+            buffer.commit(bytes);
+
+            beast::error_code ec;
+            parser.put(buffer.data(), ec);
+            if (ec && ec != http::error::need_more)
+            {
+                std::cerr << "parse error: " << ec.message() << "\n";
+                return 1;
+            }
+
+            // Удаляем обработанные данные из буфера
+            auto consumed = parser.get().body().size(); // не совсем точно, но для демо
+            (void)consumed;
+        }
+
+        auto res = parser.get();
+        std::cout << "Status: " << res.result_int() << "\n";
+        std::cout << "Body size: " << res.body().size() << "\n";
+        std::cout << "Body (first 200 bytes):\n"
+                  << res.body().substr(0, 200) << "\n";
+
+        beast::error_code ec;
+        stream.socket().shutdown(tcp::socket::shutdown_both, ec);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

@@ -1,0 +1,12 @@
+# Включение AddressSanitizer и UndefinedBehaviorSanitizer
+set(SANITIZER_FLAGS "-fsanitize=address,undefined")
+
+# Для ThreadSanitizer используйте:
+# set(SANITIZER_FLAGS "-fsanitize=thread")
+
+# Для LeakSanitizer (обычно включается вместе с ASan):
+# set(SANITIZER_FLAGS "-fsanitize=address")
+
+# Добавляем флаги компиляции и линковки
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZER_FLAGS} -fno-omit-frame-pointer -g")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} ${SANITIZER_FLAGS}")

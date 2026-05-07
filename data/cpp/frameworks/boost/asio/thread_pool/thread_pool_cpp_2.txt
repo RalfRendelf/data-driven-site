@@ -1,0 +1,101 @@
+// Пример 2: Offload CPU-bound задач в сетевом сервере
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <thread>
+
+using boost::asio::ip::tcp;
+
+boost::asio::thread_pool cpu_pool(std::thread::hardware_concurrency());
+
+class session : public std::enable_shared_from_this<session>
+{
+public:
+    session(tcp::socket socket)
+        : socket_(std::move(socket)),
+          strand_(socket_.get_executor())
+    {}
+
+    void start() { do_read(); }
+
+private:
+    void do_read()
+    {
+        auto self = shared_from_this();
+
+        socket_.async_read_some(
+            boost::asio::buffer(data_),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t n)
+                {
+                    if (!ec)
+                        offload_processing(n);
+                }
+            )
+        );
+    }
+
+    void offload_processing(std::size_t n)
+    {
+        auto self = shared_from_this();
+        std::string input(data_.data(), n);
+
+        // CPU-bound работа в пуле потоков
+        boost::asio::post(cpu_pool, [this, self, input]{
+            std::string output = "Processed: " + input; // имитация тяжёлой работы
+            boost::asio::post(
+                strand_,
+                [this, self, output]{ do_write(output); }
+            );
+        });
+    }
+
+    void do_write(const std::string& msg)
+    {
+        auto self = shared_from_this();
+
+        boost::asio::async_write(
+            socket_,
+            boost::asio::buffer(msg),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t)
+                {
+                    if (!ec)
+                        do_read();
+                }
+            )
+        );
+    }
+
+    tcp::socket socket_;
+    boost::asio::strand<boost::asio::any_io_executor> strand_;
+    std::array<char, 1024> data_;
+};
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::acceptor acc(io, tcp::endpoint(tcp::v4(), 9000));
+
+    std::function<void()> do_accept;
+    do_accept = [&]{
+        acc.async_accept(
+            [&](auto ec, tcp::socket socket)
+            {
+                if (!ec)
+                    std::make_shared<session>(std::move(socket))->start();
+                do_accept();
+            }
+        );
+    };
+
+    do_accept();
+    io.run();
+
+    cpu_pool.join();
+}

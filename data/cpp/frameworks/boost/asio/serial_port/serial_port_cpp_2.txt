@@ -1,0 +1,86 @@
+// Пример 2: Асинхронный UART-класс с постоянным чтением
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <array>
+
+using boost::asio::serial_port;
+
+class uart
+{
+public:
+    uart(boost::asio::io_context& io, const std::string& device)
+        : port_(io), strand_(io.get_executor())
+    {
+        port_.open(device);
+
+        port_.set_option(serial_port::baud_rate(115200));
+        port_.set_option(serial_port::character_size(8));
+        port_.set_option(serial_port::parity(serial_port::parity::none));
+        port_.set_option(serial_port::stop_bits(serial_port::stop_bits::one));
+        port_.set_option(serial_port::flow_control(serial_port::flow_control::none));
+
+        do_read();
+    }
+
+    void write(const std::string& data)
+    {
+        auto self = shared_from_this();
+
+        boost::asio::post(
+            strand_,
+            [this, self, data]
+            {
+                bool writing = !write_queue_.empty();
+                write_queue_.push_back(data);
+
+                if (!writing)
+                    do_write();
+            }
+        );
+    }
+
+private:
+    void do_read()
+    {
+        port_.async_read_some(
+            boost::asio::buffer(read_buf_),
+            boost::asio::bind_executor(
+                strand_,
+                [this](auto ec, std::size_t n)
+                {
+                    if (!ec)
+                    {
+                        std::cout << "UART: " << std::string(read_buf_.data(), n) << "\n";
+                        do_read();
+                    }
+                }
+            )
+        );
+    }
+
+    void do_write()
+    {
+        boost::asio::async_write(
+            port_,
+            boost::asio::buffer(write_queue_.front()),
+            boost::asio::bind_executor(
+                strand_,
+                [this](auto ec, std::size_t)
+                {
+                    if (!ec)
+                    {
+                        write_queue_.pop_front();
+                        if (!write_queue_.empty())
+                            do_write();
+                    }
+                }
+            )
+        );
+    }
+
+    serial_port port_;
+    boost::asio::strand<boost::asio::any_io_executor> strand_;
+    std::array<char, 256> read_buf_;
+    std::deque<std::string> write_queue_;
+};

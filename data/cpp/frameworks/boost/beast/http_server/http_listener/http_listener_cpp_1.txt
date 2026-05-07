@@ -1,0 +1,78 @@
+// Пример 1: Минимальный HTTP Listener
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+#include <memory>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+using tcp       = asio::ip::tcp;
+
+// Заглушка для http_session
+class http_session : public std::enable_shared_from_this<http_session>
+{
+public:
+    explicit http_session(tcp::socket socket)
+        : socket_(std::move(socket)) {}
+
+    void run() { /* здесь будет чтение HTTP */ }
+
+private:
+    tcp::socket socket_;
+};
+
+class http_listener : public std::enable_shared_from_this<http_listener>
+{
+public:
+    http_listener(asio::io_context& ioc, tcp::endpoint ep)
+        : ioc_(ioc)
+        , acceptor_(ioc)
+    {
+        beast::error_code ec;
+
+        acceptor_.open(ep.protocol(), ec);
+        acceptor_.set_option(asio::socket_base::reuse_address(true), ec);
+        acceptor_.bind(ep, ec);
+        acceptor_.listen(asio::socket_base::max_listen_connections, ec);
+    }
+
+    void run()
+    {
+        do_accept();
+    }
+
+private:
+    void do_accept()
+    {
+        acceptor_.async_accept(
+            asio::make_strand(ioc_),
+            std::bind(
+                &http_listener::on_accept,
+                shared_from_this(),
+                std::placeholders::_1,
+                std::placeholders::_2));
+    }
+
+    void on_accept(beast::error_code ec, tcp::socket socket)
+    {
+        if (!ec)
+            std::make_shared<http_session>(std::move(socket))->run();
+        else
+            std::cerr << "accept: " << ec.message() << "\n";
+
+        do_accept();
+    }
+
+    asio::io_context& ioc_;
+    tcp::acceptor     acceptor_;
+};
+
+int main()
+{
+    asio::io_context ioc;
+    auto ep = tcp::endpoint(tcp::v4(), 8080);
+
+    std::make_shared<http_listener>(ioc, ep)->run();
+    ioc.run();
+}

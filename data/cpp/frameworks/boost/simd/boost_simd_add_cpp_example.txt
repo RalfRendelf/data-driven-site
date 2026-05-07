@@ -1,0 +1,17 @@
+#include <boost/simd/pack.hpp>
+#include <vector>
+#include <iostream>
+
+using namespace boost::simd;
+
+int main() {
+    std::vector<float> x{1,2,3,4};
+    std::vector<float> y{5,6,7,8};
+
+    pack<float, 4> a(&x[0], &x[0] + 4);
+    pack<float, 4> b(&y[0], &y[0] + 4);
+    pack<float, 4> c = a + b;
+
+    for (int i = 0; i < c.size(); ++i)
+        std::cout << c[i] << " ";
+}

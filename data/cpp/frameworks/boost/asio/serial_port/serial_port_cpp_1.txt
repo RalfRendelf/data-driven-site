@@ -1,0 +1,34 @@
+// Пример 1: Базовое чтение/запись через serial_port
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::serial_port;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    serial_port port(io, "/dev/ttyS0");
+
+    port.set_option(serial_port::baud_rate(115200));
+    port.set_option(serial_port::character_size(8));
+    port.set_option(serial_port::parity(serial_port::parity::none));
+    port.set_option(serial_port::stop_bits(serial_port::stop_bits::one));
+    port.set_option(serial_port::flow_control(serial_port::flow_control::none));
+
+    // Отправка данных
+    std::string msg = "Hello UART!";
+    boost::asio::write(port, boost::asio::buffer(msg));
+
+    // Приём данных
+    std::array<char, 128> buf;
+    boost::system::error_code ec;
+
+    std::size_t n = port.read_some(boost::asio::buffer(buf), ec);
+
+    if (!ec)
+        std::cout << "Received: " << std::string(buf.data(), n) << "\n";
+
+    return 0;
+}

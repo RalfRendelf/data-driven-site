@@ -109,6 +109,22 @@ valgrind_massif_cpp_5.txt
 </code></pre>
 
 ---
+<h4>Использование Valgrind в CMake</h4>
+
+<p>
+Valgrind не требует специальных флагов компилятора, но для корректной работы полезно собирать проект с отладочной информацией (<code>-g</code>) и без оптимизаций (<code>-O0</code> или <code>-Og</code>). 
+Ниже приведён пример настройки в <code>CMakeLists.txt</code>:
+</p>
+
+<pre><code>
+cmake_valgrind_example.txt
+</code></pre>
+
+<p>
+Теперь можно запускать <code>make run_valgrind</code> (или <code>cmake --build . --target run_valgrind</code>), чтобы автоматически собирать и запускать программу под Valgrind. 
+Флаги <code>--leak-check=full</code> и <code>--track-origins=yes</code> обеспечивают максимально подробный отчёт об утечках и источниках неинициализированных данных.
+</p>
+---
 
 <h3>Практические рекомендации</h3>
 

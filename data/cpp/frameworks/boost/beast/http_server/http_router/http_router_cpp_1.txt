@@ -1,0 +1,58 @@
+// http_router_cpp_1.txt
+// Пример 1: Простой HTTP Router на основе std::map
+
+#include <boost/beast.hpp>
+#include <functional>
+#include <map>
+#include <string>
+
+namespace beast = boost::beast;
+namespace http  = beast::http;
+
+using request_t  = http::request<http::string_body>;
+using response_t = http::response<http::string_body>;
+using handler_t  = std::function<void(const request_t&, response_t&)>;
+
+class simple_router
+{
+public:
+    void add_route(http::verb method,
+                   std::string path,
+                   handler_t handler)
+    {
+        std::string key = make_key(method, path);
+        routes_[key] = std::move(handler);
+    }
+
+    void route(const request_t& req, response_t& res) const
+    {
+        std::string key = make_key(req.method(), std::string(req.target()));
+
+        auto it = routes_.find(key);
+        if (it == routes_.end())
+        {
+            res.result(http::status::not_found);
+            res.set(http::field::content_type, "text/plain");
+            res.body() = "Route not found";
+            res.prepare_payload();
+            return;
+        }
+
+        it->second(req, res);
+    }
+
+private:
+    static std::string make_key(http::verb method, const std::string& path)
+    {
+        return std::string(http::to_string(method)) + " " + path;
+    }
+
+    std::map<std::string, handler_t> routes_;
+};
+
+// Пример использования:
+// simple_router r;
+// r.add_route(http::verb::get, "/hello", handle_hello);
+// r.add_route(http::verb::post, "/echo", handle_echo);
+// ...
+// r.route(req, res);

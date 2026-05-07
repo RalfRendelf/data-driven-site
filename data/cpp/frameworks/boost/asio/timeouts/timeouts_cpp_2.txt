@@ -1,0 +1,87 @@
+// Пример 2: Idle timeout в TCP-сессии
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <memory>
+
+using boost::asio::ip::tcp;
+
+class session : public std::enable_shared_from_this<session>
+{
+public:
+    session(tcp::socket socket)
+        : socket_(std::move(socket)),
+          strand_(socket_.get_executor()),
+          timer_(socket_.get_executor())
+    {}
+
+    void start()
+    {
+        reset_timeout();
+        do_read();
+    }
+
+private:
+    void reset_timeout()
+    {
+        timer_.expires_after(std::chrono::seconds(10));
+
+        auto self = shared_from_this();
+        timer_.async_wait(
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec)
+                {
+                    if (!ec)
+                    {
+                        std::cout << "Idle timeout, closing connection\n";
+                        socket_.close();
+                    }
+                }
+            )
+        );
+    }
+
+    void do_read()
+    {
+        auto self = shared_from_this();
+
+        socket_.async_read_some(
+            boost::asio::buffer(buf_),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t n)
+                {
+                    if (!ec)
+                    {
+                        reset_timeout(); // клиент активен
+                        do_write(n);
+                    }
+                }
+            )
+        );
+    }
+
+    void do_write(std::size_t n)
+    {
+        auto self = shared_from_this();
+
+        boost::asio::async_write(
+            socket_,
+            boost::asio::buffer(buf_, n),
+            boost::asio::bind_executor(
+                strand_,
+                [this, self](auto ec, std::size_t)
+                {
+                    if (!ec)
+                        do_read();
+                }
+            )
+        );
+    }
+
+    tcp::socket socket_;
+    boost::asio::strand<boost::asio::any_io_executor> strand_;
+    boost::asio::steady_timer timer_;
+    std::array<char, 1024> buf_;
+};

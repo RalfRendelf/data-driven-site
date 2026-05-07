@@ -1,0 +1,133 @@
+<h2>Beast Overview</h2>
+
+<p><strong>Boost.Beast</strong> — это высокоуровневая библиотека поверх Boost.Asio, предназначенная для реализации HTTP и WebSocket протоколов. Beast предоставляет готовые примитивы для парсинга, сериализации, обработки запросов, управления буферами и построения асинхронных серверов и клиентов.</p>
+
+<p>Beast не заменяет Asio — он расширяет его, добавляя полноценную поддержку HTTP/1.1 и WebSocket поверх асинхронной модели ввода/вывода.</p>
+
+<h3>Основные возможности Beast</h3>
+
+<ul>
+  <li><strong>HTTP/1.1</strong> — серверы, клиенты, парсеры, сериализаторы;</li>
+  <li><strong>WebSocket</strong> — серверы и клиенты с поддержкой async чтения/записи;</li>
+  <li><strong>Буферы Beast</strong> — flat_buffer, multi_buffer, адаптеры;</li>
+  <li><strong>Streaming</strong> — поддержка chunked transfer encoding;</li>
+  <li><strong>SSL/TLS</strong> — HTTPS и WSS через OpenSSL;</li>
+  <li><strong>Инкрементальный парсинг</strong> — чтение HTTP по частям;</li>
+  <li><strong>Высокая производительность</strong> — zero-copy буферы, оптимизация под Asio.</li>
+</ul>
+
+<h3>Архитектура Beast</h3>
+
+<p>Beast строится вокруг нескольких ключевых компонентов:</p>
+
+<ul>
+  <li><strong>Buffers</strong> — хранение данных HTTP/WebSocket;</li>
+  <li><strong>Parser</strong> — инкрементальный парсер HTTP;</li>
+  <li><strong>Serializer</strong> — потоковая отправка HTTP-ответов;</li>
+  <li><strong>HTTP Messages</strong> — request/response модели;</li>
+  <li><strong>WebSocket Stream</strong> — чтение/запись WebSocket кадров;</li>
+  <li><strong>Async Model</strong> — полностью совместима с Asio.</li>
+</ul>
+
+<p>Beast не создаёт свои сокеты — он использует <strong>boost::asio::ip::tcp::socket</strong> и расширяет его функциональность.</p>
+
+<h3>HTTP модель Beast</h3>
+
+<p>HTTP в Beast основан на трёх основных элементах:</p>
+
+<ul>
+  <li><strong>request</strong> — HTTP-запрос;</li>
+  <li><strong>response</strong> — HTTP-ответ;</li>
+  <li><strong>parser/serializer</strong> — потоковая обработка.</li>
+</ul>
+
+<p>Beast поддерживает:</p>
+
+<ul>
+  <li>GET, POST, PUT, DELETE и другие методы;</li>
+  <li>chunked encoding;</li>
+  <li>keep-alive соединения;</li>
+  <li>большие тела сообщений (streaming).</li>
+</ul>
+
+<h3>WebSocket модель Beast</h3>
+
+<p>WebSocket реализован через <strong>websocket::stream</strong>, который работает поверх TCP или SSL.</p>
+
+<p>Поддерживаются:</p>
+
+<ul>
+  <li>async чтение/запись;</li>
+  <li>ping/pong;</li>
+  <li>автоматическое управление фреймами;</li>
+  <li>binary/text режимы;</li>
+  <li>broadcast (через session manager).</li>
+</ul>
+
+<h3>Буферы Beast</h3>
+
+<p>Beast использует собственные буферы:</p>
+
+<ul>
+  <li><strong>flat_buffer</strong> — оптимален для HTTP;</li>
+  <li><strong>multi_buffer</strong> — подходит для больших данных;</li>
+  <li>адаптеры: buffers_prefix, buffers_cat, buffers_to_string.</li>
+</ul>
+
+<p>Буферы совместимы с Asio и поддерживают интерфейс DynamicBuffer.</p>
+
+<h3>SSL/TLS</h3>
+
+<p>Beast не реализует SSL сам — он использует <strong>boost::asio::ssl::stream</strong>.</p>
+
+<p>Поддерживаются:</p>
+
+<ul>
+  <li>HTTPS;</li>
+  <li>WSS;</li>
+  <li>сертификаты, контексты, handshake;</li>
+  <li>streaming поверх SSL.</li>
+</ul>
+
+<h3>Применяемость Beast</h3>
+
+<p>Beast идеально подходит для:</p>
+
+<ul>
+  <li>HTTP API серверов;</li>
+  <li>WebSocket real-time серверов;</li>
+  <li>прокси и шлюзов;</li>
+  <li>IoT/WebSocket телеметрии;</li>
+  <li>HTTP клиентов (REST, RPC);</li>
+  <li>streaming протоколов.</li>
+</ul>
+
+<p>Beast НЕ подходит для:</p>
+
+<ul>
+  <li>HTTP/2 или HTTP/3 (не поддерживаются);</li>
+  <li>огромных файлов без streaming (нужен file_body или async streaming).</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>flat_buffer имеет ограничение по размеру — нужно задавать лимиты;</li>
+  <li>WebSocket требует строгой последовательности операций;</li>
+  <li>HTTP parser должен жить до конца чтения;</li>
+  <li>нельзя использовать один буфер для нескольких соединений;</li>
+  <li>Beast не управляет потоками — только Asio.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>Boost.Beast — мощная библиотека для HTTP и WebSocket, полностью совместимая с Asio. Она предоставляет высокоуровневые примитивы, позволяющие строить быстрые, надёжные и масштабируемые серверы и клиенты. Правильное понимание буферов, парсеров и async-модели — ключ к эффективной работе с Beast.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — HTTP</li>
+  <li>Boost.Beast — WebSocket</li>
+  <li>Boost.Beast — Buffers</li>
+  <li>Boost.Beast — Examples</li>
+</ul>

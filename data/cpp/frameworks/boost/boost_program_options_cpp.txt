@@ -1,0 +1,44 @@
+#include &lt;boost/program_options.hpp&gt;
+#include &lt;iostream&gt;
+
+using namespace boost::program_options;
+
+int main(int ac, char* av[]) {
+    try {
+        options_description desc("Пример программы с ProgramOptions");
+        desc.add_options()
+            ("help,h", "вывести это сообщение")
+            ("config,c", value&lt;std::string&gt;(), "файл конфигурации")
+            ("optimization,o", value&lt;int&gt;()->default_value(1), 
+             "уровень оптимизации")
+            ("verbose,v", bool_switch()->default_value(false), 
+             "включить подробный вывод");
+
+        variables_map vm;
+        store(parse_command_line(ac, av, desc), vm);
+        notify(vm);
+
+        if (vm.count("help")) {
+            std::cout << desc << std::endl;
+            return 0;
+        }
+
+        if (vm.count("config")) {
+            std::cout << "Файл конфигурации: " 
+                      << vm["config"].as&lt;std::string&gt;() << std::endl;
+        }
+
+        std::cout << "Уровень оптимизации: " 
+                  << vm["optimization"].as&lt;int&gt;() << std::endl;
+        
+        if (vm["verbose"].as&lt;bool&gt;()) {
+            std::cout << "Подробный вывод включен" << std::endl;
+        }
+    }
+    catch(std::exception& e) {
+        std::cerr << "Ошибка: " << e.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
+}

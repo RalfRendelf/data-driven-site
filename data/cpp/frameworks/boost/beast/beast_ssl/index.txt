@@ -1,0 +1,114 @@
+<h2>Beast + SSL</h2>
+
+<p><strong>Beast + SSL</strong> — это комбинация Boost.Beast и Boost.Asio SSL (OpenSSL), позволяющая реализовывать защищённые протоколы HTTPS и WSS. Beast не занимается шифрованием самостоятельно — он использует <strong>boost::asio::ssl::stream</strong> как транспортный слой, поверх которого строятся HTTP и WebSocket. Такой подход обеспечивает гибкость, высокую производительность и единый асинхронный стек.</p>
+
+<p>Использование SSL в Beast сводится к замене <code>tcp::socket</code> на <code>ssl::stream&lt;tcp::socket&gt;</code> и выполнению TLS handshake перед началом HTTP/WebSocket обмена.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>Boost.Asio SSL предоставляет обёртку над OpenSSL, позволяя выполнять шифрование на уровне сокета. Beast использует этот сокет как обычный поток ввода/вывода, что делает интеграцию прозрачной.</p>
+
+<p>Основные компоненты:</p>
+
+<ul>
+  <li><strong>ssl::context</strong> — хранит сертификаты, ключи, параметры TLS;</li>
+  <li><strong>ssl::stream&lt;tcp::socket&gt;</strong> — шифрованный транспортный слой;</li>
+  <li><strong>HTTPS</strong> — HTTP поверх TLS;</li>
+  <li><strong>WSS</strong> — WebSocket поверх TLS;</li>
+  <li><strong>TLS handshake</strong> — обязательный этап перед обменом данными.</li>
+</ul>
+
+<p>Beast работает с SSL-стримом так же, как с обычным сокетом, если тип передаётся как шаблонный параметр. Это позволяет использовать общую архитектуру Listener/Session.</p>
+
+<h3>HTTPS сервер и клиент</h3>
+
+<p>Для HTTPS-сервера:</p>
+
+<ul>
+  <li>создаётся <strong>ssl::context</strong> с сертификатом и приватным ключом;</li>
+  <li>Listener принимает TCP-соединение;</li>
+  <li>создаётся <strong>ssl::stream</strong> поверх сокета;</li>
+  <li>выполняется <strong>async_handshake(server)</strong>;</li>
+  <li>после handshake — обычный HTTP-поток (read/write).</li>
+</ul>
+
+<p>Для HTTPS-клиента:</p>
+
+<ul>
+  <li>создаётся <strong>ssl::context</strong> в режиме клиента;</li>
+  <li>устанавливается TCP-соединение;</li>
+  <li>создаётся <strong>ssl::stream</strong> поверх сокета;</li>
+  <li>выполняется <strong>async_handshake(client)</strong>;</li>
+  <li>после handshake — HTTP-запрос/ответ.</li>
+</ul>
+
+<h3>WSS сервер и клиент</h3>
+
+<p>WebSocket поверх TLS (WSS) строится аналогично HTTPS:</p>
+
+<ul>
+  <li>используется <strong>websocket::stream&lt;ssl::stream&lt;tcp::socket&gt;&gt;</strong>;</li>
+  <li>выполняется TLS handshake;</li>
+  <li>выполняется HTTP upgrade до WebSocket;</li>
+  <li>после этого — обычный WebSocket обмен.</li>
+</ul>
+
+<h3>Типичный pipeline HTTPS-сервера</h3>
+
+<ol>
+  <li>TCP accept;</li>
+  <li>создание ssl::stream;</li>
+  <li>async_handshake(server);</li>
+  <li>http::async_read();</li>
+  <li>обработка запроса;</li>
+  <li>http::async_write();</li>
+  <li>graceful shutdown (TLS shutdown + close).</li>
+</ol>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два практических примера.</p>
+
+<h4>Пример 1: HTTPS-клиент</h4>
+<pre><code>
+beast_ssl_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: HTTPS-сервер</h4>
+<pre><code>
+beast_ssl_cpp_2.txt
+</code></pre>
+
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li>Используйте TLS 1.2 или 1.3 — старые протоколы отключайте.</li>
+  <li>Храните сертификаты и ключи вне репозитория.</li>
+  <li>На клиенте включайте <strong>verify_peer</strong> и проверку hostname.</li>
+  <li>Используйте SNI (<code>SSL_set_tlsext_host_name</code>).</li>
+  <li>Настраивайте таймауты handshake и чтения/записи.</li>
+  <li>Для self-signed сертификатов используйте собственный CA.</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>TLS handshake добавляет задержку — учитывайте это в архитектуре.</li>
+  <li>Некорректные сертификаты приводят к ошибкам handshake.</li>
+  <li>SSL shutdown может возвращать EOF — это нормально.</li>
+  <li>WebSocket поверх SSL требует строгой последовательности операций.</li>
+  <li>SSL контекст должен жить дольше всех SSL-сессий.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>Beast + SSL предоставляет мощный и гибкий способ реализации HTTPS и WSS серверов и клиентов. Используя знакомую модель Asio и расширения Beast, можно строить безопасные, производительные и масштабируемые системы. Ключевыми аспектами являются корректная настройка ssl::context, управление сертификатами и правильная обработка handshake.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Asio — SSL</li>
+  <li>Boost.Beast — HTTPS examples</li>
+  <li>Boost.Beast — WebSocket SSL examples</li>
+  <li>OpenSSL — Configuration and Best Practices</li>
+</ul>

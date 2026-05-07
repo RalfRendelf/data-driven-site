@@ -1,0 +1,75 @@
+// Пример 1: Простейший кастомный аллокатор
+
+#include <boost/asio.hpp>
+#include <memory>
+#include <iostream>
+
+class simple_allocator
+{
+public:
+    simple_allocator() : in_use_(false) {}
+
+    void* allocate(std::size_t size)
+    {
+        if (!in_use_ && size <= sizeof(storage_))
+        {
+            in_use_ = true;
+            return &storage_;
+        }
+        return ::operator new(size);
+    }
+
+    void deallocate(void* ptr, std::size_t size)
+    {
+        if (ptr == &storage_)
+            in_use_ = false;
+        else
+            ::operator delete(ptr);
+    }
+
+private:
+    alignas(std::max_align_t) char storage_[256];
+    bool in_use_;
+};
+
+template <typename Handler>
+class custom_handler
+{
+public:
+    custom_handler(simple_allocator& alloc, Handler h)
+        : alloc_(alloc), handler_(h) {}
+
+    template <typename... Args>
+    void operator()(Args&&... args)
+    {
+        handler_(std::forward<Args>(args)...);
+    }
+
+    friend void* asio_handler_allocate(std::size_t size, custom_handler* h)
+    {
+        return h->alloc_.allocate(size);
+    }
+
+    friend void asio_handler_deallocate(void* ptr, std::size_t size, custom_handler* h)
+    {
+        h->alloc_.deallocate(ptr, size);
+    }
+
+private:
+    simple_allocator& alloc_;
+    Handler handler_;
+};
+
+int main()
+{
+    boost::asio::io_context io;
+    simple_allocator alloc;
+
+    boost::asio::steady_timer timer(io, std::chrono::seconds(1));
+
+    timer.async_wait(custom_handler(alloc, [](auto){
+        std::cout << "Timer fired\n";
+    }));
+
+    io.run();
+}

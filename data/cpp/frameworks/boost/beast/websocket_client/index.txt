@@ -1,0 +1,89 @@
+<h2>WebSocket Client</h2>
+
+<p><strong>WebSocket Client</strong> в Boost.Beast — это высокопроизводительный асинхронный клиент для двунаправленного обмена сообщениями в реальном времени. Он работает поверх Boost.Asio и использует неблокирующую модель ввода/вывода, что делает его подходящим для чатов, игр, IoT‑телеметрии, торговых систем, real‑time уведомлений и любых приложений, где требуется постоянное соединение и низкая задержка.</p>
+
+<p>WebSocket-клиент Beast поддерживает текстовые и бинарные сообщения, ping/pong, автоматическое управление фреймами, SSL/TLS (WSS), keep-alive и работу с большими сообщениями.</p>
+
+<h3>Теоретические основы</h3>
+
+<p>WebSocket-клиент в Beast строится вокруг следующих компонентов:</p>
+
+<ul>
+  <li><strong>websocket::stream&lt;tcp::socket&gt;</strong> — основной объект WebSocket;</li>
+  <li><strong>tcp_stream / tcp::socket</strong> — транспортный уровень;</li>
+  <li><strong>resolver</strong> — DNS‑разрешение имени хоста;</li>
+  <li><strong>handshake()</strong> — WebSocket handshake поверх HTTP;</li>
+  <li><strong>async_read / async_write</strong> — асинхронный обмен сообщениями;</li>
+  <li><strong>ping/pong</strong> — поддержание активности соединения;</li>
+  <li><strong>close()</strong> — корректное завершение WebSocket-сессии.</li>
+</ul>
+
+<p>Типичный pipeline WebSocket-клиента:</p>
+
+<ol>
+  <li>DNS‑разрешение хоста;</li>
+  <li>TCP‑подключение;</li>
+  <li>WebSocket handshake;</li>
+  <li>чтение/запись сообщений;</li>
+  <li>обработка ping/pong;</li>
+  <li>закрытие соединения.</li>
+</ol>
+
+<h3>Примеры использования</h3>
+
+<p>Рассмотрим два практических примера.</p>
+
+<h4>Пример 1: Базовый WebSocket-клиент (echo)</h4>
+<pre><code>
+websocket_client_cpp_1.txt
+</code></pre>
+
+<h4>Пример 2: Продвинутый WebSocket-клиент (reconnect + ping/pong + таймауты)</h4>
+<pre><code>
+websocket_client_cpp_2.txt
+</code></pre>
+
+<h3>Практические применения</h3>
+
+<ul>
+  <li>чаты и мессенджеры;</li>
+  <li>биржевые торговые терминалы;</li>
+  <li>онлайн‑игры и real‑time взаимодействие;</li>
+  <li>IoT‑телеметрия;</li>
+  <li>уведомления и push‑системы;</li>
+  <li>streaming‑данные (курсы валют, сенсоры, события).</li>
+</ul>
+
+<h3>Особенности и подводные камни</h3>
+
+<ul>
+  <li>WebSocket требует строгой последовательности операций (handshake → read/write → close).</li>
+  <li>Нельзя выполнять несколько async_read одновременно.</li>
+  <li>При потере соединения важно реализовать reconnect.</li>
+  <li>Ping/pong должен быть частью клиента для поддержания активности.</li>
+  <li>Большие сообщения требуют dynamic_buffer или flat_buffer с лимитами.</li>
+  <li>Для WSS требуется ssl::stream и TLS handshake.</li>
+</ul>
+
+<h3>Практические рекомендации</h3>
+
+<ul>
+  <li>Используйте <strong>async_read</strong> в цикле для постоянного получения сообщений.</li>
+  <li>Устанавливайте таймауты через <strong>tcp_stream::expires_after()</strong>.</li>
+  <li>Используйте ping/pong для обнаружения разрыва соединения.</li>
+  <li>Для больших сообщений используйте <strong>dynamic_buffer</strong>.</li>
+  <li>Реализуйте reconnect с экспоненциальной задержкой.</li>
+  <li>В продакшене всегда используйте WSS.</li>
+</ul>
+
+<h3>Заключение</h3>
+
+<p>WebSocket Client в Boost.Beast — мощный инструмент для построения real‑time приложений. Он предоставляет полный контроль над WebSocket‑протоколом, поддерживает SSL/TLS, ping/pong, большие сообщения и асинхронную модель. Правильная архитектура клиента обеспечивает стабильность, низкую задержку и высокую производительность.</p>
+
+<h3>Ссылки</h3>
+
+<ul>
+  <li>Boost.Beast — WebSocket</li>
+  <li>Boost.Asio — Networking TS</li>
+  <li>RFC 6455 — WebSocket Protocol</li>
+</ul>

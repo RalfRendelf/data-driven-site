@@ -1,0 +1,34 @@
+[
+  {
+    "type": "boost",
+    "name": "io_context",
+    "fileName": "io_context",
+    "category": "Boost.Asio Core",
+    "usage": "Главный event loop, управление задачами",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Executors",
+    "fileName": "executors",
+    "category": "Boost.Asio Core",
+    "usage": "Механизм выполнения асинхронных операций",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Work Guard",
+    "fileName": "work_guard",
+    "category": "Boost.Asio Core",
+    "usage": "Предотвращает завершение io_context",
+    "isLeaf": true
+  },
+  {
+    "type": "boost",
+    "name": "Event Loop",
+    "fileName": "event_loop",
+    "category": "Boost.Asio Core",
+    "usage": "run(), poll(), restart()",
+    "isLeaf": true
+  }
+]

@@ -1,0 +1,58 @@
+// Пример 2: Асинхронный UDP-сервер с постоянным приёмом
+
+#include <boost/asio.hpp>
+#include <iostream>
+#include <array>
+
+using boost::asio::ip::udp;
+
+class udp_server
+{
+public:
+    udp_server(boost::asio::io_context& io, unsigned short port)
+        : socket_(io, udp::endpoint(udp::v4(), port))
+    {
+        do_receive();
+    }
+
+private:
+    void do_receive()
+    {
+        socket_.async_receive_from(
+            boost::asio::buffer(buf_), sender_,
+            [this](auto ec, std::size_t n)
+            {
+                if (!ec)
+                {
+                    std::cout << "Received " << n << " bytes from "
+                              << sender_.address().to_string() << "\n";
+
+                    do_send(n);
+                }
+
+                do_receive(); // слушаем дальше
+            }
+        );
+    }
+
+    void do_send(std::size_t n)
+    {
+        socket_.async_send_to(
+            boost::asio::buffer(buf_, n), sender_,
+            [](auto, std::size_t) {}
+        );
+    }
+
+    udp::socket socket_;
+    udp::endpoint sender_;
+    std::array<char, 1024> buf_;
+};
+
+int main()
+{
+    boost::asio::io_context io;
+
+    udp_server server(io, 9000);
+
+    io.run();
+}

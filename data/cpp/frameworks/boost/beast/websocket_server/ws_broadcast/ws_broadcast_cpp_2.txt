@@ -1,0 +1,116 @@
+#include &lt;boost/asio.hpp&gt;
+#include &lt;boost/beast.hpp&gt;
+#include &lt;deque&gt;
+#include &lt;set&gt;
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace ws    = beast::websocket;
+using tcp       = asio::ip::tcp;
+
+class session;
+class broadcast_server;
+
+// Менеджер соединений с потокобезопасностью
+class broadcast_server {
+public:
+    explicit broadcast_server(asio::io_context&amp; ioc)
+        : strand_(asio::make_strand(ioc)) {}
+
+    void join(std::shared_ptr&lt;session&gt; s) {
+        asio::dispatch(strand_, [this, s] { sessions_.insert(s); });
+    }
+
+    void leave(std::shared_ptr&lt;session&gt; s) {
+        asio::dispatch(strand_, [this, s] { sessions_.erase(s); });
+    }
+
+    void broadcast(const std::string&amp; msg) {
+        asio::dispatch(strand_, [this, msg] {
+            for (auto&amp; s : sessions_)
+                s->send(msg);
+        });
+    }
+
+private:
+    asio::strand&lt;asio::any_io_executor&gt; strand_;
+    std::set&lt;std::shared_ptr&lt;session&gt;&gt; sessions_;
+};
+
+// WebSocket-сессия с очередью сообщений
+class session : public std::enable_shared_from_this&lt;session&gt; {
+public:
+    session(tcp::socket socket, broadcast_server&amp; server)
+        : ws_(std::move(socket)), server_(server),
+          strand_(ws_.get_executor()) {}
+
+    void run() {
+        server_.join(shared_from_this());
+        ws_.async_accept(
+            asio::bind_executor(strand_,
+                std::bind(&session::on_accept, shared_from_this(),
+                          std::placeholders::_1)));
+    }
+
+    void send(const std::string&amp; msg) {
+        asio::post(strand_, [self = shared_from_this(), msg] {
+            bool writing = !self->queue_.empty();
+            self->queue_.push_back(msg);
+            if (!writing)
+                self->do_write();
+        });
+    }
+
+private:
+    void on_accept(beast::error_code ec) {
+        if (!ec)
+            do_read();
+    }
+
+    void do_read() {
+        ws_.async_read(
+            buffer_,
+            asio::bind_executor(strand_,
+                std::bind(&session::on_read, shared_from_this(),
+                          std::placeholders::_1, std::placeholders::_2)));
+    }
+
+    void on_read(beast::error_code ec, std::size_t) {
+        if (ec) {
+            server_.leave(shared_from_this());
+            return;
+        }
+
+        auto msg = beast::buffers_to_string(buffer_.data());
+        buffer_.consume(buffer_.size());
+
+        server_.broadcast(msg);
+        do_read();
+    }
+
+    void do_write() {
+        ws_.text(true);
+        ws_.async_write(
+            asio::buffer(queue_.front()),
+            asio::bind_executor(strand_,
+                std::bind(&session::on_write, shared_from_this(),
+                          std::placeholders::_1, std::placeholders::_2)));
+    }
+
+    void on_write(beast::error_code ec, std::size_t) {
+        if (ec) {
+            server_.leave(shared_from_this());
+            return;
+        }
+
+        queue_.pop_front();
+        if (!queue_.empty())
+            do_write();
+    }
+
+    ws::stream&lt;tcp::socket&gt; ws_;
+    beast::flat_buffer buffer_;
+    broadcast_server&amp; server_;
+    asio::strand&lt;asio::any_io_executor&gt; strand_;
+    std::deque&lt;std::string&gt; queue_;
+};

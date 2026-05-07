@@ -1,0 +1,24 @@
+// Пример 1: Минимальный TCP-сервер
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+
+int main()
+{
+    boost::asio::io_context io;
+
+    tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 9000));
+
+    for (;;)
+    {
+        tcp::socket socket(io);
+        acceptor.accept(socket);
+
+        std::string msg = "Hello from server!\n";
+        boost::asio::write(socket, boost::asio::buffer(msg));
+    }
+
+    return 0;
+}

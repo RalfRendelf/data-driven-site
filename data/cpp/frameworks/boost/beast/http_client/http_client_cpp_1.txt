@@ -1,0 +1,49 @@
+// Пример 1: Базовый HTTP-клиент (GET)
+
+#include <boost/asio.hpp>
+#include <boost/beast.hpp>
+#include <iostream>
+
+namespace asio  = boost::asio;
+namespace beast = boost::beast;
+namespace http  = beast::http;
+using tcp       = asio::ip::tcp;
+
+int main()
+{
+    try
+    {
+        asio::io_context ioc;
+
+        std::string host   = "example.org";
+        std::string port   = "80";
+        std::string target = "/";
+
+        tcp::resolver resolver{ioc};
+        auto results = resolver.resolve(host, port);
+
+        beast::tcp_stream stream{ioc};
+        stream.connect(results);
+
+        http::request<http::empty_body> req{http::verb::get, target, 11};
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, "beast-http-client");
+
+        http::write(stream, req);
+
+        beast::flat_buffer buffer;
+        http::response<http::string_body> res;
+
+        http::read(stream, buffer, res);
+
+        std::cout << "Status: " << res.result_int() << "\n";
+        std::cout << "Body:\n" << res.body() << "\n";
+
+        beast::error_code ec;
+        stream.socket().shutdown(tcp::socket::shutdown_both, ec);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "fatal: " << e.what() << "\n";
+    }
+}

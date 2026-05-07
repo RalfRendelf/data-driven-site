@@ -1,0 +1,54 @@
+// Пример 2: TCP echo-сервер на корутинах
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+using boost::asio::ip::tcp;
+using namespace boost::asio;
+
+awaitable<void> echo_session(tcp::socket socket)
+{
+    try
+    {
+        std::array<char, 1024> buf;
+
+        for (;;)
+        {
+            std::size_t n = co_await socket.async_read_some(
+                buffer(buf),
+                use_awaitable
+            );
+
+            co_await async_write(
+                socket,
+                buffer(buf.data(), n),
+                use_awaitable
+            );
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "Session ended: " << e.what() << "\n";
+    }
+}
+
+awaitable<void> listener()
+{
+    auto exec = co_await this_coro::executor;
+    tcp::acceptor acc(exec, tcp::endpoint(tcp::v4(), 9000));
+
+    for (;;)
+    {
+        tcp::socket socket = co_await acc.async_accept(use_awaitable);
+        co_spawn(exec, echo_session(std::move(socket)), detached);
+    }
+}
+
+int main()
+{
+    io_context io;
+
+    co_spawn(io, listener(), detached);
+
+    io.run();
+}

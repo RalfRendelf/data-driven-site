@@ -1,0 +1,29 @@
+// Пример 2: Создание собственного executor'а
+
+#include <boost/asio.hpp>
+#include <iostream>
+
+class simple_executor
+{
+public:
+    simple_executor() = default;
+
+    simple_executor require(boost::asio::execution::blocking_t::never_t) const { return *this; }
+
+    void execute(std::function<void()> f) const
+    {
+        std::cout << "Executing task in custom executor\n";
+        f();
+    }
+};
+
+int main()
+{
+    simple_executor exec;
+
+    boost::asio::execution::execute(exec, []{
+        std::cout << "Hello from custom executor\n";
+    });
+
+    return 0;
+}
