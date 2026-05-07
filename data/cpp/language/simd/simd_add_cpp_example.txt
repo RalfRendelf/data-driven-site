@@ -1,0 +1,17 @@
+#include <experimental/simd>
+#include <vector>
+#include <iostream>
+
+using namespace std::experimental;
+
+int main() {
+    std::vector<float> x(4, 1.0f);
+    std::vector<float> y(4, 2.0f);
+
+    simd<float> a(x.data(), simd<float>::size());
+    simd<float> b(y.data(), simd<float>::size());
+    simd<float> c = a + b;
+
+    for (int i = 0; i < c.size(); i++)
+        std::cout << c[i] << " ";
+}

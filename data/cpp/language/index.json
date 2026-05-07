@@ -22,5 +22,14 @@
     "category": "cpp/language",
     "usage": "Управление памятью в C++",
     "isLeaf": false
-  }
+  },
+  {
+  "type": "cpp",
+  "name": "SIMD",
+  "fileName": "simd",
+  "category": "cpp/language",
+  "usage": "SIMD: векторизация, intrinsics, std::simd (C++23+)",
+  "isLeaf": true
+}
+
 ]

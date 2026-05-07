@@ -1,0 +1,15 @@
+#include <experimental/simd>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+using namespace std::experimental;
+
+int main() {
+    simd<float> a{1.0, 2.0, 3.0, 4.0};
+    simd<float> b{5.0, 6.0, 7.0, 8.0};
+    simd<float> c = a + b;
+
+    for (int i = 0; i < c.size(); i++)
+        cout << c[i] << " ";
+}

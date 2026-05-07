@@ -297,7 +297,7 @@ function buildHtmlTree(node) {
     if (childNode.children && childNode.children.length > 0) {
       const detailRow = document.createElement('tr');
       detailRow.className = 'detail';
-      // detailRow.style.display = 'none';
+      detailRow.style.display = 'none';
       detailRow.innerHTML = '<td colspan="3"><div class="content"></div></td>';
       tbody.appendChild(detailRow);
     }
@@ -360,7 +360,7 @@ function attachRowHandlersForTree(row, node, item) {
 function createTable(category, isRoot) {
   const table = document.createElement('table');
   table.className = isRoot ? 'category-table' : 'category-table nested';
-  // table.style.marginLeft = isRoot ? '0' : '20px';
+  table.style.marginLeft = isRoot ? '0' : '20px';
   table.dataset.type = category.type;
   return table;
 }
