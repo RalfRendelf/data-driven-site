@@ -1,3 +1,124 @@
-<h2>locale</h2>
+<h2>std::locale: Локализация в C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::locale`</strong> — библиотека для работы с локалями в C++.
+Она предоставляет средства для форматирования чисел, дат, строк и других данных в соответствии с культурными и региональными особенностями.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Локаль (<code>std::locale</code>)</strong> — набор параметров, определяющих форматирование данных (язык, страна, кодировка).</li>
+  <li><strong>Фасеты (<code>facet</code>)</strong> — компоненты локали, отвечающие за конкретные аспекты форматирования (например, числа, даты, строки).</li>
+  <li><strong>Категории локалей</strong> — группы фасетов (например, <code>LC_CTYPE</code>, <code>LC_NUMERIC</code>).</li>
+</ul>
+
+<h4>Класс std::locale</h4>
+<p>
+Класс <code>std::locale</code> представляет локаль и предоставляет методы для работы с фасетами:
+</p>
+<ul>
+  <li><code>locale::locale()</code> — конструктор по умолчанию (использует глобальную локаль).</li>
+  <li><code>locale::locale(const char* name)</code> — конструктор с именем локали (например, <code>"en_US.UTF-8"</code>).</li>
+  <li><code>locale::name()</code> — получение имени локали.</li>
+  <li><code>locale::imbue(stream)</code> — применение локали к потоку.</li>
+</ul>
+
+<h4>Фасеты</h4>
+<p>
+Фасеты — это компоненты локали, отвечающие за конкретные аспекты форматирования:
+</p>
+<table>
+  <tr>
+    <th>Фасет</th>
+    <th>Описание</th>
+    <th>Категория</th>
+  </tr>
+  <tr>
+    <td><code>std::num_get</code></td>
+    <td>Форматирование ввода чисел.</td>
+    <td><code>LC_NUMERIC</code></td>
+  </tr>
+  <tr>
+    <td><code>std::num_put</code></td>
+    <td>Форматирование вывода чисел.</td>
+    <td><code>LC_NUMERIC</code></td>
+  </tr>
+  <tr>
+    <td><code>std::money_get</code></td>
+    <td>Форматирование ввода денежных значений.</td>
+    <td><code>LC_MONETARY</code></td>
+  </tr>
+  <tr>
+    <td><code>std::money_put</code></td>
+    <td>Форматирование вывода денежных значений.</td>
+    <td><code>LC_MONETARY</code></td>
+  </tr>
+  <tr>
+    <td><code>std::time_get</code></td>
+    <td>Форматирование ввода даты/времени.</td>
+    <td><code>LC_TIME</code></td>
+  </tr>
+  <tr>
+    <td><code>std::time_put</code></td>
+    <td>Форматирование вывода даты/времени.</td>
+    <td><code>LC_TIME</code></td>
+  </tr>
+  <tr>
+    <td><code>std::ctype</code></td>
+    <td>Классификация символов.</td>
+    <td><code>LC_CTYPE</code></td>
+  </tr>
+  <tr>
+    <td><code>std::collate</code></td>
+    <td>Сравнение строк.</td>
+    <td><code>LC_COLLATE</code></td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Установка локали</h4>
+<pre><code>
+locale_basic_example.cpp
+</code></pre>
+
+<h4>Пример 2: Форматирование чисел</h4>
+<pre><code>
+locale_number_example.cpp
+</code></pre>
+
+<h4>Пример 3: Форматирование даты и времени</h4>
+<pre><code>
+locale_time_example.cpp
+</code></pre>
+
+<h4>Пример 4: Сравнение строк с учётом локали</h4>
+<pre><code>
+locale_string_compare_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::locale::global</code> для установки глобальной локали.</li>
+  <li>Используйте <code>imbue</code> для применения локали к потокам.</li>
+  <li>Используйте фасеты для работы с конкретными аспектами локали.</li>
+  <li>Помните, что не все локали доступны на всех системах.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::locale`</strong> — это библиотека для работы с локализацией в C++.
+Она предоставляет средства для форматирования чисел, дат, строк и других данных в соответствии с культурными и региональными особенностями.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/locale">std::locale на cppreference.com</a></li>
+</ul>

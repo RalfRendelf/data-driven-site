@@ -1,3 +1,124 @@
-<h2>chrono</h2>
+<h2>std::chrono: Работа со временем в C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::chrono`</strong> — библиотека для работы со временем, введенная в C++11.
+Она предоставляет типы и функции для измерения времени, работы с временными интервалами и метками времени.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Длительность (duration)</strong> — представление временного интервала (например, 5 секунд, 100 миллисекунд).</li>
+  <li><strong>Метка времени (time_point)</strong> — точка на временной шкале (например, текущее время).</li>
+  <li><strong>Часы (clocks)</strong> — источники времени (например, системные часы, часы высокого разрешения).</li>
+</ul>
+
+<h4>Типы длительности (std::chrono::duration)</h4>
+<p>
+Тип duration представляет временной интервал и определяется как:
+</p>
+template &lt;class Rep, class Period = std::ratio&lt;1&rt;&rt;
+class duration;
+<ul>
+  <li><strong>Rep</strong> — тип для хранения количества тиков (например, int, long long).</li>
+  <li><strong>Period</strong> — отношение секунды к тику (например, std::milli для миллисекунд).</li>
+</ul>
+<p>
+Примеры стандартных типов длительности:
+</p>
+<ul>
+  <li>std::chrono::nanoseconds — наносекунды.</li>
+  <li>std::chrono::microseconds — микросекунды.</li>
+  <li>std::chrono::milliseconds — миллисекунды.</li>
+  <li>std::chrono::seconds — секунды.</li>
+  <li>std::chrono::minutes — минуты.</li>
+  <li>std::chrono::hours — часы.</li>
+</ul>
+
+<h4>Типы меток времени (std::chrono::time_point)</h4>
+<p>
+Тип time_point представляет точку на временной шкале и определяется как:
+</p>
+
+template &lt;class Clock, class Duration = typename Clock::duration&rt;
+class time_point;
+
+<ul>
+  <li><strong>Clock</strong> — тип часов, с которым связана метка времени.</li>
+  <li><strong>Duration</strong> — тип длительности для представления интервала от эпохи.</li>
+</ul>
+
+<h4>Типы часов (std::chrono::clocks)</h4>
+<table>
+  <tr>
+    <th>Тип часов</th>
+    <th>Описание</th>
+    <th>Эпоха</th>
+    <th>Точность</th>
+  </tr>
+  <tr>
+    <td>std::chrono::system_clock</td>
+    <td>Системные часы (wall-clock time).</td>
+    <td>1 января 1970 (Unix epoch)</td>
+    <td>Зависит от системы (обычно наносекунды)</td>
+  </tr>
+  <tr>
+    <td>std::chrono::steady_clock</td>
+    <td>Часы с монотонным временем (не могут идти назад).</td>
+    <td>Неопределена</td>
+    <td>Зависит от системы</td>
+  </tr>
+  <tr>
+    <td>std::chrono::high_resolution_clock</td>
+    <td>Часы с наивысшим разрешением.</td>
+    <td>Неопределена</td>
+    <td>Максимально возможная</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Измерение времени выполнения</h4>
+<pre><code>
+chrono_duration_example.cpp
+</code></pre>
+
+<h4>Пример 2: Работа с метками времени</h4>
+<pre><code>
+chrono_time_point_example.cpp
+</code></pre>
+
+<h4>Пример 3: Преобразование между типами длительности</h4>
+<pre><code>
+chrono_conversion_example.cpp
+</code></pre>
+
+<h4>Пример 4: Использование steady_clock для измерения интервалов</h4>
+<pre><code>
+chrono_steady_clock_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте std::chrono::high_resolution_clock для измерения коротких интервалов времени.</li>
+  <li>Используйте std::chrono::steady_clock для измерения интервалов, где важна монотонность (например, таймеры).</li>
+  <li>Используйте std::chrono::system_clock для работы с календарным временем.</li>
+  <li>Используйте std::chrono::duration_cast для преобразования между различными единицами времени.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::chrono`</strong> — это мощная библиотека для работы со временем в C++.
+Она предоставляет гибкие и точные средства для измерения времени, работы с временными интервалами и метками времени.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/chrono">std::chrono на cppreference.com</a></li>
+</ul>

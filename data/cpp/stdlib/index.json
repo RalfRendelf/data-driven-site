@@ -86,5 +86,15 @@
     "category": "cpp/stdlib",
     "usage": "Результат или ошибка без исключений (C++23)",
     "isLeaf": true
-  }
+  },
+{
+  "type": "cpp",
+  "name": "Monadic operations",
+  "fileName": "monadic",
+  "category": "cpp/stdlib",
+  "usage": "Монадические операции в контейнерах C++ (expected, optional, variant, и др.)",
+  "isLeaf": true
+}
+
+
 ]

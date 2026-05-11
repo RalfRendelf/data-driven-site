@@ -1,3 +1,153 @@
-<h2>random</h2>
+<h2>std::random: Генерация случайных чисел в C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::random`</strong> — библиотека для генерации случайных чисел, введенная в C++11.
+Она предоставляет более гибкие и надёжные средства для генерации случайных чисел по сравнению с устаревшими функциями <code>rand()</code> и <code>srand()</code>.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Генераторы случайных чисел (<code>engines</code>)</strong> — источники случайности.</li>
+  <li><strong>Распределения (<code>distributions</code>)</strong> — способы преобразования случайных чисел в нужный диапазон или тип.</li>
+</ul>
+
+<h4>Типы генераторов</h4>
+<p>
+Библиотека <code>std::random</code> предоставляет несколько типов генераторов:
+</p>
+<table>
+  <tr>
+    <th>Генератор</th>
+    <th>Описание</th>
+    <th>Период</th>
+  </tr>
+  <tr>
+    <td><code>std::mt19937</code></td>
+    <td>Генератор Mersenne Twister с 32-битным состоянием.</td>
+    <td>2<sup>19937</sup> - 1</td>
+  </tr>
+  <tr>
+    <td><code>std::mt19937_64</code></td>
+    <td>Генератор Mersenne Twister с 64-битным состоянием.</td>
+    <td>2<sup>19937</sup> - 1</td>
+  </tr>
+  <tr>
+    <td><code>std::minstd_rand</code></td>
+    <td>Линейный конгруэнтный генератор.</td>
+    <td>2<sup>31</sup> - 1</td>
+  </tr>
+  <tr>
+    <td><code>std::minstd_rand0</code></td>
+    <td>Устаревший линейный конгруэнтный генератор.</td>
+    <td>2<sup>31</sup></td>
+  </tr>
+  <tr>
+    <td><code>std::ranlux24_base</code></td>
+    <td>Генератор на основе алгоритма Ranlux.</td>
+    <td>~2<sup>24</sup></td>
+  </tr>
+  <tr>
+    <td><code>std::ranlux48_base</code></td>
+    <td>Генератор на основе алгоритма Ranlux с 48-битным состоянием.</td>
+    <td>~2<sup>48</sup></td>
+  </tr>
+  <tr>
+    <td><code>std::knuth_b</code></td>
+    <td>Генератор на основе алгоритма Knuth.</td>
+    <td>2<sup>32</sup></td>
+  </tr>
+</table>
+
+<h4>Типы распределений</h4>
+<p>
+Библиотека предоставляет различные типы распределений:
+</p>
+<table>
+  <tr>
+    <th>Распределение</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>std::uniform_int_distribution</code></td>
+    <td>Равномерное распределение для целых чисел.</td>
+  </tr>
+  <tr>
+    <td><code>std::uniform_real_distribution</code></td>
+    <td>Равномерное распределение для вещественных чисел.</td>
+  </tr>
+  <tr>
+    <td><code>std::normal_distribution</code></td>
+    <td>Нормальное распределение (Гаусса).</td>
+  </tr>
+  <tr>
+    <td><code>std::exponential_distribution</code></td>
+    <td>Экспоненциальное распределение.</td>
+  </tr>
+  <tr>
+    <td><code>std::bernoulli_distribution</code></td>
+    <td>Распределение Бернулли (булево значение).</td>
+  </tr>
+  <tr>
+    <td><code>std::binomial_distribution</code></td>
+    <td>Биномиальное распределение.</td>
+  </tr>
+  <tr>
+    <td><code>std::poisson_distribution</code></td>
+    <td>Распределение Пуассона.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Генерация случайных целых чисел</h4>
+<pre><code>
+random_int_example.cpp
+</code></pre>
+
+<h4>Пример 2: Генерация случайных вещественных чисел</h4>
+<pre><code>
+random_real_example.cpp
+</code></pre>
+
+<h4>Пример 3: Генерация случайных чисел с нормальным распределением</h4>
+<pre><code>
+random_normal_example.cpp
+</code></pre>
+
+<h4>Пример 4: Инициализация генератора</h4>
+<p>
+Генераторы можно инициализировать различными способами:
+</p>
+<ul>
+  <li><strong>Случайное начальное значение:</strong> Используйте <code>std::random_device</code>.</li>
+  <li><strong>Фиксированное начальное значение:</strong> Используйте константу для воспроизводимости.</li>
+</ul>
+<pre><code>
+random_seed_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::mt19937</code> или <code>std::mt19937_64</code> для большинства задач.</li>
+  <li>Используйте <code>std::random_device</code> для инициализации генераторов случайными значениями.</li>
+  <li>Используйте подходящие распределения для ваших задач (<code>uniform_int_distribution</code> для целых чисел, <code>normal_distribution</code> для нормального распределения).</li>
+  <li>Избегайте использования устаревших функций <code>rand()</code> и <code>srand()</code>.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::random`</strong> — это мощная библиотека для генерации случайных чисел в C++.
+Она предоставляет гибкие и надёжные средства для генерации случайных чисел с различными распределениями.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/numeric/random">std::random на cppreference.com</a></li>
+</ul>

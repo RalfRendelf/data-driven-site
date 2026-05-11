@@ -1,0 +1,466 @@
+<h2>Монадические операции в C++23: std::expected, std::optional, std::variant и другие</h2>
+
+<p>
+В C++23 были добавлены <strong>монадические операции</strong> для нескольких контейнеров и типов, что позволяет удобно обрабатывать цепочки операций, которые могут завершиться ошибкой или отсутствием значения.
+Эти операции вдохновлены концепциями функционального программирования и предоставляют более выразительный и безопасный способ работы с данными.
+</p>
+
+---
+<h3>Содержание</h3>
+1. [Введение в монадические операции](#introduction)
+2. [Монадические операции в std::expected](#expected_monadic)
+3. [Монадические операции в std::optional](#optional_monadic)
+4. [Монадические операции в std::variant](#variant_monadic)
+5. [Аналоги монадических операций для других типов](#other_monadic)
+6. [Практические примеры](#practical_examples)
+7. [Сравнение монадических операций](#comparison)
+8. [Заключение](#conclusion)
+
+---
+
+<a id="introduction"></a>
+<h3>1. Введение в монадические операции</h3>
+
+<h4>Что такое монадические операции?</h4>
+<p>
+Монадические операции — это методы, которые позволяют:
+</p>
+<ul>
+  <li><strong>Цепочки операций</strong> — последовательно применять функции к результату, обрабатывая ошибки или отсутствие значений на каждом этапе.</li>
+  <li><strong>Трансформация значений</strong> — преобразовывать результат или ошибку.</li>
+  <li><strong>Композиция операций</strong> — комбинировать несколько операций в одну.</li>
+  <li><strong>Удобная обработка ошибок</strong> — избегать явных проверок на каждом шаге.</li>
+</ul>
+
+<h4>Основные монадические операции</h4>
+<table>
+  <tr>
+    <th>Операция</th>
+    <th>Описание</th>
+    <th>Применимость</th>
+  </tr>
+  <tr>
+    <td><code>and_then</code></td>
+    <td>Если контейнер содержит значение, применяет функцию к этому значению. В противном случае возвращает ошибку или пустое состояние.</td>
+    <td><code>std::expected</code>, <code>std::optional</code></td>
+  </tr>
+  <tr>
+    <td><code>or_else</code></td>
+    <td>Если контейнер содержит ошибку или пусто, применяет функцию к ошибке или создаёт значение по умолчанию.</td>
+    <td><code>std::expected</code>, <code>std::optional</code></td>
+  </tr>
+  <tr>
+    <td><code>transform</code></td>
+    <td>Применяет функцию к значению, если оно есть. В противном случае возвращает ошибку или пустое состояние.</td>
+    <td><code>std::expected</code>, <code>std::optional</code>, <code>std::variant</code></td>
+  </tr>
+  <tr>
+    <td><code>transform_error</code></td>
+    <td>Применяет функцию к ошибке, если она есть. В противном случае возвращает значение.</td>
+    <td><code>std::expected</code></td>
+  </tr>
+  <tr>
+    <td><code>value_or</code></td>
+    <td>Возвращает значение, если оно есть, или значение по умолчанию.</td>
+    <td><code>std::optional</code>, <code>std::expected</code></td>
+  </tr>
+  <tr>
+    <td><code>visit</code></td>
+    <td>Применяет функцию к значению в зависимости от его типа.</td>
+    <td><code>std::variant</code></td>
+  </tr>
+</table>
+
+---
+
+<a id="expected_monadic"></a>
+<h3>2. Монадические операции в std::expected</h3>
+
+<p>
+<strong>`std::expected<T, E>`</strong> — контейнер, который может содержать либо результат типа <code>T</code>, либо ошибку типа <code>E</code>.
+Монадические операции позволяют удобно обрабатывать цепочки операций, которые могут завершиться ошибкой.
+</p>
+
+<h4>Основные монадические операции</h4>
+<table>
+  <tr>
+    <th>Операция</th>
+    <th>Синтаксис</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>and_then</code></td>
+    <td><code>expected.and_then(f)</code></td>
+    <td>Если <code>expected</code> содержит значение, применяет функцию <code>f</code> к этому значению. В противном случае возвращает ошибку.</td>
+  </tr>
+  <tr>
+    <td><code>or_else</code></td>
+    <td><code>expected.or_else(f)</code></td>
+    <td>Если <code>expected</code> содержит ошибку, применяет функцию <code>f</code> к этой ошибке. В противном случае возвращает значение.</td>
+  </tr>
+  <tr>
+    <td><code>transform</code></td>
+    <td><code>expected.transform(f)</code></td>
+    <td>Применяет функцию <code>f</code> к значению, если оно есть. В противном случае возвращает ошибку.</td>
+  </tr>
+  <tr>
+    <td><code>transform_error</code></td>
+    <td><code>expected.transform_error(f)</code></td>
+    <td>Применяет функцию <code>f</code> к ошибке, если она есть. В противном случае возвращает значение.</td>
+  </tr>
+</table>
+
+<h4>Примеры использования</h4>
+
+<h5>Пример 1: and_then</h5>
+<p>
+<code>and_then</code> позволяет применять функцию к результату, если он есть.
+</p>
+<pre><code>
+expected_and_then_example.cpp
+</code></pre>
+
+<h5>Пример 2: or_else</h5>
+<p>
+<code>or_else</code> позволяет обрабатывать ошибку, если она есть.
+</p>
+<pre><code>
+expected_or_else_example.cpp
+</code></pre>
+
+<h5>Пример 3: transform</h5>
+<p>
+<code>transform</code> позволяет преобразовывать значение, если оно есть.
+</p>
+<pre><code>
+expected_transform_example.cpp
+</code></pre>
+
+<h5>Пример 4: transform_error</h5>
+<p>
+<code>transform_error</code> позволяет преобразовывать ошибку, если она есть.
+</p>
+<pre><code>
+expected_transform_error_example.cpp
+</code></pre>
+
+<h5>Пример 5: Цепочка операций</h5>
+<p>
+Комбинация монадических операций позволяет создавать сложные цепочки обработки.
+</p>
+<pre><code>
+expected_chain_example.cpp
+</code></pre>
+
+---
+
+<a id="optional_monadic"></a>
+<h3>3. Монадические операции в std::optional</h3>
+
+<p>
+<strong>`std::optional<T>`</strong> — контейнер, который может содержать значение типа <code>T</code> или быть пустым.
+Монадические операции позволяют удобно обрабатывать цепочки операций, которые могут завершиться отсутствием значения.
+</p>
+
+<h4>Основные монадические операции</h4>
+<table>
+  <tr>
+    <th>Операция</th>
+    <th>Синтаксис</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>and_then</code></td>
+    <td><code>optional.and_then(f)</code></td>
+    <td>Если <code>optional</code> содержит значение, применяет функцию <code>f</code> к этому значению. В противном случае возвращает пустой <code>optional</code>.</td>
+  </tr>
+  <tr>
+    <td><code>or_else</code></td>
+    <td><code>optional.or_else(f)</code></td>
+    <td>Если <code>optional</code> пуст, применяет функцию <code>f</code> (которая должна возвращать <code>optional</code>).</td>
+  </tr>
+  <tr>
+    <td><code>transform</code></td>
+    <td><code>optional.transform(f)</code></td>
+    <td>Применяет функцию <code>f</code> к значению, если оно есть. В противном случае возвращает пустой <code>optional</code>.</td>
+  </tr>
+</table>
+
+<h4>Примеры использования</h4>
+
+<h5>Пример 1: and_then</h5>
+<p>
+<code>and_then</code> позволяет применять функцию к значению, если оно есть.
+</p>
+<pre><code>
+optional_and_then_example.cpp
+</code></pre>
+
+<h5>Пример 2: or_else</h5>
+<p>
+<code>or_else</code> позволяет предоставлять значение по умолчанию, если <code>optional</code> пуст.
+</p>
+<pre><code>
+optional_or_else_example.cpp
+</code></pre>
+
+<h5>Пример 3: transform</h5>
+<p>
+<code>transform</code> позволяет преобразовывать значение, если оно есть.
+</p>
+<pre><code>
+optional_transform_example.cpp
+</code></pre>
+
+<h5>Пример 4: Цепочка операций</h5>
+<p>
+Комбинация монадических операций для <code>std::optional</code>.
+</p>
+<pre><code>
+optional_chain_example.cpp
+</code></pre>
+
+---
+
+<a id="variant_monadic"></a>
+<h3>4. Монадические операции в std::variant</h3>
+
+<p>
+<strong>`std::variant<Ts...>`</strong> — контейнер, который может содержать значение одного из нескольких типов.
+Хотя <code>std::variant</code> не имеет монадических операций в том же смысле, что <code>std::expected</code> или <code>std::optional</code>, его можно использовать с <code>std::visit</code> для обработки всех возможных типов.
+</p>
+
+<h4>Основные операции</h4>
+<table>
+  <tr>
+    <th>Операция</th>
+    <th>Синтаксис</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>std::visit</code></td>
+    <td><code>std::visit(visitor, variant)</code></td>
+    <td>Применяет визитор (функцию или лямбду) к значению в <code>variant</code> в зависимости от его типа.</td>
+  </tr>
+  <tr>
+    <td><code>transform</code> (C++23)</td>
+    <td><code>variant.transform(f)</code></td>
+    <td>Применяет функцию <code>f</code> к значению, если оно есть. Возвращает новый <code>variant</code> с результатом.</td>
+  </tr>
+</table>
+
+<h4>Примеры использования</h4>
+
+<h5>Пример 1: std::visit</h5>
+<p>
+<code>std::visit</code> позволяет обрабатывать все возможные типы в <code>std::variant</code>.
+</p>
+<pre><code>
+variant_visit_example.cpp
+</code></pre>
+
+<h5>Пример 2: Цепочка операций с std::visit</h5>
+<p>
+Можно комбинировать <code>std::visit</code> с другими операциями для создания цепочек.
+</p>
+<pre><code>
+variant_visit_chain_example.cpp
+</code></pre>
+
+<h5>Пример 3: transform (C++23)</h5>
+<p>
+В C++23 <code>std::variant</code> поддерживает метод <code>transform</code>, который позволяет применять функцию к значению, если оно есть.
+</p>
+<pre><code>
+variant_transform_example.cpp
+</code></pre>
+
+---
+
+<a id="other_monadic"></a>
+<h3>5. Аналоги монадических операций для других типов</h3>
+
+<h4>std::unique_ptr</h4>
+<p>
+Хотя <code>std::unique_ptr</code> не имеет встроенных монадических операций, их можно эмулировать с помощью лямбд и функций.
+</p>
+
+<h5>Пример: Эмуляция and_then для std::unique_ptr</h5>
+<pre><code>
+unique_ptr_and_then_example.cpp
+</code></pre>
+
+<h5>Пример: Удобная обёртка для std::unique_ptr</h5>
+<p>
+Можно создать удобную обёртку для работы с <code>std::unique_ptr</code> в монадическом стиле.
+</p>
+<pre><code>
+unique_ptr_monadic_wrapper.hpp
+</code></pre>
+<pre><code>
+unique_ptr_monadic_usage.cpp
+</code></pre>
+
+---
+<h4>Диапазоны (Ranges) и монадические операции</h4>
+<p>
+Хотя диапазоны (<code>std::ranges</code>) не имеют встроенных монадических операций, их можно комбинировать с алгоритмами для создания похожих эффектов.
+</p>
+
+<h5>Пример: Цепочка операций с диапазонами</h5>
+<pre><code>
+ranges_monadic_example.cpp
+</code></pre>
+
+---
+<h4>std::future и монадические операции</h4>
+<p>
+<code>std::future</code> и <code>std::promise</code> можно использовать для асинхронных операций в монадическом стиле.
+</p>
+
+<h5>Пример: Цепочка асинхронных операций</h5>
+<pre><code>
+future_monadic_example.cpp
+</code></pre>
+<p>
+<strong>Примечание:</strong> В стандартной библиотеке C++ нет метода <code>then</code> для <code>std::future</code>.
+Для этого можно использовать библиотеки вроде <code>Boost.Asio</code> или <code>folly::Future</code>.
+</p>
+
+---
+
+<a id="practical_examples"></a>
+<h3>6. Практические примеры</h3>
+
+<h4>Пример 1: Обработка конфигурации с std::expected</h4>
+<pre><code>
+config_processing_example.cpp
+</code></pre>
+
+---
+<h4>Пример 2: Обработка JSON с std::optional</h4>
+<pre><code>
+json_processing_example.cpp
+</code></pre>
+<p>
+<strong>Примечание:</strong> Для работы с JSON используется библиотека <a href="https://github.com/nlohmann/json">nlohmann/json</a>.
+</p>
+
+---
+<h4>Пример 3: Обработка вариантов данных с std::variant</h4>
+<pre><code>
+data_processing_example.cpp
+</code></pre>
+
+---
+<h4>Пример 4: Комбинирование std::expected и std::optional</h4>
+<pre><code>
+combined_expected_optional_example.cpp
+</code></pre>
+
+---
+
+<a id="comparison"></a>
+<h3>7. Сравнение монадических операций</h3>
+
+<h4>Сравнение операций для разных контейнеров</h4>
+<table>
+  <tr>
+    <th>Операция</th>
+    <th>std::expected</th>
+    <th>std::optional</th>
+    <th>std::variant</th>
+    <th>std::unique_ptr</th>
+    <th>Ranges</th>
+  </tr>
+  <tr>
+    <td><code>and_then</code></td>
+    <td>✅ Да</td>
+    <td>✅ Да</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет (эмуляция)</td>
+    <td>❌ Нет (используйте <code>|</code>)</td>
+  </tr>
+  <tr>
+    <td><code>or_else</code></td>
+    <td>✅ Да</td>
+    <td>✅ Да</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+  </tr>
+  <tr>
+    <td><code>transform</code></td>
+    <td>✅ Да</td>
+    <td>✅ Да</td>
+    <td>✅ Да (C++23)</td>
+    <td>❌ Нет (эмуляция)</td>
+    <td>✅ Да (через <code>transform</code>)</td>
+  </tr>
+  <tr>
+    <td><code>transform_error</code></td>
+    <td>✅ Да</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+  </tr>
+  <tr>
+    <td><code>visit</code></td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+    <td>✅ Да</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+  </tr>
+  <tr>
+    <td><code>value_or</code></td>
+    <td>✅ Да</td>
+    <td>✅ Да</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+    <td>❌ Нет</td>
+  </tr>
+</table>
+
+<h4>Рекомендации по выбору контейнера</h4>
+<ul>
+  <li><strong>std::expected</strong> — используйте для операций, которые могут завершиться ошибкой.</li>
+  <li><strong>std::optional</strong> — используйте для значений, которые могут отсутствовать.</li>
+  <li><strong>std::variant</strong> — используйте для значений, которые могут быть одного из нескольких типов.</li>
+  <li><strong>std::unique_ptr</strong> — используйте для динамического управления памятью.</li>
+  <li><strong>Ranges</strong> — используйте для работы с последовательностями данных.</li>
+</ul>
+
+---
+<a id="conclusion"></a>
+<h3>8. Заключение</h3>
+
+<p>
+<strong>Монадические операции</strong> в C++23 предоставляют удобные средства для обработки цепочек операций, которые могут завершиться ошибкой или отсутствием значения.
+Они доступны для <code>std::expected</code>, <code>std::optional</code> и частично для <code>std::variant</code>.
+</p>
+
+<p>
+Эти операции позволяют:
+</p>
+<ul>
+  <li>Создавать цепочки операций без явных проверок на каждом шаге.</li>
+  <li>Удобно обрабатывать ошибки и отсутствие значений.</li>
+  <li>Писать более выразительный и безопасный код.</li>
+</ul>
+
+<p>
+Хотя не все контейнеры поддерживают монадические операции напрямую, их можно эмулировать с помощью лямбд и функций.
+В будущих версиях C++ ожидается расширение поддержки монадических операций для других типов.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/expected">std::expected на cppreference.com</a></li>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/optional">std::optional на cppreference.com</a></li>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/variant">std::variant на cppreference.com</a></li>
+  <li><a href="https://en.cppreference.com/w/cpp/ranges">std::ranges на cppreference.com</a></li>
+  <li><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0838r3.html">P0838R3: Monadic operations for std::expected</a></li>
+</ul>

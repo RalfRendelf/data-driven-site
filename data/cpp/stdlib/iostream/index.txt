@@ -1,3 +1,128 @@
-<h2>iostream</h2>
+<h2>std::iostream: Стандартный ввод/вывод в C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::iostream`</strong> — библиотека для работы со стандартными потоками ввода/вывода в C++.
+Она предоставляет средства для чтения и записи данных в консоль, файлы и другие устройства ввода/вывода.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Потоки ввода/вывода (<code>streams</code>)</strong> — абстракция для работы с устройствами ввода/вывода.</li>
+  <li><strong>Классы потоков</strong>:
+    <ul>
+      <li><code>std::istream</code> — базовый класс для потоков ввода.</li>
+      <li><code>std::ostream</code> — базовый класс для потоков вывода.</li>
+      <li><code>std::iostream</code> — базовый класс для потоков ввода/вывода.</li>
+    </ul>
+  </li>
+  <li><strong>Стандартные потоки</strong>:
+    <ul>
+      <li><code>std::cin</code> — стандартный ввод.</li>
+      <li><code>std::cout</code> — стандартный вывод.</li>
+      <li><code>std::cerr</code> — стандартный поток ошибок.</li>
+      <li><code>std::clog</code> — буферизованный поток ошибок.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Классы потоков</h4>
+<table>
+  <tr>
+    <th>Класс</th>
+    <th>Описание</th>
+    <th>Назначение</th>
+  </tr>
+  <tr>
+    <td><code>std::istream</code></td>
+    <td>Базовый класс для потоков ввода.</td>
+    <td>Чтение данных.</td>
+  </tr>
+  <tr>
+    <td><code>std::ostream</code></td>
+    <td>Базовый класс для потоков вывода.</td>
+    <td>Запись данных.</td>
+  </tr>
+  <tr>
+    <td><code>std::iostream</code></td>
+    <td>Базовый класс для потоков ввода/вывода.</td>
+    <td>Чтение и запись данных.</td>
+  </tr>
+  <tr>
+    <td><code>std::ifstream</code></td>
+    <td>Класс для работы с файлами ввода.</td>
+    <td>Чтение из файла.</td>
+  </tr>
+  <tr>
+    <td><code>std::ofstream</code></td>
+    <td>Класс для работы с файлами вывода.</td>
+    <td>Запись в файл.</td>
+  </tr>
+  <tr>
+    <td><code>std::fstream</code></td>
+    <td>Класс для работы с файлами ввода/вывода.</td>
+    <td>Чтение и запись в файл.</td>
+  </tr>
+  <tr>
+    <td><code>std::stringstream</code></td>
+    <td>Класс для работы со строками.</td>
+    <td>Чтение и запись в строку.</td>
+  </tr>
+</table>
+
+<h4>Форматирование ввода/вывода</h4>
+<p>
+Библиотека <code>std::iostream</code> предоставляет средства для форматирования ввода/вывода:
+</p>
+<ul>
+  <li><strong>Манипуляторы</strong> — функции для изменения состояния потока (например, <code>std::hex</code>, <code>std::setw</code>).</li>
+  <li><strong>Флаги форматирования</strong> — флаги для управления форматированием (например, <code>std::ios::hex</code>, <code>std::ios::fixed</code>).</li>
+</ul>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Чтение и запись в стандартные потоки</h4>
+<pre><code>
+iostream_basic_example.cpp
+</code></pre>
+
+<h4>Пример 2: Работа с файлами</h4>
+<pre><code>
+iostream_file_example.cpp
+</code></pre>
+
+<h4>Пример 3: Форматирование вывода</h4>
+<pre><code>
+iostream_formatting_example.cpp
+</code></pre>
+
+<h4>Пример 4: Использование stringstream</h4>
+<pre><code>
+iostream_stringstream_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::cout</code> и <code>std::cin</code> для работы со стандартными потоками.</li>
+  <li>Используйте <code>std::ofstream</code> и <code>std::ifstream</code> для работы с файлами.</li>
+  <li>Используйте <code>std::stringstream</code> для работы со строками.</li>
+  <li>Используйте манипуляторы для форматирования вывода.</li>
+  <li>Проверяйте состояние потока (<code>is_open</code>, <code>fail</code>, <code>bad</code>).</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::iostream`</strong> — это основная библиотека для работы со стандартными потоками ввода/вывода в C++.
+Она предоставляет гибкие и удобные средства для чтения и записи данных в консоль, файлы и другие устройства.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/io">std::iostream на cppreference.com</a></li>
+</ul>

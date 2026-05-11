@@ -1,3 +1,113 @@
-<h2>variant</h2>
+<h2>std::variant: Тип-дискриминатор в C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::variant`</strong> — контейнер, введенный в C++17, который может содержать значение одного из нескольких типов.
+Он предоставляет типобезопасный способ работы с данными, которые могут быть одного из нескольких типов.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Тип-дискриминатор</strong> — контейнер, который может содержать значение одного из нескольких типов.</li>
+  <li><strong>Активный тип</strong> — тип значения, которое в данный момент содержится в <code>variant</code>.</li>
+  <li><strong>Индекс</strong> — индекс активного типа в списке типов.</li>
+</ul>
+
+<h4>Конструкторы std::variant</h4>
+<table>
+  <tr>
+    <th>Конструктор</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>variant()</code></td>
+    <td>Создаёт <code>variant</code> с первым типом по умолчанию.</td>
+  </tr>
+  <tr>
+    <td><code>variant(T value)</code></td>
+    <td>Создаёт <code>variant</code> с значением типа <code>T</code>.</td>
+  </tr>
+  <tr>
+    <td><code>variant(std::in_place_type_t<T>, Args... args)</code></td>
+    <td>Создаёт <code>variant</code> с конструкцией значения типа <code>T</code> на месте.</td>
+  </tr>
+  <tr>
+    <td><code>variant(std::in_place_index_t<I>, Args... args)</code></td>
+    <td>Создаёт <code>variant</code> с конструкцией значения по индексу <code>I</code> на месте.</td>
+  </tr>
+</table>
+
+<h4>Методы доступа к значению</h4>
+<table>
+  <tr>
+    <th>Метод</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>index()</code></td>
+    <td>Возвращает индекс активного типа.</td>
+  </tr>
+  <tr>
+    <td><code>holds_alternative<T>()</code></td>
+    <td>Проверяет, содержит ли <code>variant</code> значение типа <code>T</code>.</td>
+  </tr>
+  <tr>
+    <td><code>std::get<T>(variant)</code></td>
+    <td>Возвращает значение типа <code>T</code>.</td>
+  </tr>
+  <tr>
+    <td><code>std::get<I>(variant)</code></td>
+    <td>Возвращает значение по индексу <code>I</code>.</td>
+  </tr>
+  <tr>
+    <td><code>std::get_if<T>(&variant)</code></td>
+    <td>Возвращает указатель на значение типа <code>T</code> или <code>nullptr</code>.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Создание и доступ к std::variant</h4>
+<pre><code>
+variant_basic_example.cpp
+</code></pre>
+
+<h4>Пример 2: Проверка типа</h4>
+<pre><code>
+variant_check_example.cpp
+</code></pre>
+
+<h4>Пример 3: Использование std::get_if</h4>
+<pre><code>
+variant_get_if_example.cpp
+</code></pre>
+
+<h4>Пример 4: Обработка variant с помощью std::visit</h4>
+<pre><code>
+variant_visit_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::variant</code> для представления данных, которые могут быть одного из нескольких типов.</li>
+  <li>Используйте <code>std::visit</code> для обработки всех возможных типов.</li>
+  <li>Используйте <code>std::get_if</code> для безопасного доступа к значению.</li>
+  <li>Избегайте использования <code>std::get</code> без проверки типа, чтобы избежать исключений.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::variant`</strong> — это тип-дискриминатор, который может содержать значение одного из нескольких типов.
+Он предоставляет типобезопасный и удобный способ работы с такими данными.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/variant">std::variant на cppreference.com</a></li>
+</ul>

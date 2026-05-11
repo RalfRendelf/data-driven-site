@@ -1,3 +1,100 @@
-<h2>optional</h2>
+<h2>std::optional: Контейнер для значения или его отсутствия</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::optional`</strong> — контейнер, введенный в C++17, который может содержать значение или быть пустым.
+Он предоставляет безопасный способ работы с значениями, которые могут отсутствовать, без использования специальных значений (например, <code>nullptr</code> или <code>-1</code>).
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Состояние</strong>:
+    <ul>
+      <li><code>engaged</code> — содержит значение.</li>
+      <li><code>disengaged</code> — не содержит значения.</li>
+    </ul>
+  </li>
+  <li><strong>Доступ к значению</strong>:
+    <ul>
+      <li><code>operator*</code> и <code>operator-&gt;</code> — доступ к значению.</li>
+      <li><code>value()</code> — доступ к значению с проверкой.</li>
+    </ul>
+  </li>
+  <li><strong>Проверка состояния</strong>:
+    <ul>
+      <li><code>has_value()</code> — проверяет, содержит ли <code>optional</code> значение.</li>
+      <li><code>operator bool()</code> — неявное преобразование в <code>bool</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Конструкторы std::optional</h4>
+<table>
+  <tr>
+    <th>Конструктор</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>optional()</code></td>
+    <td>Создаёт пустой <code>optional</code>.</td>
+  </tr>
+  <tr>
+    <td><code>optional(T value)</code></td>
+    <td>Создаёт <code>optional</code> с значением.</td>
+  </tr>
+  <tr>
+    <td><code>optional(std::nullopt_t)</code></td>
+    <td>Создаёт пустой <code>optional</code>.</td>
+  </tr>
+  <tr>
+    <td><code>optional(std::in_place_t, Args... args)</code></td>
+    <td>Создаёт <code>optional</code> с конструкцией значения на месте.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Создание и проверка std::optional</h4>
+<pre><code>
+optional_basic_example.cpp
+</code></pre>
+
+<h4>Пример 2: Доступ к значению</h4>
+<pre><code>
+optional_access_example.cpp
+</code></pre>
+
+<h4>Пример 3: Конструкция на месте</h4>
+<pre><code>
+optional_in_place_example.cpp
+</code></pre>
+
+<h4>Пример 4: Использование с функциями</h4>
+<pre><code>
+optional_function_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::optional</code> для представления значений, которые могут отсутствовать.</li>
+  <li>Используйте <code>has_value()</code> или <code>operator bool()</code> для проверки наличия значения.</li>
+  <li>Используйте <code>value_or()</code> для предоставления значения по умолчанию.</li>
+  <li>Избегайте использования специальных значений (например, <code>-1</code> или <code>nullptr</code>) для представления отсутствия значения.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::optional`</strong> — это контейнер для представления значений, которые могут отсутствовать.
+Он предоставляет безопасный и удобный способ работы с такими значениями без использования специальных маркеров.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/optional">std::optional на cppreference.com</a></li>
+</ul>

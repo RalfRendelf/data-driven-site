@@ -1,3 +1,118 @@
-<h2>filesystem</h2>
+<h2>std::filesystem: Работа с файлами и директориями (C++17)</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::filesystem`</strong> — библиотека для работы с файловой системой, введенная в C++17.
+Она предоставляет кросс-платформенные средства для работы с файлами, директориями и путями.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Путь (<code>std::filesystem::path</code>)</strong> — представление пути к файлу или директории.</li>
+  <li><strong>Файл (<code>std::filesystem::file_status</code>)</strong> — информация о файле (типы, права доступа).</li>
+  <li><strong>Операции с файлами и директориями</strong> — создание, удаление, копирование, перемещение.</li>
+</ul>
+
+<h4>Класс std::filesystem::path</h4>
+<p>
+Класс <code>path</code> представляет путь к файлу или директории и предоставляет методы для работы с путями:
+</p>
+<ul>
+  <li><code>path::string()</code> — получение строкового представления пути.</li>
+  <li><code>path::filename()</code> — получение имени файла.</li>
+  <li><code>path::parent_path()</code> — получение родительского пути.</li>
+  <li><code>path::extension()</code> — получение расширения файла.</li>
+  <li><code>path::is_absolute()</code> — проверка, является ли путь абсолютным.</li>
+  <li><code>path::is_relative()</code> — проверка, является ли путь относительным.</li>
+</ul>
+
+<h4>Функции для работы с файловой системой</h4>
+<table>
+  <tr>
+    <th>Функция</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::exists(path)</code></td>
+    <td>Проверяет, существует ли файл или директория.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::is_directory(path)</code></td>
+    <td>Проверяет, является ли путь директорией.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::is_regular_file(path)</code></td>
+    <td>Проверяет, является ли путь обычным файлом.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::create_directory(path)</code></td>
+    <td>Создаёт директорию.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::remove(path)</code></td>
+    <td>Удаляет файл или директорию.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::copy_file(from, to)</code></td>
+    <td>Копирует файл.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::rename(from, to)</code></td>
+    <td>Переименовывает или перемещает файл.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::file_size(path)</code></td>
+    <td>Возвращает размер файла.</td>
+  </tr>
+  <tr>
+    <td><code>std::filesystem::last_write_time(path)</code></td>
+    <td>Возвращает время последней модификации файла.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Работа с путями</h4>
+<pre><code>
+filesystem_path_example.cpp
+</code></pre>
+
+<h4>Пример 2: Проверка существования файла</h4>
+<pre><code>
+filesystem_exists_example.cpp
+</code></pre>
+
+<h4>Пример 3: Рекурсивный обход директории</h4>
+<pre><code>
+filesystem_directory_iteration_example.cpp
+</code></pre>
+
+<h4>Пример 4: Создание и удаление директории</h4>
+<pre><code>
+filesystem_directory_operations_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::filesystem::path</code> для работы с путями.</li>
+  <li>Используйте <code>std::filesystem::exists</code> для проверки существования файлов.</li>
+  <li>Используйте <code>std::filesystem::recursive_directory_iterator</code> для рекурсивного обхода директорий.</li>
+  <li>Помните о кросс-платформенности — <code>std::filesystem</code> работает на всех платформах, поддерживающих C++17.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::filesystem`</strong> — это мощная библиотека для работы с файловой системой в C++17.
+Она предоставляет кросс-платформенные средства для работы с файлами, директориями и путями.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/filesystem">std::filesystem на cppreference.com</a></li>
+</ul>

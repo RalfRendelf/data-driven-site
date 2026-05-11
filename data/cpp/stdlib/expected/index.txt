@@ -1,3 +1,90 @@
-<h2>expected</h2>
+<h2>std::expected: Результат или ошибка без исключений</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>`std::expected`</strong> — контейнер, введенный в C++23, который может содержать либо результат выполнения операции, либо ошибку.
+Он предоставляет альтернативу использованию исключений для обработки ошибок.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Основные концепции</h4>
+<ul>
+  <li><strong>Результат или ошибка</strong> — <code>std::expected<T, E></code> может содержать значение типа <code>T</code> (успех) или значение типа <code>E</code> (ошибка).</li>
+  <li><strong>Состояние</strong>:
+    <ul>
+      <li><code>has_value()</code> — проверяет, содержит ли <code>expected</code> результат.</li>
+      <li><code>error()</code> — возвращает ошибку, если она есть.</li>
+    </ul>
+  </li>
+  <li><strong>Доступ к значению</strong>:
+    <ul>
+      <li><code>operator*</code> и <code>operator-&gt;</code> — доступ к результату.</li>
+      <li><code>value()</code> — доступ к результату с проверкой.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Конструкторы std::expected</h4>
+<table>
+  <tr>
+    <th>Конструктор</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><code>expected(T value)</code></td>
+    <td>Создаёт <code>expected</code> с результатом.</td>
+  </tr>
+  <tr>
+    <td><code>expected(E error)</code></td>
+    <td>Создаёт <code>expected</code> с ошибкой.</td>
+  </tr>
+  <tr>
+    <td><code>expected(std::in_place_t, Args... args)</code></td>
+    <td>Создаёт <code>expected</code> с конструкцией результата на месте.</td>
+  </tr>
+  <tr>
+    <td><code>expected(std::unexpect_t, Args... args)</code></td>
+    <td>Создаёт <code>expected</code> с конструкцией ошибки на месте.</td>
+  </tr>
+</table>
+
+---
+<h3>Примеры использования</h3>
+
+<h4>Пример 1: Создание std::expected</h4>
+<pre><code>
+expected_basic_example.cpp
+</code></pre>
+
+<h4>Пример 2: Использование с функциями</h4>
+<pre><code>
+expected_function_example.cpp
+</code></pre>
+
+<h4>Пример 3: Обработка std::expected</h4>
+<pre><code>
+expected_handling_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>std::expected</code> для обработки ошибок без исключений.</li>
+  <li>Используйте <code>has_value()</code> для проверки результата.</li>
+  <li>Используйте <code>error()</code> для доступа к ошибке.</li>
+  <li>Избегайте использования исключений в критических участках кода.</li>
+</ul>
+
+---
+<h3>Заключение</h3>
+<p>
+<strong>`std::expected`</strong> — это контейнер для представления результата или ошибки.
+Он предоставляет альтернативу использованию исключений для обработки ошибок, что может быть полезно в системах, где исключения нежелательны.
+</p>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://en.cppreference.com/w/cpp/utility/expected">std::expected на cppreference.com</a></li>
+</ul>
