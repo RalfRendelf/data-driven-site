@@ -1,3 +1,71 @@
-<h2>QFuture & QFutureWatcher</h2>
+<h2>QFuture & QFutureWatcher: Отслеживание выполнения задач</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>QFuture</strong> и <strong>QFutureWatcher</strong> — классы для отслеживания выполнения асинхронных задач в Qt Concurrent.
+Они позволяют получать результаты выполнения, отменять задачи и отслеживать их статус.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>QFuture</h4>
+<ul>
+  <li>Шаблонный класс, представляющий результат асинхронной операции.</li>
+  <li>Методы:
+    <ul>
+      <li><code>isFinished()</code> — проверяет, завершена ли задача.</li>
+      <li><code>isCanceled()</code> — проверяет, отменена ли задача.</li>
+      <li><code>isRunning()</code> — проверяет, выполняется ли задача.</li>
+      <li><code>result()</code> — возвращает результат (блокирует до завершения).</li>
+      <li><code>waitForFinished()</code> — ожидает завершения задачи.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QFutureWatcher</h4>
+<ul>
+  <li>Класс для отслеживания выполнения <code>QFuture</code>.</li>
+  <li>Испускает сигналы при изменении статуса задачи.</li>
+  <li>Сигналы:
+    <ul>
+      <li><code>finished()</code> — испускается при завершении задачи.</li>
+      <li><code>canceled()</code> — испускается при отмене задачи.</li>
+      <li><code>progressValueChanged(int)</code> — испускается при изменении прогресса.</li>
+    </ul>
+  </li>
+  <li>Методы:
+    <ul>
+      <li><code>setFuture(const QFuture<T> &future)</code> — устанавливает будущее значение для отслеживания.</li>
+      <li><code>cancel()</code> — отменяет задачу.</li>
+      <li><code>isFinished()</code> — проверяет, завершена ли задача.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>Отслеживание выполнения задачи</h4>
+<pre><code>
+qt_future_watcher.cpp
+</code></pre>
+
+<h4>Отмена задачи</h4>
+<pre><code>
+qt_future_cancel.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>QFutureWatcher</code> для отслеживания выполнения задач без блокировки.</li>
+  <li>Используйте сигналы <code>finished</code> и <code>canceled</code> для обработки завершения задач.</li>
+  <li>Избегайте вызова <code>future.result()</code> в основном потоке без проверки статуса.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qfuture.html">QFuture в документации Qt</a></li>
+  <li><a href="https://doc.qt.io/qt-6/qfuturewatcher.html">QFutureWatcher в документации Qt</a></li>
+</ul>

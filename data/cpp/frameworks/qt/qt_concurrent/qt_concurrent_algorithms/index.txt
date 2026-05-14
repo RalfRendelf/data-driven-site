@@ -1,3 +1,81 @@
-<h2>QtConcurrent Algorithms</h2>
+<h2>QtConcurrent Algorithms: Параллельные алгоритмы</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>QtConcurrent Algorithms</strong> — набор параллельных алгоритмов для обработки данных в Qt Concurrent.
+Они позволяют выполнять операции над контейнерами (например, <code>map</code>, <code>filter</code>, <code>reduce</code>) в нескольких потоках одновременно.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое параллельные алгоритмы?</h4>
+<ul>
+  <li>Алгоритмы для обработки данных в нескольких потоках.</li>
+  <li>Поддерживают стандартные контейнеры STL и Qt.</li>
+  <li>Возвращают <code>QFuture</code> для отслеживания выполнения.</li>
+</ul>
+
+<h4>Основные алгоритмы</h4>
+<table>
+  <tr>
+    <th>Алгоритм</th>
+    <th>Описание</th>
+    <th>Аналог в STL</th>
+  </tr>
+  <tr>
+    <td><code>QtConcurrent::map</code></td>
+    <td>Применяет функцию к каждому элементу контейнера параллельно.</td>
+    <td><code>std::transform</code></td>
+  </tr>
+  <tr>
+    <td><code>QtConcurrent::filter</code></td>
+    <td>Фильтрует элементы контейнера параллельно.</td>
+    <td><code>std::copy_if</code></td>
+  </tr>
+  <tr>
+    <td><code>QtConcurrent::reduce</code></td>
+    <td>Свёртка контейнера (например, суммирование) параллельно.</td>
+    <td><code>std::accumulate</code></td>
+  </tr>
+</table>
+
+---
+<h3>Использование</h3>
+
+<h4>QtConcurrent::map</h4>
+<p>
+Применяет функцию к каждому элементу контейнера параллельно:
+</p>
+<pre><code>
+qt_concurrent_map.cpp
+</code></pre>
+
+<h4>QtConcurrent::filter</h4>
+<p>
+Фильтрует элементы контейнера параллельно:
+</p>
+<pre><code>
+qt_concurrent_filter.cpp
+</code></pre>
+
+<h4>QtConcurrent::reduce</h4>
+<p>
+Свёртка контейнера (например, суммирование) параллельно:
+</p>
+<pre><code>
+qt_concurrent_reduce.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте параллельные алгоритмы для обработки больших контейнеров.</li>
+  <li>Избегайте использования параллельных алгоритмов для малых контейнеров из-за накладных расходов.</li>
+  <li>Используйте <code>QFutureWatcher</code> для отслеживания выполнения.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtconcurrent-map.html">QtConcurrent Algorithms в документации Qt</a></li>
+</ul>

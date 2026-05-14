@@ -1,3 +1,49 @@
-<h2>QtConcurrent::run</h2>
+<h2>QtConcurrent::run: Асинхронный запуск функций</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>QtConcurrent::run</strong> — функция для асинхронного выполнения функций в пуле потоков Qt.
+Она позволяет запускать функции без блокировки основного потока и возвращает объект <code>QFuture</code> для отслеживания выполнения.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое QtConcurrent::run?</h4>
+<ul>
+  <li>Функция для выполнения функций в пуле потоков.</li>
+  <li>Возвращает <code>QFuture<T></code>, который позволяет отслеживать выполнение и получать результат.</li>
+  <li>Поддерживает функции с аргументами и без.</li>
+</ul>
+
+<h4>Перегрузки функции</h4>
+<ul>
+  <li><code>QFuture<T> QtConcurrent::run(Function function)</code> — выполнение функции без аргументов.</li>
+  <li><code>QFuture<T> QtConcurrent::run(Function function, Arg1 arg1, Arg2 arg2, ...)</code> — выполнение функции с аргументами.</li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>Запуск функции без аргументов</h4>
+<pre><code>
+qt_concurrent_run_simple.cpp
+</code></pre>
+
+<h4>Запуск функции с аргументами</h4>
+<pre><code>
+qt_concurrent_run_args.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>QtConcurrent::run</code> для выполнения долгих операций в фоновом режиме.</li>
+  <li>Избегайте блокирующих вызовов <code>future.result()</code> в основном потоке.</li>
+  <li>Используйте <code>QFutureWatcher</code> для отслеживания выполнения без блокировки.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtconcurrent-run.html">QtConcurrent::run в документации Qt</a></li>
+</ul>
