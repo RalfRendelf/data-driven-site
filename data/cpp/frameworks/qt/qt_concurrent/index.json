@@ -1,0 +1,42 @@
+[
+  {
+    "type": "cpp",
+    "name": "Qt Concurrent Overview",
+    "fileName": "qt_concurrent_overview",
+    "category": "cpp/frameworks/qt/qt_concurrent",
+    "usage": "Обзор Qt Concurrent: задачи, параллелизм, архитектура",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QtConcurrent::run",
+    "fileName": "qt_concurrent_run",
+    "category": "cpp/frameworks/qt/qt_concurrent",
+    "usage": "Асинхронный запуск функций в пуле потоков",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QFuture & QFutureWatcher",
+    "fileName": "qt_future",
+    "category": "cpp/frameworks/qt/qt_concurrent",
+    "usage": "Будущие значения, отслеживание выполнения задач",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QtConcurrent Algorithms",
+    "fileName": "qt_concurrent_algorithms",
+    "category": "cpp/frameworks/qt/qt_concurrent",
+    "usage": "Параллельные алгоритмы: map, filter, reduce",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QThreadPool",
+    "fileName": "qt_threadpool",
+    "category": "cpp/frameworks/qt/qt_concurrent",
+    "usage": "Пул потоков Qt: управление задачами",
+    "isLeaf": true
+  }
+]

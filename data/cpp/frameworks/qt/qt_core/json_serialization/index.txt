@@ -1,0 +1,97 @@
+<h2>JSON and Serialization: Работа с JSON в Qt</h2>
+
+<p>
+<strong>Qt JSON</strong> — набор классов для работы с JSON-данными.
+Они предоставляют удобные средства для парсинга, генерации и манипуляции JSON-объектами.
+</p>
+
+---
+<h3>Основные классы</h3>
+
+<h4>QJsonDocument</h4>
+<ul>
+  <li>Класс для представления JSON-документа.</li>
+  <li>Может содержать JSON-объект или JSON-массив.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>fromJson(const QByteArray &json)</code> — парсит JSON из байтового массива.</li>
+      <li><code>fromVariant(const QVariant &variant)</code> — создаёт документ из QVariant.</li>
+      <li><code>toJson()</code> — возвращает JSON в виде байтового массива.</li>
+      <li><code>toVariant()</code> — преобразует документ в QVariant.</li>
+      <li><code>isObject()</code>, <code>isArray()</code> — проверяет тип документа.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QJsonObject</h4>
+<ul>
+  <li>Класс для представления JSON-объекта (ассоциативный массив).</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>insert(const QString &key, const QJsonValue &value)</code> — добавляет пару ключ-значение.</li>
+      <li><code>value(const QString &key)</code> — возвращает значение по ключу.</li>
+      <li><code>contains(const QString &key)</code> — проверяет наличие ключа.</li>
+      <li><code>remove(const QString &key)</code> — удаляет элемент по ключу.</li>
+      <li><code>keys()</code> — возвращает список ключей.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QJsonArray</h4>
+<ul>
+  <li>Класс для представления JSON-массива.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>append(const QJsonValue &value)</code> — добавляет элемент в конец массива.</li>
+      <li><code>insert(int index, const QJsonValue &value)</code> — вставляет элемент на позицию.</li>
+      <li><code>at(int index)</code> — возвращает элемент по индексу.</li>
+      <li><code>removeAt(int index)</code> — удаляет элемент на позиции.</li>
+      <li><code>size()</code> — возвращает размер массива.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QJsonValue</h4>
+<ul>
+  <li>Класс для представления значения JSON (число, строка, объект, массив и т.д.).</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>isNull()</code>, <code>isBool()</code>, <code>isDouble()</code>, <code>isString()</code>, <code>isObject()</code>, <code>isArray()</code> — проверяют тип значения.</li>
+      <li><code>toBool()</code>, <code>toDouble()</code>, <code>toString()</code>, <code>toObject()</code>, <code>toArray()</code> — преобразуют значение в соответствующий тип.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>Парсинг JSON</h4>
+<pre><code>
+json_parse_example.cpp
+</code></pre>
+
+<h4>Создание JSON</h4>
+<pre><code>
+json_create_example.cpp
+</code></pre>
+
+<h4>Работа с массивами</h4>
+<pre><code>
+json_array_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>QJsonDocument</code> для работы с JSON-документами.</li>
+  <li>Используйте <code>QJsonObject</code> для работы с JSON-объектами.</li>
+  <li>Используйте <code>QJsonArray</code> для работы с JSON-массивами.</li>
+  <li>Используйте <code>QJsonValue</code> для работы с отдельными значениями.</li>
+  <li>Проверяйте типы данных перед преобразованием.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/json.html">JSON Support in Qt в документации Qt</a></li>
+</ul>

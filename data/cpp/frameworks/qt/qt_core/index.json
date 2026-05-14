@@ -1,0 +1,82 @@
+[
+  {
+    "type": "cpp",
+    "name": "QObject",
+    "fileName": "qobject",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Базовый класс Qt: жизненный цикл, родитель/потомок, метаобъектная система",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Signals and Slots",
+    "fileName": "signals_slots",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Сигналы и слоты: механизм событий Qt, connect, лямбды",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Event Loop",
+    "fileName": "event_loop",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Цикл событий Qt: обработка событий, очереди, QEvent",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QTimer",
+    "fileName": "qtimer",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Таймеры Qt: интервалы, singleShot, асинхронные события",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QThread",
+    "fileName": "qthread",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Потоки Qt: QThread, moveToThread, worker‑объекты",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Containers",
+    "fileName": "qt_containers",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Контейнеры Qt: QVector, QList, QMap, QString, QByteArray",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Meta‑Object System",
+    "fileName": "metaobject",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "MOC, свойства, метаинформация, Q_PROPERTY, QMetaObject",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Resources System",
+    "fileName": "resources",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Система ресурсов Qt: .qrc, rcc, доступ к ресурсам",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "File and IO",
+    "fileName": "file_io",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Работа с файлами: QFile, QTextStream, QDir, QFileInfo",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "JSON and Serialization",
+    "fileName": "json_serialization",
+    "category": "cpp/frameworks/qt/qt_core",
+    "usage": "Qt JSON API, QJsonDocument, QJsonObject, сериализация",
+    "isLeaf": true
+  }
+]

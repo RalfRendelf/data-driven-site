@@ -1,0 +1,123 @@
+<h2>Event Loop: Цикл событий Qt</h2>
+
+<p>
+<strong>Цикл событий</strong> (<code>Event Loop</code>) — это центральный механизм Qt, отвечающий за обработку событий в приложении.
+Он обеспечивает асинхронную обработку пользовательского ввода, таймеров, сетевых запросов и других событий.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое цикл событий?</h4>
+<ul>
+  <li>Каждое приложение Qt имеет <strong>главный цикл событий</strong>, который запускается вызовом <code>QApplication::exec()</code>.</li>
+  <li>Цикл событий обрабатывает <strong>очередь событий</strong> (<code>QEvent</code>), поступающих от операционной системы или других источников.</li>
+  <li>События обрабатываются последовательно в том порядке, в котором они поступили.</li>
+</ul>
+
+<h4>Как работает цикл событий?</h4>
+<ul>
+  <li><strong>Запуск цикла:</strong> Вызов <code>QApplication::exec()</code> запускает главный цикл событий.</li>
+  <li><strong>Обработка событий:</strong>
+    <ul>
+      <li>Цикл извлекает событие из очереди.</li>
+      <li>Находит объект, для которого предназначено событие.</li>
+      <li>Вызывает метод <code>QObject::event()</code> для обработки события.</li>
+    </ul>
+  </li>
+  <li><strong>Завершение цикла:</strong> Цикл завершается при вызове <code>QApplication::quit()</code> или возврате из <code>exec()</code>.</li>
+</ul>
+
+---
+<h3>Классы и методы</h3>
+
+<h4>QApplication</h4>
+<ul>
+  <li><strong>Запуск цикла:</strong> <code>QApplication::exec()</code>.</li>
+  <li><strong>Завершение цикла:</strong> <code>QApplication::quit()</code>.</li>
+  <li><strong>Обработка событий вручную:</strong> <code>QApplication::processEvents()</code>.</li>
+  <li><strong>Отправка кастомных событий:</strong> <code>QApplication::postEvent()</code>.</li>
+</ul>
+
+<h4>QEvent</h4>
+<ul>
+  <li>Базовый класс для всех событий в Qt.</li>
+  <li>Содержит тип события (<code>QEvent::Type</code>) и другие данные.</li>
+  <li>Основные типы событий:
+    <ul>
+      <li><code>QEvent::MouseButtonPress</code>, <code>QEvent::MouseButtonRelease</code> — события мыши.</li>
+      <li><code>QEvent::KeyPress</code>, <code>QEvent::KeyRelease</code> — события клавиатуры.</li>
+      <li><code>QEvent::Paint</code> — событие рисования.</li>
+      <li><code>QEvent::Timer</code> — событие таймера.</li>
+      <li><code>QEvent::User</code> — пользовательские события.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Обработка событий</h4>
+<ul>
+  <li><strong>Переопределение QObject::event()</strong>:
+    <ul>
+      <li>Позволяет обрабатывать события на уровне объекта.</li>
+      <li>Возвращает <code>true</code>, если событие обработано, и <code>false</code> — если нужно передать его родителю.</li>
+    </ul>
+  </li>
+  <li><strong>Переопределение специфичных обработчиков:</strong>
+    <ul>
+      <li><code>mousePressEvent()</code>, <code>mouseReleaseEvent()</code> — для событий мыши.</li>
+      <li><code>keyPressEvent()</code>, <code>keyReleaseEvent()</code> — для событий клавиатуры.</li>
+      <li><code>paintEvent()</code> — для событий рисования.</li>
+      <li><code>timerEvent()</code> — для событий таймера.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример переопределения обработчика событий:
+</p>
+<pre><code>
+event_handling_example.hpp
+</code></pre>
+
+---
+<h3>Расширенные возможности</h3>
+
+<h4>Кастомные события</h4>
+<ul>
+  <li>Можно создавать собственные типы событий, наследуясь от <code>QEvent</code>.</li>
+  <li>Отправляются с помощью <code>QApplication::postEvent()</code>.</li>
+</ul>
+<p>
+Пример кастомного события:
+</p>
+<pre><code>
+custom_event_example.hpp
+</code></pre>
+
+<h4>Очереди событий</h4>
+<ul>
+  <li>Каждый поток в Qt имеет свою очередь событий.</li>
+  <li>События обрабатываются в том потоке, в котором они были отправлены.</li>
+  <li>Для отправки событий в другой поток используйте <code>QCoreApplication::postEvent()</code>.</li>
+</ul>
+
+<h4>Цикл событий и потоки</h4>
+<ul>
+  <li>Каждый поток (<code>QThread</code>) может иметь свой цикл событий.</li>
+  <li>Для запуска цикла событий в потоке используйте <code>QThread::exec()</code>.</li>
+  <li>События, отправленные в поток, обрабатываются в его цикле событий.</li>
+</ul>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Не блокируйте цикл событий долгими операциями.</li>
+  <li>Используйте <code>QApplication::processEvents()</code> для обработки событий вручную.</li>
+  <li>Для долгих операций используйте потоки или асинхронные вызовы.</li>
+  <li>Избегайте прямого вызова <code>QApplication::exec()</code> в потоках, кроме главного.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qcoreapplication.html#event-processing">Обработка событий в документации Qt</a></li>
+</ul>

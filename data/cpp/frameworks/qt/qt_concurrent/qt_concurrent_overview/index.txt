@@ -1,0 +1,3 @@
+<h2>Qt Concurrent Overview</h2>
+
+<p>Статья пока не заполнена.</p>

@@ -1,0 +1,82 @@
+[
+  {
+    "type": "db",
+    "name": "SQL Basics",
+    "fileName": "sql_basics",
+    "category": "db",
+    "usage": "Основы SQL: SELECT, INSERT, UPDATE, DELETE, JOIN",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "PostgreSQL",
+    "fileName": "postgresql",
+    "category": "db",
+    "usage": "PostgreSQL: архитектура, типы данных, индексы, транзакции",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "MySQL / MariaDB",
+    "fileName": "mysql",
+    "category": "db",
+    "usage": "MySQL/MariaDB: особенности, движки таблиц, оптимизация",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "SQLite",
+    "fileName": "sqlite",
+    "category": "db",
+    "usage": "SQLite: встроенная база данных, файлы, транзакции, ограничения",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "MongoDB",
+    "fileName": "mongodb",
+    "category": "db",
+    "usage": "MongoDB: документы, коллекции, индексы, агрегации",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "Redis",
+    "fileName": "redis",
+    "category": "db",
+    "usage": "Redis: in‑memory хранилище, ключ‑значение, pub/sub, TTL",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "ORM Overview",
+    "fileName": "orm_overview",
+    "category": "db",
+    "usage": "ORM: концепции, преимущества, недостатки, паттерны",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "Qt SQL Module",
+    "fileName": "qt_sql_module",
+    "category": "db",
+    "usage": "Qt SQL: драйверы, QSqlDatabase, QSqlQuery, модели",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "Database Indexing",
+    "fileName": "db_indexing",
+    "category": "db",
+    "usage": "Индексы: B‑Tree, Hash, GiST, GIN, BRIN",
+    "isLeaf": true
+  },
+  {
+    "type": "db",
+    "name": "Transactions & Isolation",
+    "fileName": "db_transactions",
+    "category": "db",
+    "usage": "Транзакции, уровни изоляции, ACID, MVCC",
+    "isLeaf": true
+  }
+]

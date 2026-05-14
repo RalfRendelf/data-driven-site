@@ -1,0 +1,54 @@
+[
+
+  {
+    "type": "алгоритмы",
+    "name": "Choosing Basic Patterns",
+    "fileName": "choosing_basic_patterns",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Как выбирать базовый алгоритмический паттерн в зависимости от структуры задачи",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers",
+    "fileName": "two_pointers",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Два указателя: три подпаттерна и их применение",
+    "isLeaf": false
+  },
+
+
+  {
+    "type": "алгоритмы",
+    "name": "Sliding Window",
+    "fileName": "sliding_window",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Скользящее окно: оптимизация подмассивов",
+    "isLeaf": true
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Prefix Sums",
+    "fileName": "prefix_sums",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Префиксные суммы: быстрые диапазонные запросы",
+    "isLeaf": true
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Difference Array",
+    "fileName": "difference_array",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Дифференциальный массив: массовые обновления",
+    "isLeaf": true
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Binary Search Patterns",
+    "fileName": "binary_search_patterns",
+    "category": "алгоритмы/basic_patterns",
+    "usage": "Бинарный поиск по ответу, монотонность",
+    "isLeaf": true
+  }
+]

@@ -147,7 +147,7 @@ function setupCodeLoaders(container, basePath) {
 
   loaders.forEach(loader => {
     let fileName = loader.dataset.file?.trim();
-    const validExtensions = ['.txt', '.cpp', '.c', '.py', '.js','.sh'
+    const validExtensions = ['.txt', '.cpp', '.c', '.py', '.js','.sh','.hpp','.pro'
     ];
 if (!fileName || !validExtensions.some(ext => fileName.endsWith(ext))) {
   const btn = loader.querySelector('.code-toggle');

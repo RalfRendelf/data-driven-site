@@ -1,0 +1,39 @@
+[
+
+
+  {
+    "type": "алгоритмы",
+    "name": "Choosing Graph Algorithms",
+    "fileName": "choosing_graph_algorithms",
+    "category": "алгоритмы/graph_algorithms",
+    "usage": "Как выбирать алгоритм на графах: обходы, пути, компоненты, структуры",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Graph Traversal",
+    "fileName": "graph_traversal",
+    "category": "алгоритмы/graph_algorithms",
+    "usage": "Обходы графов: BFS, DFS, топологическая сортировка",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Shortest Paths",
+    "fileName": "shortest_paths",
+    "category": "алгоритмы/graph_algorithms",
+    "usage": "Кратчайшие пути: Dijkstra, Bellman-Ford, Floyd-Warshall",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Union-Find (DSU)",
+    "fileName": "dsu",
+    "category": "алгоритмы/graph_algorithms",
+    "usage": "Система непересекающихся множеств: компоненты связности, объединение",
+    "isLeaf": true
+  }
+]

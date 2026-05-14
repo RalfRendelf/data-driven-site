@@ -55,7 +55,12 @@ export const CATEGORIES = [
       "title": "🐧 Linux",
       "type": "linux",
       "columns": ["Название", "Назначение", "Особенности"]
-    }
+    },
+    {
+  "title": "🗄️Базы данных (SQL/NoSQL/ORM)",
+  "type": "db",
+  "columns": ["Название", "Категория", "Описание"]
+}
 
     
   ];

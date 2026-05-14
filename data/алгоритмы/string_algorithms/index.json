@@ -1,0 +1,75 @@
+[
+
+
+  {
+    "type": "алгоритмы",
+    "name": "Choosing String Algorithms",
+    "fileName": "choosing_string_algorithms",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Как выбирать строковый алгоритм: поиск, сравнение, структуры данных",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Prefix Function (KMP)",
+    "fileName": "kmp",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Префикс‑функция и алгоритм Кнута–Морриса–Пратта",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Z-Function",
+    "fileName": "z_function",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Z‑функция: поиск подстрок, сравнение префиксов",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Rabin–Karp",
+    "fileName": "rabin_karp",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Хеширование строк: поиск подстроки, rolling hash",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Trie",
+    "fileName": "trie",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Бор: хранение строк, автодополнение, поиск по префиксу",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Aho–Corasick",
+    "fileName": "aho_corasick",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Множественный поиск подстрок: автомат Ахо–Корасик",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Suffix Array",
+    "fileName": "suffix_array",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Суффиксный массив: сортировка суффиксов, LCP",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Suffix Automaton",
+    "fileName": "suffix_automaton",
+    "category": "алгоритмы/string_algorithms",
+    "usage": "Суффиксный автомат: подстроки, количество различных подстрок",
+    "isLeaf": true
+  }
+]

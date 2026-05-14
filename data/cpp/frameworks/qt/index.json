@@ -1,1 +1,114 @@
-[]
+[
+  {
+    "type": "cpp",
+    "name": "Qt Overview",
+    "fileName": "qt_overview",
+    "category": "cpp/frameworks/qt",
+    "usage": "Обзор Qt: архитектура, модули, сборка, qmake/CMake",
+    "isLeaf": true
+  },
+    {
+    "type": "cpp",
+    "name": "Qt Core",
+    "fileName": "qt_core",
+    "category": "cpp/frameworks/qt",
+    "usage": "Основные классы Qt: QObject, сигналы/слоты, таймеры, контейнеры",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt GUI",
+    "fileName": "qt_gui",
+    "category": "cpp/frameworks/qt",
+    "usage": "Графическая подсистема Qt: окна, события, рендеринг",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Widgets",
+    "fileName": "qt_widgets",
+    "category": "cpp/frameworks/qt",
+    "usage": "Классические виджеты Qt: кнопки, таблицы, layout'ы",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Quick / QML",
+    "fileName": "qt_qml",
+    "category": "cpp/frameworks/qt",
+    "usage": "QML, Qt Quick, декларативный UI, интеграция с C++",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Network",
+    "fileName": "qt_network",
+    "category": "cpp/frameworks/qt",
+    "usage": "Сетевые сокеты, HTTP, TCP/UDP, асинхронные операции",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Concurrent",
+    "fileName": "qt_concurrent",
+    "category": "cpp/frameworks/qt",
+    "usage": "Параллелизм: QtConcurrent, Future, ThreadPool",
+    "isLeaf": false
+  },
+  {
+    "type": "cpp",
+    "name": "Qt SQL",
+    "fileName": "qt_sql",
+    "category": "cpp/frameworks/qt",
+    "usage": "Работа с базами данных: драйверы, запросы, модели",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Test",
+    "fileName": "qt_test",
+    "category": "cpp/frameworks/qt",
+    "usage": "Юнит‑тестирование в Qt",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Multimedia",
+    "fileName": "qt_multimedia",
+    "category": "cpp/frameworks/qt",
+    "usage": "Аудио, видео, камеры, мультимедиа API",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt SerialPort",
+    "fileName": "qt_serialport",
+    "category": "cpp/frameworks/qt",
+    "usage": "Работа с последовательными портами",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Bluetooth",
+    "fileName": "qt_bluetooth",
+    "category": "cpp/frameworks/qt",
+    "usage": "Bluetooth API: устройства, сервисы, BLE",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Positioning",
+    "fileName": "qt_positioning",
+    "category": "cpp/frameworks/qt",
+    "usage": "GPS, координаты, геолокация",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Build System",
+    "fileName": "qt_build",
+    "category": "cpp/frameworks/qt",
+    "usage": "Сборка Qt‑проектов: qmake, CMake, moc, rcc, uic",
+    "isLeaf": true
+  }
+]

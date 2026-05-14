@@ -1,0 +1,165 @@
+<h2>Meta-Object System: Метаобъектная система Qt</h2>
+
+<p>
+<strong>Meta-Object System (MOC)</strong> — это основа Qt, предоставляющая механизмы рефлексии, сигналов и слотов, а также динамического приведения типов.
+Она позволяет работать с объектами Qt на уровне метаинформации во время выполнения.
+</p>
+
+---
+<h3>Теоретические основы</h3>
+
+<h4>Что такое Meta-Object System?</h4>
+<ul>
+  <li><strong>Рефлексия:</strong> Возможность получения информации о классах, их методах, свойствах и сигналах во время выполнения.</li>
+  <li><strong>Сигналы и слоты:</strong> Механизм взаимодействия между объектами.</li>
+  <li><strong>Динамическое приведение типов:</strong> Безопасное приведение типов с проверкой во время выполнения.</li>
+</ul>
+
+<h4>Как работает MOC?</h4>
+<ul>
+  <li><strong>Макрос Q_OBJECT:</strong>
+    <ul>
+      <li>Объявляет класс как часть метаобъектной системы.</li>
+      <li>Генерирует дополнительный код, который обрабатывается <code>moc</code> (Meta-Object Compiler).</li>
+    </ul>
+  </li>
+  <li><strong>Meta-Object Compiler (moc):</strong>
+    <ul>
+      <li>Инструмент, который генерирует C++ код на основе макросов <code>Q_OBJECT</code>, <code>Q_PROPERTY</code> и других.</li>
+      <li>Вызывается автоматически во время сборки (через qmake или CMake).</li>
+    </ul>
+  </li>
+  <li><strong>Метаинформация:</strong>
+    <ul>
+      <li>Информация о классе хранится в объекте <code>QMetaObject</code>.</li>
+      <li>Доступна через метод <code>QObject::metaObject()</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Ключевые компоненты</h3>
+
+<h4>QMetaObject</h4>
+<ul>
+  <li>Содержит метаинформацию о классе:
+    <ul>
+      <li>Имя класса.</li>
+      <li>Список свойств (<code>QMetaProperty</code>).</li>
+      <li>Список методов (<code>QMetaMethod</code>).</li>
+      <li>Список сигналов и слотов.</li>
+    </ul>
+  </li>
+  <li>Доступ к метаинформации:
+    <ul>
+      <li><code>QObject::metaObject()</code> — возвращает <code>QMetaObject</code> для класса.</li>
+      <li><code>QMetaObject::className()</code> — возвращает имя класса.</li>
+      <li><code>QMetaObject::propertyCount()</code> — возвращает количество свойств.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QMetaProperty</h4>
+<ul>
+  <li>Содержит информацию о свойствах класса:
+    <ul>
+      <li>Имя свойства.</li>
+      <li>Тип свойства.</li>
+      <li>Флаги доступа (читаемое, записываемое, уведомляемое).</li>
+    </ul>
+  </li>
+  <li>Доступ к свойствам:
+    <ul>
+      <li><code>QMetaObject::property(int index)</code> — возвращает <code>QMetaProperty</code> по индексу.</li>
+      <li><code>QMetaProperty::name()</code> — возвращает имя свойства.</li>
+      <li><code>QMetaProperty::type()</code> — возвращает тип свойства.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QMetaMethod</h4>
+<ul>
+  <li>Содержит информацию о методах класса:
+    <ul>
+      <li>Имя метода.</li>
+      <li>Тип метода (сигнал, слот, обычный метод).</li>
+      <li>Список аргументов.</li>
+    </ul>
+  </li>
+  <li>Доступ к методам:
+    <ul>
+      <li><code>QMetaObject::method(int index)</code> — возвращает <code>QMetaMethod</code> по индексу.</li>
+      <li><code>QMetaMethod::name()</code> — возвращает имя метода.</li>
+      <li><code>QMetaMethod::methodType()</code> — возвращает тип метода.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>Объявление класса с Q_OBJECT</h4>
+<p>
+Для включения класса в метаобъектную систему используйте макрос <code>Q_OBJECT</code>:
+</p>
+<pre><code>
+moc_example.hpp
+</code></pre>
+
+<h4>Объявление свойств с Q_PROPERTY</h4>
+<p>
+Для объявления свойств используйте макрос <code>Q_PROPERTY</code>:
+</p>
+<pre><code>
+property_example.hpp
+</code></pre>
+
+<h4>Доступ к метаинформации</h4>
+<p>
+Метаинформацию можно получить во время выполнения:
+</p>
+<pre><code>
+metaobject_access_example.cpp
+</code></pre>
+
+<h4>Динамическое приведение типов</h4>
+<p>
+Для безопасного приведения типов используйте <code>qobject_cast</code>:
+</p>
+<pre><code>
+qobject_cast_example.cpp
+</code></pre>
+
+---
+<h3>Расширенные возможности</h3>
+
+<h4>Динамическое создание объектов</h4>
+<ul>
+  <li>Можно создавать объекты динамически по имени класса:</li>
+</ul>
+<pre><code>
+dynamic_creation_example.cpp
+</code></pre>
+
+<h4>Вызов методов по имени</h4>
+<ul>
+  <li>Можно вызывать методы объекта по имени во время выполнения:</li>
+</ul>
+<pre><code>
+invoke_method_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>Q_OBJECT</code> во всех классах, которые должны поддерживать сигналы/слоты.</li>
+  <li>Используйте <code>Q_PROPERTY</code> для свойств, которые должны быть доступны через метаобъектную систему.</li>
+  <li>Используйте <code>qobject_cast</code> для безопасного приведения типов.</li>
+  <li>Избегайте избыточного использования метаобъектной системы, если она не нужна.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/metaobjects.html">Meta-Object System в документации Qt</a></li>
+</ul>

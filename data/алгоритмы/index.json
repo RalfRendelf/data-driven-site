@@ -1,0 +1,50 @@
+[
+    {
+  "type": "алгоритмы",
+  "name": "Choosing Algorithmic Patterns",
+  "fileName": "choosing_patterns",
+  "category": "алгоритмы",
+  "usage": "Как выбирать алгоритмический паттерн в зависимости от задачи",
+  "isLeaf": true
+},
+  {
+    "type": "алгоритмы",
+    "name": "Basic Patterns",
+    "fileName": "basic_patterns",
+    "category": "алгоритмы",
+    "usage": "Базовые алгоритмические паттерны",
+    "isLeaf": false
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Graph Algorithms",
+    "fileName": "graph_algorithms",
+    "category": "алгоритмы",
+    "usage": "Графы: обходы, кратчайшие пути, структуры",
+    "isLeaf": false
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Dynamic Programming",
+    "fileName": "dp",
+    "category": "алгоритмы",
+    "usage": "Динамическое программирование и его паттерны",
+    "isLeaf": false
+  },
+  {
+    "type": "алгоритмы",
+    "name": "String Algorithms",
+    "fileName": "string_algorithms",
+    "category": "алгоритмы",
+    "usage": "Строковые алгоритмы и структуры данных",
+    "isLeaf": false
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Advanced Techniques",
+    "fileName": "advanced_techniques",
+    "category": "алгоритмы",
+    "usage": "Продвинутые техники: meet-in-the-middle, битмаски, Mo’s algorithm",
+    "isLeaf": false
+  }
+]

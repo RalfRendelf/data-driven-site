@@ -1,0 +1,98 @@
+[
+  {
+    "type": "cpp",
+    "name": "Widgets Overview",
+    "fileName": "widgets_overview",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Обзор Qt Widgets: архитектура, иерархия, жизненный цикл",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QWidget Basics",
+    "fileName": "qwidget_basics",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Основы QWidget: события, размеры, родитель/потомок, отображение",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Layouts",
+    "fileName": "widgets_layouts",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Layout‑ы Qt: QHBoxLayout, QVBoxLayout, QGridLayout, QFormLayout",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Basic Widgets",
+    "fileName": "widgets_basic",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Базовые виджеты: QPushButton, QLabel, QLineEdit, QTextEdit",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Advanced Widgets",
+    "fileName": "widgets_advanced",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Продвинутые виджеты: QTreeWidget, QTableWidget, QListWidget",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Model/View Framework",
+    "fileName": "widgets_model_view",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Модель/представление: QTableView, QTreeView, QAbstractItemModel",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Custom Widgets",
+    "fileName": "widgets_custom",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Создание собственных виджетов: paintEvent, события, свойства",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Painting and QPainter",
+    "fileName": "widgets_painting",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Рисование в Qt Widgets: QPainter, события перерисовки, double buffering",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Events and Event Handling",
+    "fileName": "widgets_events",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Обработка событий: mousePressEvent, keyPressEvent, eventFilter",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Dialogs",
+    "fileName": "widgets_dialogs",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Диалоги Qt: QMessageBox, QFileDialog, QDialog, кастомные диалоги",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Styles and Themes",
+    "fileName": "widgets_styles",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Стилизация Qt Widgets: QStyle, QProxyStyle, стили Fusion/Windows",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Stylesheets (CSS)",
+    "fileName": "widgets_stylesheets",
+    "category": "cpp/frameworks/qt/qt_widgets",
+    "usage": "Qt Stylesheets: кастомизация внешнего вида через CSS‑подобный синтаксис",
+    "isLeaf": true
+  }
+]

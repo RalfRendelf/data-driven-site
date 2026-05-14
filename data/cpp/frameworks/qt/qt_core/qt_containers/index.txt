@@ -1,0 +1,163 @@
+<h2>Qt Containers: Контейнеры Qt</h2>
+
+<p>
+<strong>Контейнеры Qt</strong> — это набор классов для хранения и управления коллекциями данных.
+Они аналогичны контейнерам STL, но оптимизированы для работы с Qt и предоставляют дополнительные возможности, такие как интеграция с системой сигналов и слотов.
+</p>
+
+---
+<h3>Основные контейнеры</h3>
+
+<h4>Последовательные контейнеры</h4>
+<table>
+  <tr>
+    <th>Контейнер</th>
+    <th>Описание</th>
+    <th>Аналог в STL</th>
+  </tr>
+  <tr>
+    <td><strong>QList</strong></td>
+    <td>Список элементов. Оптимизирован для вставки и удаления элементов в середине.</td>
+    <td><code>std::list</code></td>
+  </tr>
+  <tr>
+    <td><strong>QVector</strong></td>
+    <td>Динамический массив. Оптимизирован для быстрого доступа по индексу.</td>
+    <td><code>std::vector</code></td>
+  </tr>
+  <tr>
+    <td><strong>QLinkedList</strong></td>
+    <td>Двусвязный список. Оптимизирован для вставки и удаления элементов.</td>
+    <td><code>std::list</code></td>
+  </tr>
+  <tr>
+    <td><strong>QStack</strong></td>
+    <td>Стек (LIFO).</td>
+    <td><code>std::stack</code></td>
+  </tr>
+  <tr>
+    <td><strong>QQueue</strong></td>
+    <td>Очередь (FIFO).</td>
+    <td><code>std::queue</code></td>
+  </tr>
+</table>
+
+<h4>Ассоциативные контейнеры</h4>
+<table>
+  <tr>
+    <th>Контейнер</th>
+    <th>Описание</th>
+    <th>Аналог в STL</th>
+  </tr>
+  <tr>
+    <td><strong>QMap</strong></td>
+    <td>Ассоциативный массив (ключ-значение), отсортированный по ключу.</td>
+    <td><code>std::map</code></td>
+  </tr>
+  <tr>
+    <td><strong>QHash</strong></td>
+    <td>Хеш-таблица (ключ-значение). Быстрее, чем QMap, но не гарантирует порядок.</td>
+    <td><code>std::unordered_map</code></td>
+  </tr>
+  <tr>
+    <td><strong>QMultiMap</strong></td>
+    <td>Ассоциативный массив, допускающий дубликаты ключей.</td>
+    <td><code>std::multimap</code></td>
+  </tr>
+  <tr>
+    <td><strong>QMultiHash</strong></td>
+    <td>Хеш-таблица, допускающая дубликаты ключей.</td>
+    <td><code>std::unordered_multimap</code></td>
+  </tr>
+</table>
+
+<h4>Строки и байтовые массивы</h4>
+<table>
+  <tr>
+    <th>Класс</th>
+    <th>Описание</th>
+  </tr>
+  <tr>
+    <td><strong>QString</strong></td>
+    <td>Класс для работы со строками в Unicode (UTF-16). Поддерживает форматирование, поиск, замену и другие операции.</td>
+  </tr>
+  <tr>
+    <td><strong>QByteArray</strong></td>
+    <td>Класс для работы с байтовыми массивами. Аналогичен <code>std::string</code>, но оптимизирован для работы с бинарными данными.</td>
+  </tr>
+</table>
+
+---
+<h3>Отличия от STL</h3>
+<ul>
+  <li><strong>Итераторы:</strong>
+    <ul>
+      <li>Qt использует <strong>Java-стиль итераторов</strong> (например, <code>QList::iterator</code>).</li>
+      <li>Поддерживаются STL-стиль итераторы (начиная с Qt 5.6).</li>
+    </ul>
+  </li>
+  <li><strong>Именование методов:</strong>
+    <ul>
+      <li>Qt использует более интуитивные имена методов (например, <code>append()</code>, <code>prepend()</code>, <code>contains()</code>).</li>
+    </ul>
+  </li>
+  <li><strong>Интеграция с Qt:</strong>
+    <ul>
+      <li>Контейнеры Qt интегрированы с системой сигналов и слотов.</li>
+      <li>Поддерживают автоматическое управление памятью.</li>
+    </ul>
+  </li>
+  <li><strong>Производительность:</strong>
+    <ul>
+      <li>Qt контейнеры оптимизированы для работы с Qt и могут быть быстрее в некоторых сценариях.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Основные методы</h3>
+
+<h4>QList</h4>
+<ul>
+  <li><code>append(T)</code> — добавляет элемент в конец.</li>
+  <li><code>prepend(T)</code> — добавляет элемент в начало.</li>
+  <li><code>insert(int, T)</code> — вставляет элемент на позицию.</li>
+  <li><code>removeAt(int)</code> — удаляет элемент на позиции.</li>
+  <li><code>contains(T)</code> — проверяет наличие элемента.</li>
+  <li><code>indexOf(T)</code> — возвращает индекс элемента.</li>
+</ul>
+
+<h4>QMap / QHash</h4>
+<ul>
+  <li><code>insert(K, V)</code> — добавляет пару ключ-значение.</li>
+  <li><code>value(K)</code> — возвращает значение по ключу.</li>
+  <li><code>contains(K)</code> — проверяет наличие ключа.</li>
+  <li><code>remove(K)</code> — удаляет элемент по ключу.</li>
+  <li><code>keys()</code> — возвращает список ключей.</li>
+</ul>
+
+<h4>QString</h4>
+<ul>
+  <li><code>arg()</code> — форматирование строк.</li>
+  <li><code>contains()</code> — проверка наличия подстроки.</li>
+  <li><code>split()</code> — разделение строки на части.</li>
+  <li><code>toInt()</code>, <code>toDouble()</code> — преобразование в числа.</li>
+  <li><code>fromUtf8()</code>, <code>toUtf8()</code> — работа с кодировкой UTF-8.</li>
+</ul>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>QList</code> для списков, где важна вставка/удаление в середине.</li>
+  <li>Используйте <code>QVector</code> для списков, где важен быстрый доступ по индексу.</li>
+  <li>Используйте <code>QHash</code> для ассоциативных массивов, где важен быстрый доступ.</li>
+  <li>Используйте <code>QMap</code> для ассоциативных массивов, где важен порядок ключей.</li>
+  <li>Используйте <code>QString</code> для работы со строками в Unicode.</li>
+  <li>Используйте <code>QByteArray</code> для работы с бинарными данными.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtcontainer.html">Qt Containers в документации Qt</a></li>
+</ul>

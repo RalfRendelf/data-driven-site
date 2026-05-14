@@ -1,0 +1,24 @@
+  [{
+    "type": "алгоритмы",
+    "name": "Two Pointers: Opposite Direction",
+    "fileName": "two_pointers_opposite",
+    "category": "алгоритмы/basic_patterns/two_pointers",
+    "usage": "Два указателя навстречу: пары, палиндромы, слияние",
+    "isLeaf": true
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers: Same Direction",
+    "fileName": "two_pointers_same",
+    "category": "алгоритмы/basic_patterns/two_pointers",
+    "usage": "Два указателя в одном направлении: fast/slow, циклы, дубликаты",
+    "isLeaf": true
+  },
+  {
+    "type": "алгоритмы",
+    "name": "Two Pointers: Window",
+    "fileName": "two_pointers_window",
+    "category": "алгоритмы/basic_patterns/two_pointers",
+    "usage": "Окно на двух указателях: расширение/сжатие, минимальные подотрезки",
+    "isLeaf": true
+  }]

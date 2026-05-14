@@ -1,0 +1,114 @@
+<h2>File and IO: Работа с файлами в Qt</h2>
+
+<p>
+<strong>Qt File and IO</strong> — набор классов для работы с файлами и вводом/выводом.
+Они предоставляют кросс-платформенные средства для чтения, записи и управления файлами.
+</p>
+
+---
+<h3>Основные классы</h3>
+
+<h4>QFile</h4>
+<ul>
+  <li>Класс для работы с файлами.</li>
+  <li>Поддерживает чтение и запись в текстовых и бинарных режимах.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>open(QIODevice::OpenMode)</code> — открывает файл.</li>
+      <li><code>close()</code> — закрывает файл.</li>
+      <li><code>read(qint64 maxSize)</code> — читает данные из файла.</li>
+      <li><code>write(const QByteArray &data)</code> — записывает данные в файл.</li>
+      <li><code>size()</code> — возвращает размер файла.</li>
+      <li><code>exists()</code> — проверяет существование файла.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QTextStream</h4>
+<ul>
+  <li>Класс для работы с текстовыми потоками.</li>
+  <li>Поддерживает форматированный ввод/вывод.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>setDevice(QIODevice*)</code> — устанавливает устройство для потока.</li>
+      <li><code>operator<<</code> — запись в поток.</li>
+      <li><code>operator>></code> — чтение из потока.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QFileInfo</h4>
+<ul>
+  <li>Класс для получения информации о файлах.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>fileName()</code> — возвращает имя файла.</li>
+      <li><code>filePath()</code> — возвращает полный путь к файлу.</li>
+      <li><code>size()</code> — возвращает размер файла.</li>
+      <li><code>lastModified()</code> — возвращает дату последней модификации.</li>
+      <li><code>isDir()</code>, <code>isFile()</code> — проверяет тип файла.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QDir</h4>
+<ul>
+  <li>Класс для работы с директориями.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>exists()</code> — проверяет существование директории.</li>
+      <li><code>mkdir()</code> — создаёт директорию.</li>
+      <li><code>rmdir()</code> — удаляет директорию.</li>
+      <li><code>entryList()</code> — возвращает список файлов в директории.</li>
+      <li><code>cd()</code>, <code>cdUp()</code> — изменяет текущую директорию.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>QDataStream</h4>
+<ul>
+  <li>Класс для работы с бинарными потоками.</li>
+  <li>Поддерживает сериализацию данных.</li>
+  <li>Основные методы:
+    <ul>
+      <li><code>setDevice(QIODevice*)</code> — устанавливает устройство для потока.</li>
+      <li><code>operator<<</code> — запись в поток.</li>
+      <li><code>operator>></code> — чтение из потока.</li>
+    </ul>
+  </li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>Чтение из файла</h4>
+<pre><code>
+file_read_example.cpp
+</code></pre>
+
+<h4>Запись в файл</h4>
+<pre><code>
+file_write_example.cpp
+</code></pre>
+
+<h4>Получение информации о файле</h4>
+<pre><code>
+file_info_example.cpp
+</code></pre>
+
+---
+<h3>Практические рекомендации</h3>
+<ul>
+  <li>Используйте <code>QFile</code> для работы с файлами.</li>
+  <li>Используйте <code>QTextStream</code> для работы с текстовыми данными.</li>
+  <li>Используйте <code>QDataStream</code> для работы с бинарными данными.</li>
+  <li>Используйте <code>QFileInfo</code> для получения информации о файлах.</li>
+  <li>Используйте <code>QDir</code> для работы с директориями.</li>
+  <li>Всегда проверяйте успешность открытия файла.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtcore5.html#file-and-i-o">File and I/O в документации Qt</a></li>
+</ul>

@@ -1,0 +1,90 @@
+[
+  {
+    "type": "cpp",
+    "name": "QML Overview",
+    "fileName": "qml_overview",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Обзор QML и Qt Quick: архитектура, принципы, область применения",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Language Basics",
+    "fileName": "qml_language",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Синтаксис QML: объекты, свойства, привязки, сигналы",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Quick Elements",
+    "fileName": "qml_elements",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Базовые элементы Qt Quick: Item, Rectangle, Text, Image",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Layouts",
+    "fileName": "qml_layouts",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Позиционирование и layout'ы в QML: anchors, Row, Column, Grid",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Models and Views",
+    "fileName": "qml_models_views",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Модели и представления: ListModel, ListView, Repeater, DelegateModel",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML JavaScript",
+    "fileName": "qml_js",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Использование JavaScript в QML: функции, обработчики, модули",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Animations",
+    "fileName": "qml_animations",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Анимации в QML: PropertyAnimation, NumberAnimation, Transitions, States",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Canvas & Shader Effects",
+    "fileName": "qml_graphics",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Графика в QML: Canvas, ShaderEffect, рендеринг",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML and C++ Integration",
+    "fileName": "qml_cpp_integration",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Интеграция QML и C++: контексты, объекты, типы, Q_PROPERTY",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QML Performance",
+    "fileName": "qml_performance",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Оптимизация QML: профилирование, рендеринг, память",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "Qt Quick Controls",
+    "fileName": "qml_controls",
+    "category": "cpp/frameworks/qt/qt_qml",
+    "usage": "Qt Quick Controls 2: кнопки, поля ввода, стилизация",
+    "isLeaf": true
+  }
+]

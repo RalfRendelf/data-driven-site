@@ -1,0 +1,57 @@
+[
+
+
+  {
+    "type": "алгоритмы",
+    "name": "Choosing Advanced Techniques",
+    "fileName": "choosing_advanced_techniques",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Как выбирать продвинутую технику: битмаски, Mo’s algorithm, meet-in-the-middle, backtracking",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Backtracking",
+    "fileName": "backtracking",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Поиск с возвратом: перебор, pruning, ограничения",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Divide and Conquer",
+    "fileName": "divide_conquer",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Разделяй и властвуй: рекурсивные разбиения, слияние результатов",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Meet-in-the-Middle",
+    "fileName": "meet_in_the_middle",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Разделение задачи пополам: экспоненциальные оптимизации",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Bitmask Techniques",
+    "fileName": "bitmask",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Битовые маски: подмножества, состояния, оптимизация",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Mo's Algorithm",
+    "fileName": "mo_algorithm",
+    "category": "алгоритмы/advanced_techniques",
+    "usage": "Mo’s algorithm: оффлайн‑запросы на массиве, sqrt‑декомпозиция",
+    "isLeaf": true
+  }
+]

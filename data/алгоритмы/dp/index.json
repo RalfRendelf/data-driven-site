@@ -1,0 +1,84 @@
+[
+
+
+  {
+    "type": "алгоритмы",
+    "name": "Choosing DP Patterns",
+    "fileName": "choosing_dp_patterns",
+    "category": "алгоритмы/dp",
+    "usage": "Как выбирать тип динамического программирования в зависимости от структуры задачи",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "DP Basics",
+    "fileName": "dp_basics",
+    "category": "алгоритмы/dp",
+    "usage": "Основы ДП: формулировка состояний, переходы, оптимизация",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "1D DP",
+    "fileName": "dp_1d",
+    "category": "алгоритмы/dp",
+    "usage": "Одномерное ДП: линейные состояния, оптимизация памяти",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "2D DP",
+    "fileName": "dp_2d",
+    "category": "алгоритмы/dp",
+    "usage": "Двумерное ДП: таблицы, сетки, подстроки",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "DP on Trees",
+    "fileName": "dp_trees",
+    "category": "алгоритмы/dp",
+    "usage": "ДП на деревьях: поддеревья, rerooting, пути",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "DP on Graphs",
+    "fileName": "dp_graphs",
+    "category": "алгоритмы/dp",
+    "usage": "ДП на DAG: топологический порядок, пути, подсчёты",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Bitmask DP",
+    "fileName": "dp_bitmask",
+    "category": "алгоритмы/dp",
+    "usage": "ДП по маскам: подмножества, состояния, TSP",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Knapsack Patterns",
+    "fileName": "dp_knapsack",
+    "category": "алгоритмы/dp",
+    "usage": "Паттерны рюкзака: 0/1, полный, ограниченный, оптимизации",
+    "isLeaf": true
+  },
+
+  {
+    "type": "алгоритмы",
+    "name": "Digit DP",
+    "fileName": "dp_digit",
+    "category": "алгоритмы/dp",
+    "usage": "Digit DP: подсчёт чисел по разрядам, ограничения",
+    "isLeaf": true
+  }
+]

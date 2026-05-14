@@ -1,0 +1,50 @@
+[
+  {
+    "type": "cpp",
+    "name": "Qt Network Overview",
+    "fileName": "qt_network_overview",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "Обзор Qt Network: архитектура, классы, возможности",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QTcpSocket & QTcpServer",
+    "fileName": "qt_tcp",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "TCP‑клиенты и серверы в Qt",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QUdpSocket",
+    "fileName": "qt_udp",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "UDP‑сокеты, multicast, broadcast",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QNetworkAccessManager",
+    "fileName": "qt_http",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "HTTP‑клиент: GET, POST, загрузка файлов, асинхронность",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QSslSocket",
+    "fileName": "qt_ssl",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "SSL/TLS в Qt: сертификаты, шифрование",
+    "isLeaf": true
+  },
+  {
+    "type": "cpp",
+    "name": "QNetworkConfiguration",
+    "fileName": "qt_network_config",
+    "category": "cpp/frameworks/qt/qt_network",
+    "usage": "Управление сетевыми конфигурациями и интерфейсами",
+    "isLeaf": true
+  }
+]
