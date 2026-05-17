@@ -1,3 +1,90 @@
-<h2>Qt Quick Elements</h2>
+<h2>Qt Quick Elements: Базовые элементы</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>Qt Quick Elements</strong> — это набор базовых элементов для создания интерфейсов в QML.
+Они предоставляют основные строительные блоки для создания пользовательских интерфейсов.
+</p>
+
+---
+<h3>Основные элементы</h3>
+
+<h4>Item</h4>
+<ul>
+  <li>Базовый элемент для всех визуальных объектов в QML.</li>
+  <li>Не имеет визуального представления сам по себе.</li>
+  <li>Служит контейнером для других элементов.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>x</code>, <code>y</code> — координаты.</li>
+      <li><code>width</code>, <code>height</code> — размеры.</li>
+      <li><code>visible</code> — видимость.</li>
+      <li><code>opacity</code> — прозрачность.</li>
+      <li><code>rotation</code> — угол поворота.</li>
+      <li><code>scale</code> — масштаб.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Rectangle</h4>
+<ul>
+  <li>Прямоугольник с заполнением.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>color</code> — цвет заполнения.</li>
+      <li><code>border.color</code> — цвет границы.</li>
+      <li><code>border.width</code> — ширина границы.</li>
+      <li><code>radius</code> — радиус скругления углов.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_rectangle_example.qml
+</code></pre>
+
+<h4>Text</h4>
+<ul>
+  <li>Элемент для отображения текста.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>text</code> — отображаемый текст.</li>
+      <li><code>font.family</code> — шрифт.</li>
+      <li><code>font.size</code> — размер шрифта.</li>
+      <li><code>color</code> — цвет текста.</li>
+      <li><code>horizontalAlignment</code>, <code>verticalAlignment</code> — выравнивание.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_text_example.qml
+</code></pre>
+
+<h4>Image</h4>
+<ul>
+  <li>Элемент для отображения изображений.</li>
+  <li>Поддерживает форматы: PNG, JPG, SVG и другие.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>source</code> — путь к изображению.</li>
+      <li><code>fillMode</code> — режим заполнения (<code>Image.Stretch</code>, <code>Image.PreserveAspectFit</code> и др.).</li>
+      <li><code>smooth</code> — сглаживание.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_image_example.qml
+</code></pre>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-elements.html">Qt Quick Elements в документации Qt</a></li>
+</ul>

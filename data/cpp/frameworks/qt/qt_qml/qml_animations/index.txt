@@ -1,3 +1,102 @@
-<h2>QML Animations</h2>
+<h2>QML Animations: Анимации в QML</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>Анимации в QML</strong> позволяют создавать плавные переходы и динамические эффекты для элементов интерфейса.
+Qt Quick предоставляет набор классов для создания анимаций, которые легко интегрируются с остальными элементами QML.
+</p>
+
+---
+<h3>Основные концепции</h3>
+
+<h4>Типы анимаций</h4>
+<ul>
+  <li><strong>PropertyAnimation</strong> — анимация изменения свойства.</li>
+  <li><strong>NumberAnimation</strong> — анимация изменения числового значения.</li>
+  <li><strong>ColorAnimation</strong> — анимация изменения цвета.</li>
+  <li><strong>RotationAnimation</strong> — анимация поворота.</li>
+  <li><strong>ScaleAnimation</strong> — анимация масштабирования.</li>
+  <li><strong>SequentialAnimation</strong> — последовательное выполнение анимаций.</li>
+  <li><strong>ParallelAnimation</strong> — параллельное выполнение анимаций.</li>
+</ul>
+
+---
+<h3>Использование</h3>
+
+<h4>PropertyAnimation</h4>
+<ul>
+  <li>Анимирует изменение свойства объекта.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>target</code> — объект, свойство которого анимируется.</li>
+      <li><code>property</code> — имя свойства.</li>
+      <li><code>from</code> — начальное значение.</li>
+      <li><code>to</code> — конечное значение.</li>
+      <li><code>duration</code> — длительность анимации в миллисекундах.</li>
+      <li><code>easing.type</code> — тип анимации (например, <code>Easing.Linear</code>, <code>Easing.InOutQuad</code>).</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_property_animation_example.qml
+</code></pre>
+
+<h4>NumberAnimation</h4>
+<ul>
+  <li>Анимирует изменение числового значения.</li>
+  <li>Часто используется для анимации свойств, которые принимают числовые значения (например, <code>x</code>, <code>y</code>, <code>opacity</code>).</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_number_animation_example.qml
+</code></pre>
+
+<h4>SequentialAnimation и ParallelAnimation</h4>
+<ul>
+  <li><strong>SequentialAnimation</strong> — выполняет анимации последовательно.</li>
+  <li><strong>ParallelAnimation</strong> — выполняет анимации параллельно.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_sequential_parallel_animation_example.qml
+</code></pre>
+
+<h4>Transitions (Переходы)</h4>
+<ul>
+  <li>Позволяют анимировать изменения свойств при изменении состояния.</li>
+  <li>Используются вместе с <code>State</code>.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_transitions_example.qml
+</code></pre>
+
+<h4>States (Состояния)</h4>
+<ul>
+  <li>Позволяют определять различные состояния объекта.</li>
+  <li>При изменении состояния автоматически применяются изменения свойств.</li>
+</ul>
+
+---
+<h3>Советы по использованию анимаций</h3>
+<ul>
+  <li>Используйте <strong>PropertyAnimation</strong> для анимации свойств объектов.</li>
+  <li>Используйте <strong>SequentialAnimation</strong> для последовательных анимаций.</li>
+  <li>Используйте <strong>ParallelAnimation</strong> для параллельных анимаций.</li>
+  <li>Используйте <strong>Transitions</strong> для анимации изменений состояний.</li>
+  <li>Настраивайте <code>easing</code> для плавных анимаций.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-animations.html">Animations в документации Qt</a></li>
+</ul>

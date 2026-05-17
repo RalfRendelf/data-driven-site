@@ -1,3 +1,88 @@
-<h2>QML Layouts</h2>
+<h2>QML Layouts: Позиционирование и компоновка</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>QML Layouts</strong> — это система для управления позиционированием и компоновкой элементов в QML.
+Она позволяет создавать гибкие интерфейсы, которые автоматически адаптируются к изменениям размеров.
+</p>
+
+---
+<h3>Основные подходы к компоновке</h3>
+
+<h4>Anchors (Якоря)</h4>
+<ul>
+  <li>Позволяют привязывать элементы друг к другу или к родительскому контейнеру.</li>
+  <li>Основные свойства:
+    <ul>
+      <li><code>anchors.left</code>, <code>anchors.right</code>, <code>anchors.top</code>, <code>anchors.bottom</code> — привязка к краям.</li>
+      <li><code>anchors.centerIn</code> — центрирование относительно другого элемента.</li>
+      <li><code>anchors.fill</code> — заполнение родительского контейнера.</li>
+      <li><code>anchors.margins</code> — отступы.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_anchors_example.qml
+</code></pre>
+
+<h4>Positioners (Позиционеры)</h4>
+<ul>
+  <li>Элементы для автоматической компоновки дочерних элементов.</li>
+  <li>Типы позиционеров:
+    <ul>
+      <li><strong>Row</strong> — размещает элементы в строку.</li>
+      <li><strong>Column</strong> — размещает элементы в столбец.</li>
+      <li><strong>Grid</strong> — размещает элементы в сетке.</li>
+      <li><strong>Flow</strong> — размещает элементы в потоке (переносит на новую строку при нехватке места).</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_positioners_example.qml
+</code></pre>
+
+<h4>Layouts (Компоновщики)</h4>
+<ul>
+  <li>Более современные и гибкие компоновщики, чем позиционеры.</li>
+  <li>Типы компоновщиков:
+    <ul>
+      <li><strong>RowLayout</strong> — строка.</li>
+      <li><strong>ColumnLayout</strong> — столбец.</li>
+      <li><strong>GridLayout</strong> — сетка.</li>
+      <li><strong>FormLayout</strong> — форма (метка + поле ввода).</li>
+    </ul>
+  </li>
+  <li>Поддерживают свойства:
+    <ul>
+      <li><code>spacing</code> — расстояние между элементами.</li>
+      <li><code>margins</code> — отступы от краёв.</li>
+      <li><code>alignment</code> — выравнивание.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_layouts_example.qml
+</code></pre>
+
+---
+<h3>Советы по компоновке</h3>
+<ul>
+  <li>Используйте <strong>Anchors</strong> для простых случаев привязки элементов.</li>
+  <li>Используйте <strong>Layouts</strong> для сложных интерфейсов с автоматическим управлением размерами.</li>
+  <li>Избегайте жёсткого задания координат (<code>x</code>, <code>y</code>), если это возможно.</li>
+  <li>Используйте <code>spacing</code> и <code>margins</code> для управления отступами.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-positioning.html">Positioning Elements в документации Qt</a></li>
+</ul>

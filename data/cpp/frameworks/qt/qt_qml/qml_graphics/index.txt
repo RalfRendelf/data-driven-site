@@ -1,3 +1,75 @@
-<h2>QML Canvas & Shader Effects</h2>
+<h2>QML Canvas & Shader Effects: Графика в QML</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>Canvas</strong> и <strong>Shader Effects</strong> в QML предоставляют средства для рисования и применения графических эффектов.
+Они позволяют создавать кастомные графические элементы, анимации и визуальные эффекты.
+</p>
+
+---
+<h3>Canvas</h3>
+
+<h4>Что такое Canvas?</h4>
+<ul>
+  <li>Элемент для рисования с использованием API, похожего на HTML5 Canvas.</li>
+  <li>Позволяет рисовать линии, фигуры, текст и изображения.</li>
+  <li>Поддерживает рисование с использованием JavaScript.</li>
+</ul>
+
+<h4>Основные методы Canvas</h4>
+<ul>
+  <li><code>getContext("2d")</code> — получение контекста для рисования.</li>
+  <li><strong>Методы контекста:</strong>
+    <ul>
+      <li><code>fillRect(x, y, width, height)</code> — заполненный прямоугольник.</li>
+      <li><code>strokeRect(x, y, width, height)</code> — контур прямоугольника.</li>
+      <li><code>beginPath()</code>, <code>moveTo(x, y)</code>, <code>lineTo(x, y)</code> — рисование линий.</li>
+      <li><code>arc(x, y, radius, startAngle, endAngle)</code> — дуга.</li>
+      <li><code>fillText(text, x, y)</code> — текст.</li>
+      <li><code>drawImage(image, x, y)</code> — изображение.</li>
+    </ul>
+  </li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_canvas_example.qml
+</code></pre>
+
+---
+<h3>Shader Effects</h3>
+
+<h4>Что такое Shader Effects?</h4>
+<ul>
+  <li>Позволяют применять шейдеры (GLSL) к элементам QML.</li>
+  <li>Поддерживают вершинные и фрагментные шейдеры.</li>
+  <li>Могут использоваться для создания кастомных эффектов (размытие, искажение, цветокоррекция и др.).</li>
+</ul>
+
+<h4>Основные классы</h4>
+<ul>
+  <li><strong>ShaderEffect</strong> — базовый класс для применения шейдеров.</li>
+  <li><strong>ShaderEffectSource</strong> — источник текстуры для шейдера.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_shader_effect_example.qml
+</code></pre>
+
+---
+<h3>Советы по использованию графики в QML</h3>
+<ul>
+  <li>Используйте <strong>Canvas</strong> для рисования кастомных графических элементов.</li>
+  <li>Используйте <strong>Shader Effects</strong> для применения графических эффектов.</li>
+  <li>Избегайте сложных шейдеров на слабых устройствах.</li>
+  <li>Используйте <code>ShaderEffectSource</code> для применения шейдеров к существующим элементам.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-canvas.html">Canvas в документации Qt</a></li>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-shadereffect.html">Shader Effects в документации Qt</a></li>
+</ul>

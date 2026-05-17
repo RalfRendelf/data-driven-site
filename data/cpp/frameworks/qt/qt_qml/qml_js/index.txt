@@ -1,3 +1,88 @@
-<h2>QML JavaScript</h2>
+<h2>QML JavaScript: Использование JavaScript в QML</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>JavaScript</strong> в QML используется для добавления логики в интерфейсы.
+Он позволяет определять функции, обработчики событий и динамические выражения.
+</p>
+
+---
+<h3>Основные возможности</h3>
+
+<h4>Выражения</h4>
+<ul>
+  <li>JavaScript-выражения могут использоваться в привязках свойств.</li>
+  <li>Поддерживаются все основные операторы и функции JavaScript.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_expressions_example.qml
+</code></pre>
+
+<h4>Функции</h4>
+<ul>
+  <li>Функции можно определять в объектах QML.</li>
+  <li>Функции могут принимать аргументы и возвращать значения.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_functions_example.qml
+</code></pre>
+
+<h4>Обработчики событий</h4>
+<ul>
+  <li>Обработчики событий объявляются с использованием синтаксиса <code>onSignalName: { ... }</code>.</li>
+  <li>Обработчики могут содержать произвольный JavaScript-код.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_event_handlers_example.qml
+</code></pre>
+
+<h4>Модули JavaScript</h4>
+<ul>
+  <li>Можно подключать внешние JavaScript-файлы как модули.</li>
+  <li>Используется для переиспользования кода.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+utils.js
+</code></pre>
+<pre><code>
+qml_import_js_example.qml
+</code></pre>
+
+---
+<h3>Работа с данными</h3>
+<ul>
+  <li><strong>Типы данных:</strong> Поддерживаются все основные типы JavaScript (<code>number</code>, <code>string</code>, <code>boolean</code>, <code>object</code>, <code>array</code>).</li>
+  <li><strong>JSON:</strong> Встроенная поддержка для работы с JSON.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_json_example.qml
+</code></pre>
+
+---
+<h3>Советы по использованию JavaScript в QML</h3>
+<ul>
+  <li>Используйте JavaScript для логики интерфейса.</li>
+  <li>Избегайте сложных вычислений в JavaScript — переносите их в C++.</li>
+  <li>Используйте модули для переиспользования кода.</li>
+  <li>Будьте осторожны с замыканиями и контекстом выполнения.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtqml-javascript.html">JavaScript in QML в документации Qt</a></li>
+</ul>

@@ -1,3 +1,87 @@
-<h2>Qt Quick Controls</h2>
+<h2>Qt Quick Controls: Элементы управления</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>Qt Quick Controls</strong> — это набор готовых элементов управления для создания интерфейсов в QML.
+Они предоставляют стандартные элементы, такие как кнопки, поля ввода, выпадающие списки и другие, которые можно легко стилизовать и настраивать.
+</p>
+
+---
+<h3>Обзор</h3>
+<ul>
+  <li><strong>Qt Quick Controls 1</strong> — первая версия, основанная на базовых элементах Qt Quick.</li>
+  <li><strong>Qt Quick Controls 2</strong> — вторая версия, основанная на концепции стилей и более гибкая.</li>
+  <li>В этой статье рассматривается <strong>Qt Quick Controls 2</strong>, как более современная и рекомендуемая версия.</li>
+</ul>
+
+---
+<h3>Основные элементы управления</h3>
+
+<h4>Кнопки</h4>
+<ul>
+  <li><strong>Button</strong> — стандартная кнопка.</li>
+  <li><strong>ToolButton</strong> — кнопка для панелей инструментов.</li>
+  <li><strong>RadioButton</strong> — переключатель.</li>
+  <li><strong>CheckBox</strong> — флажок.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_buttons_example.qml
+</code></pre>
+
+<h4>Поля ввода</h4>
+<ul>
+  <li><strong>TextField</strong> — однострочное поле ввода.</li>
+  <li><strong>TextArea</strong> — многострочное поле ввода.</li>
+  <li><strong>ComboBox</strong> — выпадающий список.</li>
+  <li><strong>SpinBox</strong> — поле для ввода чисел с кнопками увеличения/уменьшения.</li>
+  <li><strong>Slider</strong> — ползунок.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+qml_input_example.qml
+</code></pre>
+
+<h4>Контейнеры</h4>
+<ul>
+  <li><strong>GroupBox</strong> — группа элементов с рамкой и заголовком.</li>
+  <li><strong>TabBar</strong> — панель вкладок.</li>
+  <li><strong>StackLayout</strong> — стек элементов, где виден только один.</li>
+  <li><strong>ScrollView</strong> — область с прокруткой.</li>
+</ul>
+
+---
+<h3>Стилизация</h3>
+<ul>
+  <li>Qt Quick Controls 2 поддерживает стилизацию с использованием:
+    <ul>
+      <li><strong>Qt Quick Controls 2 Style</strong> — встроенные стили.</li>
+      <li><strong>Кастомные стили</strong> — пользовательские стили.</li>
+    </ul>
+  </li>
+  <li>Стили можно применять глобально или к отдельным элементам.</li>
+</ul>
+<p>
+Пример применения стиля:
+</p>
+<pre><code>
+qml_style_example.qml
+</code></pre>
+
+---
+<h3>Советы по использованию Qt Quick Controls</h3>
+<ul>
+  <li>Используйте <strong>Qt Quick Controls 2</strong> для создания современных интерфейсов.</li>
+  <li>Выбирайте подходящие элементы управления для ваших задач.</li>
+  <li>Используйте стилизацию для создания единого визуального стиля.</li>
+  <li>Оптимизируйте производительность для больших списков и таблиц.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtquick-controls2-index.html">Qt Quick Controls 2 в документации Qt</a></li>
+</ul>

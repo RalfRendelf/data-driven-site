@@ -1,3 +1,88 @@
-<h2>QML and C++ Integration</h2>
+<h2>QML and C++ Integration: Интеграция QML и C++</h2>
 
-<p>Статья пока не заполнена.</p>
+<p>
+<strong>Интеграция QML и C++</strong> позволяет сочетать гибкость QML для описания интерфейсов с мощью C++ для бизнес-логики.
+Qt предоставляет несколько способов интеграции этих двух миров.
+</p>
+
+---
+<h3>Способы интеграции</h3>
+
+<h4>Регистрация C++ классов в QML</h4>
+<ul>
+  <li>Позволяет использовать C++ классы в QML.</li>
+  <li>Классы должны быть унаследованы от <code>QObject</code>.</li>
+  <li>Регистрация осуществляется с помощью <code>qmlRegisterType</code>.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+cpp_qml_integration_register.cpp
+</code></pre>
+
+<h4>Использование в QML</h4>
+<pre><code>
+qml_use_cpp_class.qml
+</code></pre>
+
+<h4>Контексты QML</h4>
+<ul>
+  <li>Позволяют передавать данные из C++ в QML.</li>
+  <li>Используются для передачи объектов, свойств или функций.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+cpp_qml_context.cpp
+</code></pre>
+<pre><code>
+qml_context_property.qml
+</code></pre>
+
+<h4>Свойства Q_PROPERTY</h4>
+<ul>
+  <li>Позволяют объявлять свойства, которые будут доступны в QML.</li>
+  <li>Поддерживают уведомления об изменении (<code>NOTIFY</code>).</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+cpp_qproperty_example.hpp
+</code></pre>
+
+<h4>Модели данных</h4>
+<ul>
+  <li>C++ классы могут использоваться как модели данных для QML.</li>
+  <li>Для этого нужно реализовать интерфейс <code>QAbstractItemModel</code>.</li>
+</ul>
+<p>
+Пример:
+</p>
+<pre><code>
+cpp_model_example.hpp
+</code></pre>
+<pre><code>
+cpp_model_registration.cpp
+</code></pre>
+<pre><code>
+qml_model_usage.qml
+</code></pre>
+
+---
+<h3>Советы по интеграции QML и C++</h3>
+<ul>
+  <li>Используйте <strong>qmlRegisterType</strong> для регистрации C++ классов в QML.</li>
+  <li>Используйте <strong>Q_PROPERTY</strong> для объявления свойств, доступных в QML.</li>
+  <li>Используйте <strong>контексты QML</strong> для передачи данных из C++ в QML.</li>
+  <li>Используйте <strong>QAbstractItemModel</strong> для создания кастомных моделей данных.</li>
+  <li>Избегайте сложной логики в QML — переносите её в C++.</li>
+</ul>
+
+---
+<h3>Ссылки</h3>
+<ul>
+  <li><a href="https://doc.qt.io/qt-6/qtqml-cppintegration.html">Integrating QML and C++ в документации Qt</a></li>
+</ul>
